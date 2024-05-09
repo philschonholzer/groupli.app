@@ -1,0 +1,166 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "id": "f8eff9d0-d8b0-4213-9e3a-1e55aad50671",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "Groups": {
+      "name": "Groups",
+      "columns": {
+        "Id": {
+          "name": "Id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Name": {
+          "name": "Name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "SessionId": {
+          "name": "SessionId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "LastSessionAt": {
+          "name": "LastSessionAt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "Pairings": {
+      "name": "Pairings",
+      "columns": {
+        "Id": {
+          "name": "Id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Person1": {
+          "name": "Person1",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Person2": {
+          "name": "Person2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "At": {
+          "name": "At",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Pairings_Person1_Persons_Id_fk": {
+          "name": "Pairings_Person1_Persons_Id_fk",
+          "tableFrom": "Pairings",
+          "tableTo": "Persons",
+          "columnsFrom": [
+            "Person1"
+          ],
+          "columnsTo": [
+            "Id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Pairings_Person2_Persons_Id_fk": {
+          "name": "Pairings_Person2_Persons_Id_fk",
+          "tableFrom": "Pairings",
+          "tableTo": "Persons",
+          "columnsFrom": [
+            "Person2"
+          ],
+          "columnsTo": [
+            "Id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "Persons": {
+      "name": "Persons",
+      "columns": {
+        "Id": {
+          "name": "Id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Name": {
+          "name": "Name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Group": {
+          "name": "Group",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Color": {
+          "name": "Color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Persons_Group_Groups_Id_fk": {
+          "name": "Persons_Group_Groups_Id_fk",
+          "tableFrom": "Persons",
+          "tableTo": "Groups",
+          "columnsFrom": [
+            "Group"
+          ],
+          "columnsTo": [
+            "Id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

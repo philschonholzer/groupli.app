@@ -1,26 +1,21 @@
 import { run } from '@/adapter/effect'
-import { Group } from '@/domain'
+import { Person } from '@/domain'
 import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Effect } from 'effect'
-import Link from 'next/link'
 
 export const runtime = 'edge'
 
-export default async function Home() {
+export default async function Group(props: { params: { id: string } }) {
 	return Effect.gen(function* () {
-		const groups = yield* Group.Repository.getAll
-
+		const persons = yield* Person.Repository.getByGroupId(
+			Number(props.params.id),
+		)
 		return (
-			<div>
-				{groups.map((group) => (
-					<div key={group.id}>
-						<Link href={`/group/${group.id}`}>
-							<h1>{group.name}</h1>
-						</Link>
-						<p>{group.sessionId}</p>
-					</div>
+			<ul>
+				{persons.map((person) => (
+					<li key={person.id}>{person.name}</li>
 				))}
-			</div>
+			</ul>
 		)
 	}).pipe(
 		Effect.catchAll((e) =>
