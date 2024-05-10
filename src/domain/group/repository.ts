@@ -1,5 +1,6 @@
 import { Db } from '@/adapter/db'
 import { Groups } from '@/adapter/db/schema'
+import { eq } from 'drizzle-orm'
 import { Effect, Layer } from 'effect'
 
 const make = Effect.gen(function* () {
@@ -14,6 +15,10 @@ const make = Effect.gen(function* () {
 		insert: (props: { id: string; name: string }) =>
 			db((client) =>
 				client.insert(Groups).values({ id: props.id, name: props.name }),
+			),
+		updateName: (id: string, name: string) =>
+			db((client) =>
+				client.update(Groups).set({ name }).where(eq(Groups.id, id)),
 			),
 	}
 })

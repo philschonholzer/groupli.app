@@ -2,7 +2,7 @@ import { run } from '@/adapter/effect'
 import { Group, Person } from '@/domain'
 import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Effect } from 'effect'
-import { addPerson } from './action'
+import { addPerson, updateName } from './action'
 
 export const runtime = 'edge'
 
@@ -13,7 +13,25 @@ export default async function GroupPage(props: { params: { id: string } }) {
 
 		return (
 			<>
-				<h1>Group {group?.name}</h1>
+				<form
+					action={async (formData: FormData) => {
+						'use server'
+						await updateName(formData.get('name') as string, props.params.id)
+					}}
+				>
+					<h1>
+						<label>
+							Group{' '}
+							<input
+								className="bg-slate-900 ring-1 ring-slate-500 rounded-sm"
+								type="text"
+								name="name"
+								id=""
+								defaultValue={group?.name}
+							/>
+						</label>
+					</h1>
+				</form>
 				<ul>
 					{persons.map((person) => (
 						<li key={person.id}>{person.name}</li>
@@ -34,6 +52,7 @@ export default async function GroupPage(props: { params: { id: string } }) {
 							className="bg-slate-900 ring-1 ring-slate-500 rounded-sm"
 							type="text"
 							name="name"
+							defaultValue={''}
 						/>
 					</label>
 					<button type="submit">Add Person</button>
