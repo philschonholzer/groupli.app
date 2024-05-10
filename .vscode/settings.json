@@ -1,3 +1,8 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "editor.defaultFormatter": "biomejs.biome",
+  "prettier.enable": false
 }
