@@ -4,7 +4,7 @@ import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 export const Persons = sqliteTable('Persons', {
 	id: integer('Id').primaryKey(),
 	name: text('Name').notNull(),
-	group: integer('Group')
+	group: text('Group')
 		.notNull()
 		.references(() => Groups.id),
 	color: text('Color'),
@@ -13,10 +13,26 @@ export const Persons = sqliteTable('Persons', {
 export type Person = typeof Persons.$inferSelect
 
 export const Groups = sqliteTable('Groups', {
-	id: integer('Id').primaryKey(),
+	id: text('Id').primaryKey(),
 	name: text('Name').notNull(),
-	sessionId: text('SessionId').notNull(),
-	lastSessionAt: text('LastSessionAt').notNull(),
+})
+
+export const Sessions = sqliteTable('Sessions', {
+	id: integer('Id').primaryKey(),
+	at: text('At').notNull(),
+	group: text('Group')
+		.notNull()
+		.references(() => Groups.id),
+})
+
+export const PersonsInSessions = sqliteTable('PersonsInSessions', {
+	id: integer('Id').primaryKey(),
+	person: integer('Person')
+		.notNull()
+		.references(() => Persons.id),
+	session: integer('Session')
+		.notNull()
+		.references(() => Sessions.id),
 })
 
 export const Pairings = sqliteTable('Pairings', {
@@ -27,7 +43,9 @@ export const Pairings = sqliteTable('Pairings', {
 	person2: integer('Person2')
 		.notNull()
 		.references(() => Persons.id),
-	at: text('At').notNull(),
+	session: integer('Session')
+		.notNull()
+		.references(() => Sessions.id),
 })
 
 export const pairingRelations = relations(Pairings, ({ one, many }) => ({

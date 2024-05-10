@@ -1,4 +1,5 @@
 import { Db } from '@/adapter/db'
+import { Persons } from '@/adapter/db/schema'
 import { Effect, Layer } from 'effect'
 
 const make = Effect.gen(function* () {
@@ -6,7 +7,9 @@ const make = Effect.gen(function* () {
 
 	return {
 		getAll: db((client) => client.query.Persons.findMany()),
-		getByGroupId: (groupId: number) =>
+		insert: (name: string, groupId: string) =>
+			db((client) => client.insert(Persons).values({ name, group: groupId })),
+		getByGroupId: (groupId: string) =>
 			db((client) =>
 				client.query.Persons.findMany({
 					where: (_, { eq }) => eq(_.group, groupId),

@@ -1,6 +1,6 @@
 import { Effect, Layer } from 'effect'
 import { Db } from '../db'
-import { repositoryLayer, type RepositoryLayer } from './repository-layer'
+import { type RepositoryLayer, repositoryLayer } from './repository-layer'
 
 export const run =
 	<A>(db: D1Database) =>

@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "f8eff9d0-d8b0-4213-9e3a-1e55aad50671",
+  "id": "9a48eeec-45a2-475b-ab07-d5d7c1426c40",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "Groups": {
@@ -9,27 +9,13 @@
       "columns": {
         "Id": {
           "name": "Id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false
         },
         "Name": {
           "name": "Name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "SessionId": {
-          "name": "SessionId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "LastSessionAt": {
-          "name": "LastSessionAt",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -65,9 +51,9 @@
           "notNull": true,
           "autoincrement": false
         },
-        "At": {
-          "name": "At",
-          "type": "text",
+        "Session": {
+          "name": "Session",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -100,6 +86,19 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
+        },
+        "Pairings_Session_Sessions_Id_fk": {
+          "name": "Pairings_Session_Sessions_Id_fk",
+          "tableFrom": "Pairings",
+          "tableTo": "Sessions",
+          "columnsFrom": [
+            "Session"
+          ],
+          "columnsTo": [
+            "Id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -124,7 +123,7 @@
         },
         "Group": {
           "name": "Group",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -142,6 +141,107 @@
         "Persons_Group_Groups_Id_fk": {
           "name": "Persons_Group_Groups_Id_fk",
           "tableFrom": "Persons",
+          "tableTo": "Groups",
+          "columnsFrom": [
+            "Group"
+          ],
+          "columnsTo": [
+            "Id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "PersonsInSessions": {
+      "name": "PersonsInSessions",
+      "columns": {
+        "Id": {
+          "name": "Id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Person": {
+          "name": "Person",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Session": {
+          "name": "Session",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "PersonsInSessions_Person_Persons_Id_fk": {
+          "name": "PersonsInSessions_Person_Persons_Id_fk",
+          "tableFrom": "PersonsInSessions",
+          "tableTo": "Persons",
+          "columnsFrom": [
+            "Person"
+          ],
+          "columnsTo": [
+            "Id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "PersonsInSessions_Session_Sessions_Id_fk": {
+          "name": "PersonsInSessions_Session_Sessions_Id_fk",
+          "tableFrom": "PersonsInSessions",
+          "tableTo": "Sessions",
+          "columnsFrom": [
+            "Session"
+          ],
+          "columnsTo": [
+            "Id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "Sessions": {
+      "name": "Sessions",
+      "columns": {
+        "Id": {
+          "name": "Id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "At": {
+          "name": "At",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "Group": {
+          "name": "Group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Sessions_Group_Groups_Id_fk": {
+          "name": "Sessions_Group_Groups_Id_fk",
+          "tableFrom": "Sessions",
           "tableTo": "Groups",
           "columnsFrom": [
             "Group"
