@@ -13,6 +13,7 @@ const make = Effect.gen(function* () {
 				client.query.Rounds.findMany({
 					where: (_, { eq }) => eq(_.group, groupId),
 					with: { personsInRounds: { with: { person: true } } },
+					orderBy: desc(Rounds.at),
 				}),
 			).pipe(
 				Effect.map(

@@ -2,13 +2,14 @@ import { run } from '@/adapter/effect'
 import { Group, Person, Round } from '@/domain'
 import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Effect } from 'effect'
-import { addPerson, updateName } from './action'
+import { addPerson, newRound, updateName } from './action'
 
 export const runtime = 'edge'
 
 export default async function GroupPage(props: { params: { id: string } }) {
 	return Effect.gen(function* () {
 		const persons = yield* Person.Repository.getByGroupId(props.params.id)
+		const personIds = persons.map((person) => person.id)
 		const group = yield* Group.Repository.getById(props.params.id)
 		const rounds = yield* Round.Repository.getByGroupId(props.params.id)
 
@@ -57,6 +58,15 @@ export default async function GroupPage(props: { params: { id: string } }) {
 						/>
 					</label>
 					<button type="submit">Add Person</button>
+				</form>
+				<h2>Rounds</h2>
+				<form
+					action={async (formData: FormData) => {
+						'use server'
+						await newRound(props.params.id, personIds)
+					}}
+				>
+					<button type="submit">New Round</button>
 				</form>
 				<ul>
 					{rounds.map((round) => (
