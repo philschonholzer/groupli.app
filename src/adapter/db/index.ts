@@ -8,7 +8,10 @@ const make = (d1Database: D1Database) => {
 	const query = <A>(body: (client: typeof dBclient) => Promise<A>) =>
 		Effect.tryPromise<A, DbError>({
 			try: () => body(dBclient),
-			catch: (cause) => new DbError({ cause }),
+			catch: (cause) => {
+				console.error('DbError', cause)
+				return new DbError({ cause })
+			},
 		})
 
 	return query

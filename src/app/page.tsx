@@ -36,7 +36,7 @@ export default async function Home() {
 		)
 	}).pipe(
 		Effect.catchAll((e) =>
-			Effect.succeed(<div>Error {JSON.stringify(e)}</div>),
+			Effect.succeed(<div>Error {JSON.stringify(e.cause)}</div>),
 		),
 		run(getRequestContext().env.DB),
 	)

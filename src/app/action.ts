@@ -11,11 +11,14 @@ export async function newGroup() {
 		return yield* Group.newGroup
 	})
 		.pipe(
-			Effect.catchAll((e) => Effect.succeed(`Error ${JSON.stringify(e)}`)),
+			Effect.catchAll((e) =>
+				Effect.succeed(`Error ${JSON.stringify(e.cause)}`),
+			),
 			run(getRequestContext().env.DB),
 		)
 		.then((result) => {
 			if (typeof result === 'string') {
+				console.error('Error', result)
 				return result
 			}
 			console.log('result', result)

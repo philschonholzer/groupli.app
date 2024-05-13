@@ -17,23 +17,40 @@ export const Groups = sqliteTable('Groups', {
 	name: text('Name').notNull(),
 })
 
-export const Sessions = sqliteTable('Sessions', {
+export const Rounds = sqliteTable('Rounds', {
 	id: integer('Id').primaryKey(),
 	at: text('At').notNull(),
 	group: text('Group')
 		.notNull()
 		.references(() => Groups.id),
 })
+export const roundsRelations = relations(Rounds, ({ one, many }) => ({
+	personsInRounds: many(PersonsInRounds),
+}))
 
-export const PersonsInSessions = sqliteTable('PersonsInSessions', {
+export const PersonsInRounds = sqliteTable('PersonsInRounds', {
 	id: integer('Id').primaryKey(),
 	person: integer('Person')
 		.notNull()
 		.references(() => Persons.id),
-	session: integer('Session')
+	round: integer('Rounds')
 		.notNull()
-		.references(() => Sessions.id),
+		.references(() => Rounds.id),
 })
+
+export const personsInRoundsRelations = relations(
+	PersonsInRounds,
+	({ one }) => ({
+		person: one(Persons, {
+			fields: [PersonsInRounds.person],
+			references: [Persons.id],
+		}),
+		user: one(Rounds, {
+			fields: [PersonsInRounds.round],
+			references: [Rounds.id],
+		}),
+	}),
+)
 
 export const Pairings = sqliteTable('Pairings', {
 	id: integer('Id').primaryKey(),
@@ -43,9 +60,9 @@ export const Pairings = sqliteTable('Pairings', {
 	person2: integer('Person2')
 		.notNull()
 		.references(() => Persons.id),
-	session: integer('Session')
+	round: integer('Round')
 		.notNull()
-		.references(() => Sessions.id),
+		.references(() => Rounds.id),
 })
 
 export const pairingRelations = relations(Pairings, ({ one, many }) => ({

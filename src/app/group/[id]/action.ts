@@ -8,14 +8,17 @@ import { revalidatePath } from 'next/cache'
 
 export async function addPerson(name: string, groupId: string) {
 	return Effect.gen(function* () {
-		yield* Person.Repository.insert(name, groupId)
+		yield* Person.addPerson(name, groupId)
 	})
 		.pipe(
-			Effect.catchAll((e) => Effect.succeed(`Error ${JSON.stringify(e)}`)),
+			Effect.catchAll((e) =>
+				Effect.succeed(`Error ${JSON.stringify(e.cause)}`),
+			),
 			run(getRequestContext().env.DB),
 		)
 		.then((result) => {
 			if (typeof result === 'string') {
+				console.error('Error', result)
 				return result
 			}
 			revalidatePath(`/group/${groupId}`)

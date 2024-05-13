@@ -8,7 +8,13 @@ const make = Effect.gen(function* () {
 	return {
 		getAll: db((client) => client.query.Persons.findMany()),
 		insert: (name: string, groupId: string) =>
-			db((client) => client.insert(Persons).values({ name, group: groupId })),
+			db((client) =>
+				client
+					.insert(Persons)
+					.values({ name, group: groupId })
+					.returning()
+					.get(),
+			),
 		getByGroupId: (groupId: string) =>
 			db((client) =>
 				client.query.Persons.findMany({

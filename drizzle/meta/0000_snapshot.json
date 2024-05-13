@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "9a48eeec-45a2-475b-ab07-d5d7c1426c40",
+  "id": "c15313a8-dfff-4e60-abce-71750f688505",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "Groups": {
@@ -51,8 +51,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "Session": {
-          "name": "Session",
+        "Round": {
+          "name": "Round",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -87,12 +87,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "Pairings_Session_Sessions_Id_fk": {
-          "name": "Pairings_Session_Sessions_Id_fk",
+        "Pairings_Round_Rounds_Id_fk": {
+          "name": "Pairings_Round_Rounds_Id_fk",
           "tableFrom": "Pairings",
-          "tableTo": "Sessions",
+          "tableTo": "Rounds",
           "columnsFrom": [
-            "Session"
+            "Round"
           ],
           "columnsTo": [
             "Id"
@@ -155,8 +155,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "PersonsInSessions": {
-      "name": "PersonsInSessions",
+    "PersonsInRounds": {
+      "name": "PersonsInRounds",
       "columns": {
         "Id": {
           "name": "Id",
@@ -172,8 +172,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "Session": {
-          "name": "Session",
+        "Rounds": {
+          "name": "Rounds",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
@@ -182,9 +182,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "PersonsInSessions_Person_Persons_Id_fk": {
-          "name": "PersonsInSessions_Person_Persons_Id_fk",
-          "tableFrom": "PersonsInSessions",
+        "PersonsInRounds_Person_Persons_Id_fk": {
+          "name": "PersonsInRounds_Person_Persons_Id_fk",
+          "tableFrom": "PersonsInRounds",
           "tableTo": "Persons",
           "columnsFrom": [
             "Person"
@@ -195,12 +195,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "PersonsInSessions_Session_Sessions_Id_fk": {
-          "name": "PersonsInSessions_Session_Sessions_Id_fk",
-          "tableFrom": "PersonsInSessions",
-          "tableTo": "Sessions",
+        "PersonsInRounds_Rounds_Rounds_Id_fk": {
+          "name": "PersonsInRounds_Rounds_Rounds_Id_fk",
+          "tableFrom": "PersonsInRounds",
+          "tableTo": "Rounds",
           "columnsFrom": [
-            "Session"
+            "Rounds"
           ],
           "columnsTo": [
             "Id"
@@ -212,8 +212,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "Sessions": {
-      "name": "Sessions",
+    "Rounds": {
+      "name": "Rounds",
       "columns": {
         "Id": {
           "name": "Id",
@@ -239,9 +239,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "Sessions_Group_Groups_Id_fk": {
-          "name": "Sessions_Group_Groups_Id_fk",
-          "tableFrom": "Sessions",
+        "Rounds_Group_Groups_Id_fk": {
+          "name": "Rounds_Group_Groups_Id_fk",
+          "tableFrom": "Rounds",
           "tableTo": "Groups",
           "columnsFrom": [
             "Group"
