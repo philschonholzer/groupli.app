@@ -26,6 +26,7 @@ export const Rounds = sqliteTable('Rounds', {
 })
 export const roundsRelations = relations(Rounds, ({ one, many }) => ({
 	personsInRounds: many(PersonsInRounds),
+	pairings: many(Pairings),
 }))
 
 export const PersonsInRounds = sqliteTable('PersonsInRounds', {
@@ -73,5 +74,9 @@ export const pairingRelations = relations(Pairings, ({ one, many }) => ({
 	person2: one(Persons, {
 		fields: [Pairings.person2],
 		references: [Persons.id],
+	}),
+	round: one(Rounds, {
+		fields: [Pairings.round],
+		references: [Rounds.id],
 	}),
 }))

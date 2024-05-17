@@ -73,8 +73,8 @@ export default async function GroupPage(props: { params: { id: string } }) {
 						<li key={round.id}>
 							<h3>{round.at}</h3>
 							<ul>
-								{round.persons.map((person) => (
-									<li key={person.id}>{person.name}</li>
+								{round.pairings.map((pair) => (
+									<li key={pair.id}>{pair.person1 / pair.person2}</li>
 								))}
 							</ul>
 						</li>

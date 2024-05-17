@@ -27,7 +27,7 @@ export async function addPerson(name: string, groupId: string) {
 
 export async function newRound(groupId: string, personIds: number[]) {
 	return Effect.gen(function* () {
-		const round = yield* Round.newRound(groupId, personIds)
+		const { round } = yield* Round.newRound(groupId, personIds)
 		return round
 	})
 		.pipe(

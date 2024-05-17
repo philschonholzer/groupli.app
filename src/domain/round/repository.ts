@@ -1,6 +1,6 @@
 import { Db } from '@/adapter/db'
 import { PersonsInRounds, Rounds } from '@/adapter/db/schema'
-import { desc } from 'drizzle-orm'
+import { asc, desc, eq } from 'drizzle-orm'
 import { Array as A, Effect, Layer, Option } from 'effect'
 
 const make = Effect.gen(function* () {
@@ -12,7 +12,7 @@ const make = Effect.gen(function* () {
 			db((client) =>
 				client.query.Rounds.findMany({
 					where: (_, { eq }) => eq(_.group, groupId),
-					with: { personsInRounds: { with: { person: true } } },
+					with: { personsInRounds: { with: { person: true } }, pairings: true },
 					orderBy: desc(Rounds.at),
 				}),
 			).pipe(
@@ -23,6 +23,18 @@ const make = Effect.gen(function* () {
 					})),
 				),
 			),
+		get10LastByGroupIdWithPairings: (groupId: string) => {
+			console.log('get10LastByGroupIdWithPairings')
+
+			return db((client) =>
+				client.query.Rounds.findMany({
+					where: eq(Rounds.group, groupId),
+					limit: 10,
+					orderBy: asc(Rounds.at),
+					with: { pairings: true },
+				}),
+			)
+		},
 		findLast: (groupId: string) =>
 			db((client) =>
 				client.query.Rounds.findFirst({ orderBy: desc(Rounds.at) }),

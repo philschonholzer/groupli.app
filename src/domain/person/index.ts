@@ -10,3 +10,7 @@ export const addPerson = (name: string, groupId: string) =>
 		const round = yield* Round.getCurrentRound(groupId)
 		return yield* Round.Repository.addPersonToRound(person.id, round.id)
 	})
+
+export const skipRound = (personId: number) => {
+	throw new Error('Not implemented')
+}
