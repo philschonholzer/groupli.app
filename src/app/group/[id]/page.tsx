@@ -36,7 +36,9 @@ export default async function GroupPage(props: { params: { id: string } }) {
 				</form>
 				<ul>
 					{persons.map((person) => (
-						<li key={person.id}>{person.name}</li>
+						<li key={person.id}>
+							{person.id} {person.name}
+						</li>
 					))}
 				</ul>
 				<form
@@ -68,13 +70,15 @@ export default async function GroupPage(props: { params: { id: string } }) {
 				>
 					<button type="submit">New Round</button>
 				</form>
-				<ul>
+				<ul className="space-y-4">
 					{rounds.map((round) => (
-						<li key={round.id}>
+						<li key={round.id} className="border rounded">
 							<h3>{round.at}</h3>
 							<ul>
 								{round.pairings.map((pair) => (
-									<li key={pair.id}>{pair.person1 / pair.person2}</li>
+									<li key={pair.id}>
+										{pair.person1} - {pair.person2}
+									</li>
 								))}
 							</ul>
 						</li>

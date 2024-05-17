@@ -1,5 +1,5 @@
 import { Chunk, Effect, Random } from 'effect'
-import { Round } from '..'
+import { Pairing, Round } from '..'
 
 export * from './repository'
 
@@ -45,19 +45,22 @@ export const pairPersons = (
 			}
 		}
 
-		const pairs = generateAllPossibleListsOfPairings(
+		const pairsWithWeight = generateAllPossibleListsOfPairings(
 			Array.from(allPossiblePairsFromPersons.values()),
 			personIds.length,
 		)
 
-		return pairs
+		const pairs = pairsWithWeight
 			.reduce((pairWithLowestWeight, currentPair) => {
 				if (pairWithLowestWeight.weight < currentPair.weight) {
 					return pairWithLowestWeight
 				}
 				return currentPair
-			}, pairs[0])
-			.list.map((pair) => [pair.person1, pair.person2])
+			}, pairsWithWeight[0])
+			.list.map((pair) => ([pair.person1, pair.person2]) as const)
+
+			yield* Pairing.Repository.insert(roundId, pairs)
+			return pairs
 	})
 
 export function generateAllPossibleListsOfPairings(

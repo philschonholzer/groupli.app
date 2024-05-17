@@ -7,7 +7,7 @@ const make = Effect.gen(function* () {
 
 	return {
 		getAll: db((client) => client.query.Pairings.findMany()),
-		insert: (roundId: number, pairs: [person1: number, person2: number][]) =>
+		insert: (roundId: number, pairs: (readonly [person1: number, person2: number])[]) =>
 			db((client) =>
 				client
 					.insert(Pairings)
