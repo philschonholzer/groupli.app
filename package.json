@@ -7,7 +7,7 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "biome check src",
-		"test": "tsx --watch --test src/**/*.test.ts",
+		"test": "zsh -c 'tsx --watch --test src/**/*.test.ts'",
 		"pages:build": "pnpm next-on-pages",
 		"preview": "pnpm pages:build && wrangler pages dev",
 		"deploy": "pnpm pages:build && wrangler pages deploy",

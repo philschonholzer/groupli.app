@@ -73,7 +73,9 @@ export default async function GroupPage(props: { params: { id: string } }) {
 				<ul className="space-y-4">
 					{rounds.map((round) => (
 						<li key={round.id} className="border rounded">
-							<h3>{round.at}</h3>
+							<h3>
+								{round.id} {round.at}
+							</h3>
 							<ul>
 								{round.pairings.map((pair) => (
 									<li key={pair.id}>

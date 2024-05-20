@@ -20,18 +20,17 @@ export const pairPersons = (
 
 		const allPossiblePairsFromPersons = makeAllPossiblePairs(randomPersonIds)
 
-		console.log('allPossiblePairsFromPersons')
-
 		const passedRoundsWithPairings =
-			yield* Round.Repository.get10LastByGroupIdWithPairings(groupId)
-		for (const round of passedRoundsWithPairings) {
-			for (const pairing of round.pairings) {
-				console.log('in For loop', pairing)
+			yield* Round.Repository.get10LastByGroupIdWithPairings(groupId)	
+
+		const sortedPassedRounds =	passedRoundsWithPairings.toSorted((a,b) => new Date(a.at).getTime() - new Date(b.at).getTime()).slice(0,-1)		
+
+		for (const round of sortedPassedRounds) {
+			for (const pairing of round.pairings) {			
 				const passedPairing = allPossiblePairsFromPersons.get(
 					`${pairing.person1}-${pairing.person2}`,
 				)
 				if (passedPairing) {
-					console.log('found passed pairing')
 
 					allPossiblePairsFromPersons.set(
 						`${pairing.person1}-${pairing.person2}`,
@@ -45,10 +44,13 @@ export const pairPersons = (
 			}
 		}
 
+
+		const {pairs: allPossiblePairsFromEvenPersons, numberOfPersons} = makeEvenAmountOfPersons(Array.from(allPossiblePairsFromPersons.values()), personIds.length)
+		
 		const pairsWithWeight = generateAllPossibleListsOfPairings(
-			Array.from(allPossiblePairsFromPersons.values()),
-			personIds.length,
-		)
+			allPossiblePairsFromEvenPersons,
+			numberOfPersons,
+		)	
 
 		const pairs = pairsWithWeight
 			.reduce((pairWithLowestWeight, currentPair) => {
@@ -63,15 +65,49 @@ export const pairPersons = (
 			return pairs
 	})
 
+function makeEvenAmountOfPersons(pairs: PairWithPosition[], numberOfPersons: number) {
+	if (numberOfPersons % 2 === 0) {
+		return {pairs, numberOfPersons}
+	}
+	const personsWithPosition = pairs.reduce((persons, currentPair) =>{
+		const person1 = persons.findIndex((person) => person.person === currentPair.person1)
+		const person2 = persons.findIndex((person) => person.person === currentPair.person2)
+		if (person1 > -1) {		
+			persons[person1].position += currentPair.position
+		} else {
+			persons.push({ person: currentPair.person1, position: currentPair.position })
+		}
+		if (person2 > -1) {
+			persons[person2].position += currentPair.position
+		} else {
+			persons.push({ person: currentPair.person2, position: currentPair.position })
+		}
+		return persons
+	}, [] as { person: number, position: number }[])
+
+	const personWithHighestPosition = personsWithPosition.toSorted((a, b) => a.position - b.position).at(-1)
+
+	if (!personWithHighestPosition) {
+		throw new Error('No person with highest position found')
+	}
+
+	const personsWithoutHighestPosition = pairs.filter((person) => person.person1 !== personWithHighestPosition.person && person.person2 !== personWithHighestPosition.person)
+
+	return {pairs: personsWithoutHighestPosition, numberOfPersons: numberOfPersons - 1}
+}
+
 export function generateAllPossibleListsOfPairings(
 	elements: PairWithPosition[],
 	numberOfPersons: number,
 ): { list: PairWithPosition[]; weight: number }[] {
+	const sortedElements = elements.toSorted((a, b) => a.position - b.position)
 	const numberOfPairs = numberOfPersons / 2
+
 	const allLists: { list: PairWithPosition[]; weight: number }[] = []
+
 	for (let index = 0; index < numberOfPairs * 2; index++) {
 		const candidateList = generateOnePossibleListOfPairings(
-			elements.slice(index),
+			sortedElements.slice(index),
 			numberOfPairs,
 		)
 		if (candidateList.length === numberOfPairs) {
@@ -132,4 +168,5 @@ const randomizeOrder = (persons: number[]) =>
 
 export const __tests__ = {
 	makeAllPossiblePairs,
+	makeEvenAmountOfPersons,
 }

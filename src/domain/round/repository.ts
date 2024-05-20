@@ -1,6 +1,6 @@
 import { Db } from '@/adapter/db'
 import { PersonsInRounds, Rounds } from '@/adapter/db/schema'
-import { asc, desc, eq } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import { Array as A, Effect, Layer, Option } from 'effect'
 
 const make = Effect.gen(function* () {
@@ -30,7 +30,7 @@ const make = Effect.gen(function* () {
 				client.query.Rounds.findMany({
 					where: eq(Rounds.group, groupId),
 					limit: 10,
-					orderBy: asc(Rounds.at),
+					orderBy: desc(Rounds.at),
 					with: { pairings: true },
 				}),
 			)
