@@ -1,4 +1,4 @@
-import { Chunk, Effect, Option, Random } from 'effect'
+import { Array as A, Chunk, Effect, Option, Random } from 'effect'
 import { Round } from '..'
 
 export * from './repository'
@@ -35,7 +35,9 @@ export const pairPersons = (groupId: string, personIds: number[]) =>
 			pairsWithWeight[0],
 		)
 
-		return pairs.list.length > 0 ? Option.some(pairs.list) : Option.none()
+		return A.isNonEmptyArray(pairs.list)
+			? Option.some(pairs.list)
+			: Option.none()
 	})
 
 function generateAllListsOfPairs(persons: number[]): PairList[] {
