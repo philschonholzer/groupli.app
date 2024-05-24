@@ -1,192 +1,94 @@
-import { Chunk, Effect, Random } from 'effect'
-import { Pairing, Round } from '..'
+import { Chunk, Effect, Option, Random } from 'effect'
+import { Round } from '..'
 
 export * from './repository'
 
-type PairWithPosition = {
-	person1: number
-	person2: number
-	position: number
+export type Pair = [person1: number, person2: number]
+export type PairList = Pair[]
+type PairListWithWeight = {
+	list: PairList
+	weight: number
 }
+
 export const pairPersons = (groupId: string, personIds: number[]) =>
 	Effect.gen(function* () {
-		const randomPersonIds = yield* Random.shuffle(personIds).pipe(
-			Effect.map(Chunk.toArray),
-		)
-
-		const allPossiblePairsFromPersons = makeAllPossiblePairs(randomPersonIds)
-
 		const sortedPassedRounds =
 			yield* Round.Repository.get10LastByGroupIdWithPairings(groupId)
 
-		for (const round of sortedPassedRounds) {
-			for (const pairing of round.pairings) {
-				const passedPairing = allPossiblePairsFromPersons.get(
-					`${pairing.person1}-${pairing.person2}`,
-				)
-				if (passedPairing) {
-					allPossiblePairsFromPersons.set(
-						`${pairing.person1}-${pairing.person2}`,
-						{
-							person1: pairing.person1,
-							person2: pairing.person2,
-							position: pairing.round,
-						},
-					)
-				}
-			}
-		}
+		const randomPersonIds = yield* Random.shuffle(personIds).pipe(
+			Effect.map(Chunk.toArray),
+		)
+		const allPossiblePairsFromPersons = generateAllListsOfPairs(randomPersonIds)
 
-		const { pairs: allPossiblePairsFromEvenPersons, numberOfPersons } =
-			makeEvenAmountOfPersons(
-				Array.from(allPossiblePairsFromPersons.values()),
-				personIds.length,
-			)
-
-		const pairsWithWeight = generateAllPossibleListsOfPairings(
-			allPossiblePairsFromEvenPersons,
-			numberOfPersons,
+		const pairsWithWeight = addWeightToPairLists(
+			allPossiblePairsFromPersons,
+			sortedPassedRounds,
 		)
 
-		const pairs = pairsWithWeight
-			.reduce((pairWithLowestWeight, currentPair) => {
+		const pairs = pairsWithWeight.reduce(
+			(pairWithLowestWeight, currentPair) => {
 				if (pairWithLowestWeight.weight < currentPair.weight) {
 					return pairWithLowestWeight
 				}
 				return currentPair
-			}, pairsWithWeight[0])
-			.list.map((pair) => [pair.person1, pair.person2] as const)
-
-		return pairs
-	})
-
-function makeEvenAmountOfPersons(
-	pairs: PairWithPosition[],
-	numberOfPersons: number,
-) {
-	if (numberOfPersons % 2 === 0) {
-		return { pairs, numberOfPersons }
-	}
-	const personsWithPosition = pairs.reduce(
-		(persons, currentPair) => {
-			const person1 = persons.findIndex(
-				(person) => person.person === currentPair.person1,
-			)
-			const person2 = persons.findIndex(
-				(person) => person.person === currentPair.person2,
-			)
-			if (person1 > -1) {
-				persons[person1].position += currentPair.position
-			} else {
-				persons.push({
-					person: currentPair.person1,
-					position: currentPair.position,
-				})
-			}
-			if (person2 > -1) {
-				persons[person2].position += currentPair.position
-			} else {
-				persons.push({
-					person: currentPair.person2,
-					position: currentPair.position,
-				})
-			}
-			return persons
-		},
-		[] as { person: number; position: number }[],
-	)
-
-	const personWithHighestPosition = personsWithPosition
-		.toSorted((a, b) => a.position - b.position)
-		.at(-1)
-
-	if (!personWithHighestPosition) {
-		throw new Error('No person with highest position found')
-	}
-
-	const personsWithoutHighestPosition = pairs.filter(
-		(person) =>
-			person.person1 !== personWithHighestPosition.person &&
-			person.person2 !== personWithHighestPosition.person,
-	)
-
-	return {
-		pairs: personsWithoutHighestPosition,
-		numberOfPersons: numberOfPersons - 1,
-	}
-}
-
-export function generateAllPossibleListsOfPairings(
-	elements: PairWithPosition[],
-	numberOfPersons: number,
-): { list: PairWithPosition[]; weight: number }[] {
-	const sortedElements = elements.toSorted((a, b) => a.position - b.position)
-	const numberOfPairs = numberOfPersons / 2
-
-	const allLists: { list: PairWithPosition[]; weight: number }[] = []
-
-	for (let index = 0; index < numberOfPairs * 2; index++) {
-		const candidateList = generateOnePossibleListOfPairings(
-			sortedElements.slice(index),
-			numberOfPairs,
-		)
-		if (candidateList.length === numberOfPairs) {
-			const weight = Math.max(...candidateList.map((pair) => pair.position))
-			allLists.push({ list: candidateList, weight })
-		}
-	}
-	return allLists
-}
-export function generateOnePossibleListOfPairings(
-	elements: PairWithPosition[],
-	numberOfPairs: number,
-): PairWithPosition[] {
-	const firstPair = elements[0]
-	const otherPairs = elements
-		.slice(1)
-		.filter(
-			(pair) =>
-				firstPair.person1 !== pair.person1 &&
-				firstPair.person1 !== pair.person2 &&
-				firstPair.person2 !== pair.person1 &&
-				firstPair.person2 !== pair.person2,
+			},
+			pairsWithWeight[0],
 		)
 
-	if (otherPairs.length + 1 < numberOfPairs) {
-		return []
-	}
-	if (otherPairs.length + 1 === numberOfPairs) {
-		return [firstPair, ...otherPairs]
+		return pairs.list.length > 0 ? Option.some(pairs.list) : Option.none()
+	})
+
+function generateAllListsOfPairs(persons: number[]): PairList[] {
+	if (persons.length < 2) {
+		return [[]]
 	}
 
-	return [
-		firstPair,
-		...generateOnePossibleListOfPairings(otherPairs, numberOfPairs - 1),
-	]
-}
+	const result: PairList[] = []
+	const firstPerson = persons[0]
 
-const makeAllPossiblePairs = (persons: number[]) => {
-	const pairs = new Map<string, PairWithPosition>()
-	for (let index1 = 0; index1 < persons.length; index1++) {
-		for (let index2 = index1 + 1; index2 < persons.length; index2++) {
-			const person1 = Math.min(persons[index1], persons[index2])
-			const person2 = Math.max(persons[index1], persons[index2])
-			pairs.set(`${person1}-${person2}`, {
-				person1: person1,
-				person2: person2,
-				position: 0,
-			})
+	for (let i = 1; i < persons.length; i++) {
+		const [p1, p2] = [firstPerson, persons[i]].toSorted((a, b) => a - b)
+		const pair: Pair = [p1, p2]
+		const remainingPersons = persons.slice(1, i).concat(persons.slice(i + 1))
+		for (const sublist of generateAllListsOfPairs(remainingPersons)) {
+			result.push([pair, ...sublist])
 		}
 	}
-	return pairs
+
+	return result
 }
 
-const randomizeOrder = (persons: number[]) =>
-	Effect.gen(function* () {
-		return yield* Random.shuffle(persons)
+function addWeightToPairLists(
+	pairLists: PairList[],
+	sortedPassedRounds: {
+		id: number
+		group: string
+		at: string
+		pairings: { id: number; round: number; person1: number; person2: number }[]
+	}[],
+): PairListWithWeight[] {
+	const allHistoricalPairsWithWeight = sortedPassedRounds
+		.flatMap((round) => round.pairings)
+		.toSorted((a, b) => a.round - b.round)
+		.map(
+			(pairings) =>
+				[`${pairings.person1}-${pairings.person2}`, pairings.round] as const,
+		)
+
+	const dedupedPairsWithWeight = new Map(allHistoricalPairsWithWeight)
+
+	const pairListsWithWeight = pairLists.map((pairList) => {
+		const weight = pairList.reduce(
+			(acc, pair) =>
+				Math.max(acc, dedupedPairsWithWeight.get(`${pair[0]}-${pair[1]}`) ?? 0),
+			0,
+		)
+		return { list: pairList, weight }
 	})
+	return pairListsWithWeight
+}
 
 export const __tests__ = {
-	makeAllPossiblePairs,
-	makeEvenAmountOfPersons,
+	generateAllListsOfPairs,
+	addWeightToPairLists,
 }

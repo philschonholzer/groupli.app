@@ -2,17 +2,11 @@ import assert from 'node:assert'
 import { describe, test } from 'node:test'
 
 import { Db } from '@/adapter/db'
-import { Effect, Layer } from 'effect'
+import { Effect, Layer, Option } from 'effect'
 import { Pairing, Round } from '../index'
-import {
-	__tests__,
-	generateAllPossibleListsOfPairings,
-	generateOnePossibleListOfPairings,
-	pairPersons,
-} from './index'
+import { type PairList, __tests__, pairPersons } from './index'
 
-const { makeAllPossiblePairs, makeEvenAmountOfPersons, allListsOfPairs } =
-	__tests__
+const { generateAllListsOfPairs, addWeightToPairLists } = __tests__
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 function runTest(data: any) {
@@ -35,138 +29,363 @@ function runTest(data: any) {
 	}
 }
 
+const allPairingsFor6: PairList[] = [
+	[
+		[1, 2],
+		[3, 4],
+		[5, 6],
+	],
+	[
+		[1, 2],
+		[3, 5],
+		[4, 6],
+	],
+	[
+		[1, 2],
+		[3, 6],
+		[4, 5],
+	],
+	[
+		[1, 3],
+		[2, 4],
+		[5, 6],
+	],
+	[
+		[1, 3],
+		[2, 5],
+		[4, 6],
+	],
+	[
+		[1, 3],
+		[2, 6],
+		[4, 5],
+	],
+	[
+		[1, 4],
+		[2, 3],
+		[5, 6],
+	],
+	[
+		[1, 4],
+		[2, 5],
+		[3, 6],
+	],
+	[
+		[1, 4],
+		[2, 6],
+		[3, 5],
+	],
+	[
+		[1, 5],
+		[2, 3],
+		[4, 6],
+	],
+	[
+		[1, 5],
+		[2, 4],
+		[3, 6],
+	],
+	[
+		[1, 5],
+		[2, 6],
+		[3, 4],
+	],
+	[
+		[1, 6],
+		[2, 3],
+		[4, 5],
+	],
+	[
+		[1, 6],
+		[2, 4],
+		[3, 5],
+	],
+	[
+		[1, 6],
+		[2, 5],
+		[3, 4],
+	],
+]
+const allPairingsFor4: PairList[] = [
+	[
+		[1, 2],
+		[3, 4],
+	],
+	[
+		[1, 3],
+		[2, 4],
+	],
+	[
+		[1, 4],
+		[2, 3],
+	],
+]
 describe('Pairing', () => {
-	test('all possible lists of pairings for 4 persons', () => {
-		const actual = generateAllPossibleListsOfPairings(
-			[
-				{ person1: 1, person2: 2, position: 0 },
-				{ person1: 1, person2: 3, position: 0 },
-				{ person1: 1, person2: 4, position: 0 },
-				{ person1: 2, person2: 3, position: 5 },
-				{ person1: 2, person2: 4, position: 0 },
-				{ person1: 3, person2: 4, position: 0 },
-			],
-			4,
-		)
-		assert.deepStrictEqual(actual, [
-			{
-				list: [
-					{ person1: 1, person2: 2, position: 0 },
-					{ person1: 3, person2: 4, position: 0 },
-				],
-				weight: 0,
-			},
-			{
-				list: [
-					{ person1: 1, person2: 3, position: 0 },
-					{ person1: 2, person2: 4, position: 0 },
-				],
-				weight: 0,
-			},
-			{
-				list: [
-					{ person1: 1, person2: 4, position: 0 },
-					{ person1: 2, person2: 3, position: 5 },
-				],
-				weight: 5,
-			},
-		])
+	describe('makeEvenAmountOfPersons', () => {
+		test('remove hightest weighted person of 3', () => {})
 	})
-	test('all possible lists of pairings for 6 persons', () => {
-		const actual = generateAllPossibleListsOfPairings(
-			[
-				{ person1: 1, person2: 2, position: 0 },
-				{ person1: 1, person2: 3, position: 0 },
-				{ person1: 1, person2: 4, position: 0 },
-				{ person1: 1, person2: 5, position: 0 },
-				{ person1: 1, person2: 6, position: 0 },
-				{ person1: 2, person2: 3, position: 5 },
-				{ person1: 2, person2: 4, position: 0 },
-				{ person1: 2, person2: 5, position: 0 },
-				{ person1: 2, person2: 6, position: 0 },
-				{ person1: 3, person2: 4, position: 0 },
-				{ person1: 3, person2: 5, position: 0 },
-				{ person1: 3, person2: 6, position: 0 },
-				{ person1: 4, person2: 5, position: 0 },
-				{ person1: 4, person2: 6, position: 0 },
-				{ person1: 5, person2: 6, position: 0 },
-			],
-			6,
-		)
-		assert.deepStrictEqual(actual, [
-			{
-				list: [
-					{ person1: 1, person2: 2, position: 0 },
-					{ person1: 3, person2: 4, position: 0 },
-					{ person1: 5, person2: 6, position: 0 },
+	describe('all lists of pairs', () => {
+		test('returns all possible lists of pairings for 4 persons', () => {
+			const actual = generateAllListsOfPairs([1, 2, 3, 4])
+			assert.deepStrictEqual(actual, allPairingsFor4)
+		})
+		test('returns all pairings in the ordered by value', () => {
+			const actual = generateAllListsOfPairs([2, 1, 4, 3])
+
+			assert.deepStrictEqual(actual, [
+				[
+					[1, 2],
+					[3, 4],
 				],
-				weight: 0,
-			},
-			{
-				list: [
-					{ person1: 1, person2: 3, position: 0 },
-					{ person1: 2, person2: 4, position: 0 },
-					{ person1: 5, person2: 6, position: 0 },
+				[
+					[2, 4],
+					[1, 3],
 				],
-				weight: 0,
-			},
-			{
-				list: [
-					{ person1: 1, person2: 4, position: 0 },
-					{ person1: 2, person2: 5, position: 0 },
-					{ person1: 3, person2: 6, position: 0 },
+				[
+					[2, 3],
+					[1, 4],
 				],
-				weight: 0,
-			},
-			{
-				list: [
-					{ person1: 1, person2: 5, position: 0 },
-					{ person1: 2, person2: 4, position: 0 },
-					{ person1: 3, person2: 6, position: 0 },
-				],
-				weight: 0,
-			},
-			{
-				list: [
-					{ person1: 1, person2: 6, position: 0 },
-					{ person1: 2, person2: 4, position: 0 },
-					{ person1: 3, person2: 5, position: 0 },
-				],
-				weight: 0,
-			},
-		])
-	})
-	test('one possible lists of pairings', () => {
-		const actual = generateOnePossibleListOfPairings(
-			[
-				{ person1: 1, person2: 2, position: 0 },
-				{ person1: 1, person2: 3, position: 0 },
-				{ person1: 1, person2: 4, position: 0 },
-				{ person1: 2, person2: 3, position: 5 },
-				{ person1: 2, person2: 4, position: 0 },
-				{ person1: 3, person2: 4, position: 0 },
-			],
-			2,
-		)
-		assert.deepStrictEqual(actual, [
-			{ person1: 1, person2: 2, position: 0 },
-			{ person1: 3, person2: 4, position: 0 },
-		])
+			])
+		})
+		test('returns all possible lists of pairings for 6 persons', () => {
+			const actual = generateAllListsOfPairs([1, 2, 3, 4, 5, 6])
+			assert.deepStrictEqual(actual, allPairingsFor6)
+		})
 	})
 
-	describe('makeEvenAmountOfPersons', () => {
-		test('remove hightest weighted person of 3', () => {
-			const actual = makeEvenAmountOfPersons(
-				[
-					{ person1: 1, person2: 2, position: 0 },
-					{ person1: 1, person2: 3, position: 5 },
-					{ person1: 2, person2: 3, position: 2 },
+	test('add weight to pair lists for 4 persons', () => {
+		const actual = addWeightToPairLists(allPairingsFor4, [
+			{
+				id: 1,
+				at: '',
+				group: '',
+				pairings: [{ id: 1, person1: 1, person2: 2, round: 1 }],
+			},
+			{
+				id: 4,
+				at: '',
+				group: '',
+				pairings: [{ id: 2, person1: 2, person2: 3, round: 4 }],
+			},
+			{
+				id: 7,
+				at: '',
+				group: '',
+				pairings: [{ id: 2, person1: 1, person2: 2, round: 7 }],
+			},
+		])
+		const expected = [
+			{
+				list: [
+					[1, 2],
+					[3, 4],
 				],
-				3,
-			)
-			const expect = [{ person1: 1, person2: 2, position: 0 }]
-			assert.deepStrictEqual(actual, { pairs: expect, numberOfPersons: 2 })
-		})
+				weight: 7,
+			},
+			{
+				list: [
+					[1, 3],
+					[2, 4],
+				],
+				weight: 0,
+			},
+			{
+				list: [
+					[1, 4],
+					[2, 3],
+				],
+				weight: 4,
+			},
+		]
+		assert.deepStrictEqual(actual, expected)
+	})
+	test('add weight to pair lists for 6 persons', () => {
+		const actual = addWeightToPairLists(allPairingsFor6, [
+			{
+				id: 1,
+				at: '',
+				group: '',
+				pairings: [{ id: 1, person1: 1, person2: 2, round: 1 }],
+			},
+			{
+				id: 1,
+				at: '',
+				group: '',
+				pairings: [{ id: 2, person1: 3, person2: 4, round: 1 }],
+			},
+			{
+				id: 1,
+				at: '',
+				group: '',
+				pairings: [{ id: 3, person1: 5, person2: 6, round: 1 }],
+			},
+			{
+				id: 2,
+				at: '',
+				group: '',
+				pairings: [{ id: 11, person1: 1, person2: 3, round: 2 }],
+			},
+			{
+				id: 2,
+				at: '',
+				group: '',
+				pairings: [{ id: 13, person1: 2, person2: 4, round: 2 }],
+			},
+			{
+				id: 2,
+				at: '',
+				group: '',
+				pairings: [{ id: 14, person1: 5, person2: 6, round: 2 }],
+			},
+			{
+				id: 4,
+				at: '',
+				group: '',
+				pairings: [{ id: 22, person1: 1, person2: 4, round: 4 }],
+			},
+			{
+				id: 4,
+				at: '',
+				group: '',
+				pairings: [{ id: 23, person1: 2, person2: 5, round: 4 }],
+			},
+			{
+				id: 7,
+				at: '',
+				group: '',
+				pairings: [{ id: 32, person1: 1, person2: 2, round: 7 }],
+			},
+			{
+				id: 7,
+				at: '',
+				group: '',
+				pairings: [{ id: 33, person1: 4, person2: 6, round: 7 }],
+			},
+		])
+
+		const expected = [
+			{
+				list: [
+					[1, 2],
+					[3, 4],
+					[5, 6],
+				],
+				weight: 7,
+			},
+			{
+				list: [
+					[1, 2],
+					[3, 5],
+					[4, 6],
+				],
+				weight: 7,
+			},
+			{
+				list: [
+					[1, 2],
+					[3, 6],
+					[4, 5],
+				],
+				weight: 7,
+			},
+			{
+				list: [
+					[1, 3],
+					[2, 4],
+					[5, 6],
+				],
+				weight: 2,
+			},
+			{
+				list: [
+					[1, 3],
+					[2, 5],
+					[4, 6],
+				],
+				weight: 7,
+			},
+			{
+				list: [
+					[1, 3],
+					[2, 6],
+					[4, 5],
+				],
+				weight: 2,
+			},
+			{
+				list: [
+					[1, 4],
+					[2, 3],
+					[5, 6],
+				],
+				weight: 4,
+			},
+			{
+				list: [
+					[1, 4],
+					[2, 5],
+					[3, 6],
+				],
+				weight: 4,
+			},
+			{
+				list: [
+					[1, 4],
+					[2, 6],
+					[3, 5],
+				],
+				weight: 4,
+			},
+			{
+				list: [
+					[1, 5],
+					[2, 3],
+					[4, 6],
+				],
+				weight: 7,
+			},
+			{
+				list: [
+					[1, 5],
+					[2, 4],
+					[3, 6],
+				],
+				weight: 2,
+			},
+			{
+				list: [
+					[1, 5],
+					[2, 6],
+					[3, 4],
+				],
+				weight: 1,
+			},
+			{
+				list: [
+					[1, 6],
+					[2, 3],
+					[4, 5],
+				],
+				weight: 0,
+			},
+			{
+				list: [
+					[1, 6],
+					[2, 4],
+					[3, 5],
+				],
+				weight: 2,
+			},
+			{
+				list: [
+					[1, 6],
+					[2, 5],
+					[3, 4],
+				],
+				weight: 4,
+			},
+		]
+		assert.deepStrictEqual(actual, expected)
 	})
 	describe('pairPersons', () => {
 		type Data = {
@@ -180,95 +399,188 @@ describe('Pairing', () => {
 				person2: number
 			}[]
 		}[]
-		test('pairs even group of people with respect to historical data', () =>
+		test('pairs none in empty group', () =>
 			Effect.gen(function* () {
-				const actual = yield* pairPersons('groupId', [1, 2, 3, 4])
+				const actual = yield* pairPersons('groupId', [])
 
-				assert.doesNotMatch(
-					actual.map(([n1, n2]) => `${n1}${n2}`).join(','),
-					/23/,
-				)
+				assert.equal(Option.isNone(actual), true)
 			}).pipe(
+				Effect.repeatN(100),
 				runTest([
 					{
 						id: 232,
-						at: '',
-						group: '',
+						at: '2024-05-01T22:00:00.000Z',
+						group: '1',
+						pairings: [],
+					},
+					{
+						id: 231,
+						at: '2024-05-01T21:00:00.000Z',
+						group: '1',
 						pairings: [{ id: 1, person1: 2, person2: 3, round: 7 }],
 					},
 				] satisfies Data),
 			))
-		test('pairs odd group of people with respect to historical data', () =>
+		test('pairs none in group of 1', () =>
 			Effect.gen(function* () {
-				const actual = yield* pairPersons('groupId', [1, 2, 3, 4, 5])
+				const actual = yield* pairPersons('groupId', [1])
 
-				assert.doesNotMatch(
-					actual.map(([n1, n2]) => `${n1}${n2}`).join(','),
-					/23/,
-				)
+				assert.equal(Option.isNone(actual), true)
 			}).pipe(
+				Effect.repeatN(100),
 				runTest([
 					{
 						id: 232,
-						at: '',
-						group: '',
+						at: '2024-05-01T22:00:00.000Z',
+						group: '1',
+						pairings: [],
+					},
+					{
+						id: 231,
+						at: '2024-05-01T21:00:00.000Z',
+						group: '1',
 						pairings: [{ id: 1, person1: 2, person2: 3, round: 7 }],
 					},
 				] satisfies Data),
 			))
-	})
+		test('pairs group of 2 people with respect to historical data', () =>
+			Effect.gen(function* () {
+				const result = yield* pairPersons('groupId', [1, 2])
+				const actual = yield* result
 
-	describe('makeAllPossiblePairs', () => {
-		test('returns empty array when input is empty', () => {
-			const actual = makeAllPossiblePairs([])
-			assert.deepStrictEqual(actual, new Map())
-		})
+				assert.deepStrictEqual(actual, [[1, 2]])
 
-		test('returns empty array when input has only one element', () => {
-			const actual = makeAllPossiblePairs([1])
-			assert.deepStrictEqual(actual, new Map())
-		})
+				assert.equal(actual.length, 1)
+			}).pipe(
+				Effect.repeatN(100),
+				runTest([
+					{
+						id: 232,
+						at: '2024-05-01T22:00:00.000Z',
+						group: '1',
+						pairings: [],
+					},
+					{
+						id: 231,
+						at: '2024-05-01T21:00:00.000Z',
+						group: '1',
+						pairings: [{ id: 1, person1: 2, person2: 3, round: 7 }],
+					},
+				] satisfies Data),
+			))
+		test('pairs group of 3 people with respect to historical data', () =>
+			Effect.gen(function* () {
+				const result = yield* pairPersons('groupId', [1, 2, 3])
+				const actual = yield* result
 
-		test('returns all possible pairs when input has more than one element', () => {
-			const actual = makeAllPossiblePairs([1, 2, 3])
-			assert.deepStrictEqual(
-				actual,
-				new Map([
-					['1-2', { person1: 1, person2: 2, position: 0 }],
-					['1-3', { person1: 1, person2: 3, position: 0 }],
-					['2-3', { person1: 2, person2: 3, position: 0 }],
-				]),
-			)
-		})
+				assert.equal(
+					actual.some(
+						([p1, p2]) => (p1 === 2 && p2 === 3) || (p1 === 3 && p2 === 2),
+					),
+					false,
+				)
+				assert.equal(actual.length, 1)
+			}).pipe(
+				Effect.repeatN(100),
+				runTest([
+					{
+						id: 232,
+						at: '2024-05-01T22:00:00.000Z',
+						group: '1',
+						pairings: [],
+					},
+					{
+						id: 231,
+						at: '2024-05-01T21:00:00.000Z',
+						group: '1',
+						pairings: [{ id: 1, person1: 2, person2: 3, round: 7 }],
+					},
+				] satisfies Data),
+			))
+		test('pairs group of 4 people with respect to historical data', () =>
+			Effect.gen(function* () {
+				const result = yield* pairPersons('groupId', [1, 2, 3, 4])
+				const actual = yield* result
 
-		test('returns all possible pairs when input has more than one element', () => {
-			const actual = makeAllPossiblePairs([1, 2, 3, 4])
-			assert.deepStrictEqual(
-				actual,
-				new Map([
-					['1-2', { person1: 1, person2: 2, position: 0 }],
-					['1-3', { person1: 1, person2: 3, position: 0 }],
-					['1-4', { person1: 1, person2: 4, position: 0 }],
-					['2-3', { person1: 2, person2: 3, position: 0 }],
-					['2-4', { person1: 2, person2: 4, position: 0 }],
-					['3-4', { person1: 3, person2: 4, position: 0 }],
-				]),
-			)
-		})
+				assert.equal(
+					actual.some(([p1, p2]) => p1 === 2 && p2 === 3),
+					false,
+				)
+				assert.equal(actual.length, 2)
+			}).pipe(
+				Effect.repeatN(100),
+				runTest([
+					{
+						id: 232,
+						at: '2024-05-01T22:00:00.000Z',
+						group: '1',
+						pairings: [],
+					},
+					{
+						id: 231,
+						at: '2024-05-01T21:00:00.000Z',
+						group: '1',
+						pairings: [{ id: 1, person1: 2, person2: 3, round: 7 }],
+					},
+				] satisfies Data),
+			))
+		test('pairs group of 5 people with respect to historical data', () =>
+			Effect.gen(function* () {
+				const result = yield* pairPersons('groupId', [1, 2, 3, 4, 5])
+				const actual = yield* result
 
-		test('returns all possible pairs in the right order', () => {
-			const actual = makeAllPossiblePairs([57, 99, 23, 4])
-			assert.deepStrictEqual(
-				actual,
-				new Map([
-					['57-99', { person1: 57, person2: 99, position: 0 }],
-					['23-57', { person1: 23, person2: 57, position: 0 }],
-					['4-57', { person1: 4, person2: 57, position: 0 }],
-					['23-99', { person1: 23, person2: 99, position: 0 }],
-					['4-99', { person1: 4, person2: 99, position: 0 }],
-					['4-23', { person1: 4, person2: 23, position: 0 }],
-				]),
-			)
-		})
+				assert.equal(
+					actual.some(
+						([p1, p2]) => (p1 === 2 && p2 === 3) || (p1 === 3 && p2 === 2),
+					),
+					false,
+				)
+				assert.equal(actual.length, 2)
+			}).pipe(
+				Effect.repeatN(100),
+				runTest([
+					{
+						id: 232,
+						at: '2024-05-01T22:00:00.000Z',
+						group: '1',
+						pairings: [],
+					},
+					{
+						id: 231,
+						at: '2024-05-01T21:00:00.000Z',
+						group: '1',
+						pairings: [{ id: 1, person1: 2, person2: 3, round: 7 }],
+					},
+				] satisfies Data),
+			))
+		test('pairs group of 6 people with respect to historical data', () =>
+			Effect.gen(function* () {
+				const result = yield* pairPersons('groupId', [1, 2, 3, 4, 5, 6])
+				const actual = yield* result
+
+				assert.equal(
+					actual.some(
+						([p1, p2]) => (p1 === 2 && p2 === 3) || (p1 === 3 && p2 === 2),
+					),
+					false,
+				)
+				assert.equal(actual.length, 3)
+			}).pipe(
+				Effect.repeatN(100),
+				runTest([
+					{
+						id: 232,
+						at: '2024-05-01T22:00:00.000Z',
+						group: '1',
+						pairings: [],
+					},
+					{
+						id: 231,
+						at: '2024-05-01T21:00:00.000Z',
+						group: '1',
+						pairings: [{ id: 1, person1: 2, person2: 3, round: 7 }],
+					},
+				] satisfies Data),
+			))
 	})
 })

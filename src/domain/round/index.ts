@@ -8,7 +8,9 @@ export const newRound = (groupId: string, personIds: number[]) =>
 	Effect.gen(function* () {
 		const { round } = yield* Repository.newRound(groupId, personIds)
 		const pairings = yield* Pairing.pairPersons(groupId, personIds)
-		yield* Pairing.Repository.insert(round.id, pairings)
+		if (Option.isSome(pairings)) {
+			yield* Pairing.Repository.insert(round.id, pairings.value)
+		}
 
 		return { round, pairings }
 	})
@@ -39,6 +41,8 @@ export const removePersonFromRound = (
 			groupId,
 			personsInRound.map((p) => p.person),
 		)
-		yield* Pairing.Repository.insert(roundId, pairings)
+		if (Option.isSome(pairings)) {
+			yield* Pairing.Repository.insert(roundId, pairings.value)
+		}
 		return pairings
 	})
