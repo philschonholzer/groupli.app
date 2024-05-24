@@ -1,4 +1,4 @@
-import { Array as A, Chunk, Effect, Option, Random } from 'effect'
+import { Chunk, Effect, Option, Random, pipe } from 'effect'
 import { Round } from '..'
 
 export * from './repository'
@@ -20,25 +20,22 @@ export const pairPersons = (groupId: string, personIds: number[]) =>
 		)
 		const allPossiblePairsFromPersons = generateAllListsOfPairs(randomPersonIds)
 
-		const pairsWithWeight = addWeightToPairLists(
-			allPossiblePairsFromPersons,
-			sortedPassedRounds,
+		return pipe(
+			addWeightToPairLists(allPossiblePairsFromPersons, sortedPassedRounds),
+			getBestList,
+			(pairs) => pairs.list,
+			getArrayOption,
 		)
-
-		const pairs = pairsWithWeight.reduce(
-			(pairWithLowestWeight, currentPair) => {
-				if (pairWithLowestWeight.weight < currentPair.weight) {
-					return pairWithLowestWeight
-				}
-				return currentPair
-			},
-			pairsWithWeight[0],
-		)
-
-		return A.isNonEmptyArray(pairs.list)
-			? Option.some(pairs.list)
-			: Option.none()
 	})
+
+function getBestList(pairsWithWeight: PairListWithWeight[]) {
+	return pairsWithWeight.reduce((pairWithLowestWeight, currentPair) => {
+		if (pairWithLowestWeight.weight < currentPair.weight) {
+			return pairWithLowestWeight
+		}
+		return currentPair
+	}, pairsWithWeight[0])
+}
 
 function generateAllListsOfPairs(persons: number[]): PairList[] {
 	if (persons.length < 2) {
@@ -89,6 +86,10 @@ function addWeightToPairLists(
 	})
 	return pairListsWithWeight
 }
+
+const getArrayOption = Option.liftPredicate(
+	(pairList: PairList) => pairList.length > 0,
+)
 
 export const __tests__ = {
 	generateAllListsOfPairs,
