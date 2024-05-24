@@ -60,3 +60,21 @@ export async function updateName(name: string, groupId: string) {
 			revalidatePath(`/group/${groupId}`)
 		})
 }
+
+export async function removePersonFromRound(
+	personId: number,
+	roundId: number,
+	groupId: string,
+) {
+	return Round.removePersonFromRound(personId, roundId, groupId)
+		.pipe(
+			Effect.catchAll((e) => Effect.succeed(`Error ${JSON.stringify(e)}`)),
+			run(getRequestContext().env.DB),
+		)
+		.then((result) => {
+			if (typeof result === 'string') {
+				return result
+			}
+			revalidatePath(`/group/${groupId}`)
+		})
+}

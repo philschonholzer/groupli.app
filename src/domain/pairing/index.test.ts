@@ -11,14 +11,20 @@ import {
 	pairPersons,
 } from './index'
 
-const { makeAllPossiblePairs, makeEvenAmountOfPersons, allListsOfPairs } = __tests__
+const { makeAllPossiblePairs, makeEvenAmountOfPersons, allListsOfPairs } =
+	__tests__
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 function runTest(data: any) {
-	return <A, I>(effect: Effect.Effect<A, I, Round.Repository | Pairing.Repository>) => {
+	return <A, I>(
+		effect: Effect.Effect<A, I, Round.Repository | Pairing.Repository>,
+	) => {
 		const query = () => Effect.succeed(data)
 		const DbTest = Layer.succeed(Db, Db.of(query))
-		const repoLayer = Layer.mergeAll(Round.Repository.Live, Pairing.Repository.Live)
+		const repoLayer = Layer.mergeAll(
+			Round.Repository.Live,
+			Pairing.Repository.Live,
+		)
 		const RoundRepository = repoLayer.pipe(Layer.provide(DbTest))
 
 		return effect.pipe(
@@ -150,9 +156,16 @@ describe('Pairing', () => {
 
 	describe('makeEvenAmountOfPersons', () => {
 		test('remove hightest weighted person of 3', () => {
-			const actual = makeEvenAmountOfPersons([{ person1: 1, person2: 2, position: 0 }, { person1: 1, person2: 3, position: 5 }, {person1: 2, person2: 3, position: 2} ], 3)
+			const actual = makeEvenAmountOfPersons(
+				[
+					{ person1: 1, person2: 2, position: 0 },
+					{ person1: 1, person2: 3, position: 5 },
+					{ person1: 2, person2: 3, position: 2 },
+				],
+				3,
+			)
 			const expect = [{ person1: 1, person2: 2, position: 0 }]
-			assert.deepStrictEqual(actual, {pairs: expect, numberOfPersons: 2})
+			assert.deepStrictEqual(actual, { pairs: expect, numberOfPersons: 2 })
 		})
 	})
 	describe('pairPersons', () => {
@@ -169,7 +182,7 @@ describe('Pairing', () => {
 		}[]
 		test('pairs even group of people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const actual = yield* pairPersons('groupId', 1, [1, 2, 3, 4])
+				const actual = yield* pairPersons('groupId', [1, 2, 3, 4])
 
 				assert.doesNotMatch(
 					actual.map(([n1, n2]) => `${n1}${n2}`).join(','),
@@ -187,7 +200,7 @@ describe('Pairing', () => {
 			))
 		test('pairs odd group of people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const actual = yield* pairPersons('groupId', 1, [1, 2, 3, 4, 5])
+				const actual = yield* pairPersons('groupId', [1, 2, 3, 4, 5])
 
 				assert.doesNotMatch(
 					actual.map(([n1, n2]) => `${n1}${n2}`).join(','),

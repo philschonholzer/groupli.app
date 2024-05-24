@@ -8,11 +8,7 @@ type PairWithPosition = {
 	person2: number
 	position: number
 }
-export const pairPersons = (
-	groupId: string,
-	roundId: number,
-	personIds: number[],
-) =>
+export const pairPersons = (groupId: string, personIds: number[]) =>
 	Effect.gen(function* () {
 		const randomPersonIds = yield* Random.shuffle(personIds).pipe(
 			Effect.map(Chunk.toArray),
@@ -21,15 +17,14 @@ export const pairPersons = (
 		const allPossiblePairsFromPersons = makeAllPossiblePairs(randomPersonIds)
 
 		const sortedPassedRounds =
-			yield* Round.Repository.get10LastByGroupIdWithPairings(groupId)	
+			yield* Round.Repository.get10LastByGroupIdWithPairings(groupId)
 
 		for (const round of sortedPassedRounds) {
-			for (const pairing of round.pairings) {			
+			for (const pairing of round.pairings) {
 				const passedPairing = allPossiblePairsFromPersons.get(
 					`${pairing.person1}-${pairing.person2}`,
 				)
 				if (passedPairing) {
-
 					allPossiblePairsFromPersons.set(
 						`${pairing.person1}-${pairing.person2}`,
 						{
@@ -42,13 +37,16 @@ export const pairPersons = (
 			}
 		}
 
+		const { pairs: allPossiblePairsFromEvenPersons, numberOfPersons } =
+			makeEvenAmountOfPersons(
+				Array.from(allPossiblePairsFromPersons.values()),
+				personIds.length,
+			)
 
-		const {pairs: allPossiblePairsFromEvenPersons, numberOfPersons} = makeEvenAmountOfPersons(Array.from(allPossiblePairsFromPersons.values()), personIds.length)
-		
 		const pairsWithWeight = generateAllPossibleListsOfPairings(
 			allPossiblePairsFromEvenPersons,
 			numberOfPersons,
-		)	
+		)
 
 		const pairs = pairsWithWeight
 			.reduce((pairWithLowestWeight, currentPair) => {
@@ -57,41 +55,65 @@ export const pairPersons = (
 				}
 				return currentPair
 			}, pairsWithWeight[0])
-			.list.map((pair) => ([pair.person1, pair.person2]) as const)
+			.list.map((pair) => [pair.person1, pair.person2] as const)
 
-			yield* Pairing.Repository.insert(roundId, pairs)
-			return pairs
+		return pairs
 	})
 
-function makeEvenAmountOfPersons(pairs: PairWithPosition[], numberOfPersons: number) {
+function makeEvenAmountOfPersons(
+	pairs: PairWithPosition[],
+	numberOfPersons: number,
+) {
 	if (numberOfPersons % 2 === 0) {
-		return {pairs, numberOfPersons}
+		return { pairs, numberOfPersons }
 	}
-	const personsWithPosition = pairs.reduce((persons, currentPair) =>{
-		const person1 = persons.findIndex((person) => person.person === currentPair.person1)
-		const person2 = persons.findIndex((person) => person.person === currentPair.person2)
-		if (person1 > -1) {		
-			persons[person1].position += currentPair.position
-		} else {
-			persons.push({ person: currentPair.person1, position: currentPair.position })
-		}
-		if (person2 > -1) {
-			persons[person2].position += currentPair.position
-		} else {
-			persons.push({ person: currentPair.person2, position: currentPair.position })
-		}
-		return persons
-	}, [] as { person: number, position: number }[])
+	const personsWithPosition = pairs.reduce(
+		(persons, currentPair) => {
+			const person1 = persons.findIndex(
+				(person) => person.person === currentPair.person1,
+			)
+			const person2 = persons.findIndex(
+				(person) => person.person === currentPair.person2,
+			)
+			if (person1 > -1) {
+				persons[person1].position += currentPair.position
+			} else {
+				persons.push({
+					person: currentPair.person1,
+					position: currentPair.position,
+				})
+			}
+			if (person2 > -1) {
+				persons[person2].position += currentPair.position
+			} else {
+				persons.push({
+					person: currentPair.person2,
+					position: currentPair.position,
+				})
+			}
+			return persons
+		},
+		[] as { person: number; position: number }[],
+	)
 
-	const personWithHighestPosition = personsWithPosition.toSorted((a, b) => a.position - b.position).at(-1)
+	const personWithHighestPosition = personsWithPosition
+		.toSorted((a, b) => a.position - b.position)
+		.at(-1)
 
 	if (!personWithHighestPosition) {
 		throw new Error('No person with highest position found')
 	}
 
-	const personsWithoutHighestPosition = pairs.filter((person) => person.person1 !== personWithHighestPosition.person && person.person2 !== personWithHighestPosition.person)
+	const personsWithoutHighestPosition = pairs.filter(
+		(person) =>
+			person.person1 !== personWithHighestPosition.person &&
+			person.person2 !== personWithHighestPosition.person,
+	)
 
-	return {pairs: personsWithoutHighestPosition, numberOfPersons: numberOfPersons - 1}
+	return {
+		pairs: personsWithoutHighestPosition,
+		numberOfPersons: numberOfPersons - 1,
+	}
 }
 
 export function generateAllPossibleListsOfPairings(

@@ -2,7 +2,12 @@ import { run } from '@/adapter/effect'
 import { Group, Person, Round } from '@/domain'
 import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Effect } from 'effect'
-import { addPerson, newRound, updateName } from './action'
+import {
+	addPerson,
+	newRound,
+	removePersonFromRound,
+	updateName,
+} from './action'
 
 export const runtime = 'edge'
 
@@ -78,8 +83,34 @@ export default async function GroupPage(props: { params: { id: string } }) {
 							</h3>
 							<ul>
 								{round.pairings.map((pair) => (
-									<li key={pair.id}>
-										{pair.person1} - {pair.person2}
+									<li key={pair.id} className="flex gap-2">
+										<form
+											action={async (formData) => {
+												'use server'
+												await removePersonFromRound(
+													pair.person1.id,
+													round.id,
+													props.params.id,
+												)
+											}}
+										>
+											{pair.person1.name}
+											<button type="submit">✕</button>
+										</form>
+										<p>-</p>
+										<form
+											action={async (formData) => {
+												'use server'
+												await removePersonFromRound(
+													pair.person2.id,
+													round.id,
+													props.params.id,
+												)
+											}}
+										>
+											{pair.person2.name}
+											<button type="submit">✕</button>
+										</form>
 									</li>
 								))}
 							</ul>

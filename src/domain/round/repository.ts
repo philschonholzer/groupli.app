@@ -20,7 +20,10 @@ const make = Effect.gen(function* () {
 			db((client) =>
 				client.query.Rounds.findMany({
 					where: (_, { eq }) => eq(_.group, groupId),
-					with: { personsInRounds: { with: { person: true } }, pairings: true },
+					with: {
+						personsInRounds: { with: { person: true } },
+						pairings: { with: { person1: true, person2: true } },
+					},
 					orderBy: desc(Rounds.at),
 				}),
 			).pipe(
@@ -44,10 +47,7 @@ const make = Effect.gen(function* () {
 					orderBy: desc(Rounds.at),
 					with: { pairings: true },
 				}),
-			).pipe(
-				Effect.map(A.sortBy(byDate)),
-				Effect.map(A.filter((a) => a.pairings.length > 0)),
-			)
+			).pipe(Effect.map(A.sortBy(byDate)), Effect.map(A.dropRight(1)))
 		},
 		findLast: (groupId: string) =>
 			db((client) =>
@@ -80,6 +80,25 @@ const make = Effect.gen(function* () {
 					.values({ person: personId, round: roundId })
 					.returning()
 					.get(),
+			),
+		removePersonFromRound: (personInRoundId: number) =>
+			db((client) =>
+				client
+					.delete(PersonsInRounds)
+					.where(eq(PersonsInRounds.id, personInRoundId)),
+			),
+		findPersonInRound: (personId: number, roundId: number) =>
+			db((client) =>
+				client.query.PersonsInRounds.findFirst({
+					where: (p, { and, eq }) =>
+						and(eq(p.person, personId), eq(p.round, roundId)),
+				}),
+			).pipe(Effect.map(Option.fromNullable)),
+		getPersonsInRound: (roundId: number) =>
+			db((client) =>
+				client.query.PersonsInRounds.findMany({
+					where: eq(PersonsInRounds.round, roundId),
+				}),
 			),
 	}
 })
