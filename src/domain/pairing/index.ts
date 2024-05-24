@@ -1,16 +1,17 @@
 import { Chunk, Effect, Option, Random, pipe } from 'effect'
 import { Round } from '..'
+import type { PersonId } from '../person'
 
 export * from './repository'
 
-export type Pair = [person1: number, person2: number]
+export type Pair = [person1: PersonId, person2: PersonId]
 export type PairList = Pair[]
 type PairListWithWeight = {
 	list: PairList
 	weight: number
 }
 
-export const pairPersons = (groupId: string, personIds: number[]) =>
+export const pairPersons = (groupId: string, personIds: PersonId[]) =>
 	Effect.gen(function* () {
 		const sortedPassedRounds =
 			yield* Round.Repository.get10LastByGroupIdWithPairings(groupId)
@@ -37,7 +38,7 @@ function getBestList(pairsWithWeight: PairListWithWeight[]) {
 	}, pairsWithWeight[0])
 }
 
-function generateAllListsOfPairs(persons: number[]): PairList[] {
+function generateAllListsOfPairs(persons: PersonId[]): PairList[] {
 	if (persons.length < 2) {
 		return [[]]
 	}
@@ -63,7 +64,12 @@ function addWeightToPairLists(
 		id: number
 		group: string
 		at: string
-		pairings: { id: number; round: number; person1: number; person2: number }[]
+		pairings: {
+			id: number
+			round: number
+			person1: PersonId
+			person2: PersonId
+		}[]
 	}[],
 ): PairListWithWeight[] {
 	const allHistoricalPairsWithWeight = sortedPassedRounds

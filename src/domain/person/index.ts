@@ -1,8 +1,11 @@
-import { Effect } from 'effect'
+import { Brand, Effect } from 'effect'
 import { Round } from '..'
 import { Repository } from './repository'
 
 export * from './repository'
+
+export type PersonId = Brand.Branded<number, 'PersonId'>
+export const PersonId = Brand.nominal<PersonId>()
 
 export const addPerson = (name: string, groupId: string) =>
 	Effect.gen(function* () {

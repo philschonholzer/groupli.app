@@ -1,10 +1,11 @@
 import { Effect, Option } from 'effect'
 import { Pairing } from '..'
+import type { PersonId } from '../person'
 import { Repository } from './repository'
 
 export * from './repository'
 
-export const newRound = (groupId: string, personIds: number[]) =>
+export const newRound = (groupId: string, personIds: PersonId[]) =>
 	Effect.gen(function* () {
 		const { round } = yield* Repository.newRound(groupId, personIds)
 		const pairings = yield* Pairing.pairPersons(groupId, personIds)
@@ -26,7 +27,7 @@ export const getCurrentRound = (groupId: string) =>
 	})
 
 export const removePersonFromRound = (
-	personId: number,
+	personId: PersonId,
 	roundId: number,
 	groupId: string,
 ) =>

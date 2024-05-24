@@ -1,8 +1,9 @@
+import type { PersonId } from '@/domain/person'
 import { relations } from 'drizzle-orm'
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 export const Persons = sqliteTable('Persons', {
-	id: integer('Id').primaryKey(),
+	id: integer('Id').$type<PersonId>().primaryKey(),
 	name: text('Name').notNull(),
 	group: text('Group')
 		.notNull()
@@ -32,6 +33,7 @@ export const roundsRelations = relations(Rounds, ({ one, many }) => ({
 export const PersonsInRounds = sqliteTable('PersonsInRounds', {
 	id: integer('Id').primaryKey(),
 	person: integer('Person')
+		.$type<PersonId>()
 		.notNull()
 		.references(() => Persons.id),
 	round: integer('Rounds')
@@ -56,9 +58,11 @@ export const personsInRoundsRelations = relations(
 export const Pairings = sqliteTable('Pairings', {
 	id: integer('Id').primaryKey(),
 	person1: integer('Person1')
+		.$type<PersonId>()
 		.notNull()
 		.references(() => Persons.id),
 	person2: integer('Person2')
+		.$type<PersonId>()
 		.notNull()
 		.references(() => Persons.id),
 	round: integer('Round')

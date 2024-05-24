@@ -10,6 +10,7 @@ import {
 	String as S,
 	pipe,
 } from 'effect'
+import type { PersonId } from '../person'
 
 const make = Effect.gen(function* () {
 	const db = yield* Db
@@ -53,7 +54,7 @@ const make = Effect.gen(function* () {
 			db((client) =>
 				client.query.Rounds.findFirst({ orderBy: desc(Rounds.at) }),
 			).pipe(Effect.map(Option.fromNullable)),
-		newRound: (groupId: string, persons: number[]) =>
+		newRound: (groupId: string, persons: PersonId[]) =>
 			Effect.gen(function* () {
 				const [round] = yield* db((client) =>
 					client
@@ -73,7 +74,7 @@ const make = Effect.gen(function* () {
 				)
 				return { round, personsInRound }
 			}),
-		addPersonToRound: (personId: number, roundId: number) =>
+		addPersonToRound: (personId: PersonId, roundId: number) =>
 			db((client) =>
 				client
 					.insert(PersonsInRounds)
@@ -87,7 +88,7 @@ const make = Effect.gen(function* () {
 					.delete(PersonsInRounds)
 					.where(eq(PersonsInRounds.id, personInRoundId)),
 			),
-		findPersonInRound: (personId: number, roundId: number) =>
+		findPersonInRound: (personId: PersonId, roundId: number) =>
 			db((client) =>
 				client.query.PersonsInRounds.findFirst({
 					where: (p, { and, eq }) =>

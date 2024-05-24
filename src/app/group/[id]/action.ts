@@ -2,6 +2,7 @@
 
 import { run } from '@/adapter/effect'
 import { Group, Person, Round } from '@/domain'
+import type { PersonId } from '@/domain/person'
 import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Effect } from 'effect'
 import { revalidatePath } from 'next/cache'
@@ -25,7 +26,7 @@ export async function addPerson(name: string, groupId: string) {
 		})
 }
 
-export async function newRound(groupId: string, personIds: number[]) {
+export async function newRound(groupId: string, personIds: PersonId[]) {
 	return Effect.gen(function* () {
 		const { round } = yield* Round.newRound(groupId, personIds)
 		return round
@@ -62,7 +63,7 @@ export async function updateName(name: string, groupId: string) {
 }
 
 export async function removePersonFromRound(
-	personId: number,
+	personId: PersonId,
 	roundId: number,
 	groupId: string,
 ) {

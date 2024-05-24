@@ -4,6 +4,7 @@ import { describe, test } from 'node:test'
 import { Db } from '@/adapter/db'
 import { Effect, Layer, Option } from 'effect'
 import { Pairing, Round } from '../index'
+import { PersonId } from '../person'
 import { type PairList, __tests__, pairPersons } from './index'
 
 const { generateAllListsOfPairs, addWeightToPairLists } = __tests__
@@ -105,7 +106,7 @@ const allPairingsFor6: PairList[] = [
 		[2, 5],
 		[3, 4],
 	],
-]
+].map((list) => list.map(([p1, p2]) => [PersonId(p1), PersonId(p2)]))
 const allPairingsFor4: PairList[] = [
 	[
 		[1, 2],
@@ -119,18 +120,18 @@ const allPairingsFor4: PairList[] = [
 		[1, 4],
 		[2, 3],
 	],
-]
+].map((list) => list.map(([p1, p2]) => [PersonId(p1), PersonId(p2)]))
 describe('Pairing', () => {
 	describe('makeEvenAmountOfPersons', () => {
 		test('remove hightest weighted person of 3', () => {})
 	})
 	describe('all lists of pairs', () => {
 		test('returns all possible lists of pairings for 4 persons', () => {
-			const actual = generateAllListsOfPairs([1, 2, 3, 4])
+			const actual = generateAllListsOfPairs([1, 2, 3, 4].map(PersonId))
 			assert.deepStrictEqual(actual, allPairingsFor4)
 		})
 		test('returns all pairings in the ordered by value', () => {
-			const actual = generateAllListsOfPairs([2, 1, 4, 3])
+			const actual = generateAllListsOfPairs([2, 1, 4, 3].map(PersonId))
 
 			assert.deepStrictEqual(actual, [
 				[
@@ -148,7 +149,7 @@ describe('Pairing', () => {
 			])
 		})
 		test('returns all possible lists of pairings for 6 persons', () => {
-			const actual = generateAllListsOfPairs([1, 2, 3, 4, 5, 6])
+			const actual = generateAllListsOfPairs([1, 2, 3, 4, 5, 6].map(PersonId))
 			assert.deepStrictEqual(actual, allPairingsFor6)
 		})
 	})
@@ -159,19 +160,25 @@ describe('Pairing', () => {
 				id: 1,
 				at: '',
 				group: '',
-				pairings: [{ id: 1, person1: 1, person2: 2, round: 1 }],
+				pairings: [
+					{ id: 1, person1: PersonId(1), person2: PersonId(2), round: 1 },
+				],
 			},
 			{
 				id: 4,
 				at: '',
 				group: '',
-				pairings: [{ id: 2, person1: 2, person2: 3, round: 4 }],
+				pairings: [
+					{ id: 2, person1: PersonId(2), person2: PersonId(3), round: 4 },
+				],
 			},
 			{
 				id: 7,
 				at: '',
 				group: '',
-				pairings: [{ id: 2, person1: 1, person2: 2, round: 7 }],
+				pairings: [
+					{ id: 2, person1: PersonId(1), person2: PersonId(2), round: 7 },
+				],
 			},
 		])
 		const expected = [
@@ -205,61 +212,81 @@ describe('Pairing', () => {
 				id: 1,
 				at: '',
 				group: '',
-				pairings: [{ id: 1, person1: 1, person2: 2, round: 1 }],
+				pairings: [
+					{ id: 1, person1: PersonId(1), person2: PersonId(2), round: 1 },
+				],
 			},
 			{
 				id: 1,
 				at: '',
 				group: '',
-				pairings: [{ id: 2, person1: 3, person2: 4, round: 1 }],
+				pairings: [
+					{ id: 2, person1: PersonId(3), person2: PersonId(4), round: 1 },
+				],
 			},
 			{
 				id: 1,
 				at: '',
 				group: '',
-				pairings: [{ id: 3, person1: 5, person2: 6, round: 1 }],
+				pairings: [
+					{ id: 3, person1: PersonId(5), person2: PersonId(6), round: 1 },
+				],
 			},
 			{
 				id: 2,
 				at: '',
 				group: '',
-				pairings: [{ id: 11, person1: 1, person2: 3, round: 2 }],
+				pairings: [
+					{ id: 11, person1: PersonId(1), person2: PersonId(3), round: 2 },
+				],
 			},
 			{
 				id: 2,
 				at: '',
 				group: '',
-				pairings: [{ id: 13, person1: 2, person2: 4, round: 2 }],
+				pairings: [
+					{ id: 13, person1: PersonId(2), person2: PersonId(4), round: 2 },
+				],
 			},
 			{
 				id: 2,
 				at: '',
 				group: '',
-				pairings: [{ id: 14, person1: 5, person2: 6, round: 2 }],
+				pairings: [
+					{ id: 14, person1: PersonId(5), person2: PersonId(6), round: 2 },
+				],
 			},
 			{
 				id: 4,
 				at: '',
 				group: '',
-				pairings: [{ id: 22, person1: 1, person2: 4, round: 4 }],
+				pairings: [
+					{ id: 22, person1: PersonId(1), person2: PersonId(4), round: 4 },
+				],
 			},
 			{
 				id: 4,
 				at: '',
 				group: '',
-				pairings: [{ id: 23, person1: 2, person2: 5, round: 4 }],
+				pairings: [
+					{ id: 23, person1: PersonId(2), person2: PersonId(5), round: 4 },
+				],
 			},
 			{
 				id: 7,
 				at: '',
 				group: '',
-				pairings: [{ id: 32, person1: 1, person2: 2, round: 7 }],
+				pairings: [
+					{ id: 32, person1: PersonId(1), person2: PersonId(2), round: 7 },
+				],
 			},
 			{
 				id: 7,
 				at: '',
 				group: '',
-				pairings: [{ id: 33, person1: 4, person2: 6, round: 7 }],
+				pairings: [
+					{ id: 33, person1: PersonId(4), person2: PersonId(6), round: 7 },
+				],
 			},
 		])
 
@@ -395,8 +422,8 @@ describe('Pairing', () => {
 			pairings: {
 				id: number
 				round: number
-				person1: number
-				person2: number
+				person1: PersonId
+				person2: PersonId
 			}[]
 		}[]
 		test('pairs none in empty group', () =>
@@ -417,13 +444,15 @@ describe('Pairing', () => {
 						id: 231,
 						at: '2024-05-01T21:00:00.000Z',
 						group: '1',
-						pairings: [{ id: 1, person1: 2, person2: 3, round: 7 }],
+						pairings: [
+							{ id: 1, person1: PersonId(2), person2: PersonId(3), round: 7 },
+						],
 					},
 				] satisfies Data),
 			))
 		test('pairs none in group of 1', () =>
 			Effect.gen(function* () {
-				const actual = yield* pairPersons('groupId', [1])
+				const actual = yield* pairPersons('groupId', [1].map(PersonId))
 
 				assert.equal(Option.isNone(actual), true)
 			}).pipe(
@@ -439,13 +468,15 @@ describe('Pairing', () => {
 						id: 231,
 						at: '2024-05-01T21:00:00.000Z',
 						group: '1',
-						pairings: [{ id: 1, person1: 2, person2: 3, round: 7 }],
+						pairings: [
+							{ id: 1, person1: PersonId(2), person2: PersonId(3), round: 7 },
+						],
 					},
 				] satisfies Data),
 			))
 		test('pairs group of 2 people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const result = yield* pairPersons('groupId', [1, 2])
+				const result = yield* pairPersons('groupId', [1, 2].map(PersonId))
 				const actual = yield* result
 
 				assert.deepStrictEqual(actual, [[1, 2]])
@@ -464,13 +495,15 @@ describe('Pairing', () => {
 						id: 231,
 						at: '2024-05-01T21:00:00.000Z',
 						group: '1',
-						pairings: [{ id: 1, person1: 2, person2: 3, round: 7 }],
+						pairings: [
+							{ id: 1, person1: PersonId(2), person2: PersonId(3), round: 7 },
+						],
 					},
 				] satisfies Data),
 			))
 		test('pairs group of 3 people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const result = yield* pairPersons('groupId', [1, 2, 3])
+				const result = yield* pairPersons('groupId', [1, 2, 3].map(PersonId))
 				const actual = yield* result
 
 				assert.equal(
@@ -493,13 +526,15 @@ describe('Pairing', () => {
 						id: 231,
 						at: '2024-05-01T21:00:00.000Z',
 						group: '1',
-						pairings: [{ id: 1, person1: 2, person2: 3, round: 7 }],
+						pairings: [
+							{ id: 1, person1: PersonId(2), person2: PersonId(3), round: 7 },
+						],
 					},
 				] satisfies Data),
 			))
 		test('pairs group of 4 people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const result = yield* pairPersons('groupId', [1, 2, 3, 4])
+				const result = yield* pairPersons('groupId', [1, 2, 3, 4].map(PersonId))
 				const actual = yield* result
 
 				assert.equal(
@@ -520,13 +555,18 @@ describe('Pairing', () => {
 						id: 231,
 						at: '2024-05-01T21:00:00.000Z',
 						group: '1',
-						pairings: [{ id: 1, person1: 2, person2: 3, round: 7 }],
+						pairings: [
+							{ id: 1, person1: PersonId(2), person2: PersonId(3), round: 7 },
+						],
 					},
 				] satisfies Data),
 			))
 		test('pairs group of 5 people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const result = yield* pairPersons('groupId', [1, 2, 3, 4, 5])
+				const result = yield* pairPersons(
+					'groupId',
+					[1, 2, 3, 4, 5].map(PersonId),
+				)
 				const actual = yield* result
 
 				assert.equal(
@@ -549,13 +589,18 @@ describe('Pairing', () => {
 						id: 231,
 						at: '2024-05-01T21:00:00.000Z',
 						group: '1',
-						pairings: [{ id: 1, person1: 2, person2: 3, round: 7 }],
+						pairings: [
+							{ id: 1, person1: PersonId(2), person2: PersonId(3), round: 7 },
+						],
 					},
 				] satisfies Data),
 			))
 		test('pairs group of 6 people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const result = yield* pairPersons('groupId', [1, 2, 3, 4, 5, 6])
+				const result = yield* pairPersons(
+					'groupId',
+					[1, 2, 3, 4, 5, 6].map(PersonId),
+				)
 				const actual = yield* result
 
 				assert.equal(
@@ -578,7 +623,9 @@ describe('Pairing', () => {
 						id: 231,
 						at: '2024-05-01T21:00:00.000Z',
 						group: '1',
-						pairings: [{ id: 1, person1: 2, person2: 3, round: 7 }],
+						pairings: [
+							{ id: 1, person1: PersonId(2), person2: PersonId(3), round: 7 },
+						],
 					},
 				] satisfies Data),
 			))
