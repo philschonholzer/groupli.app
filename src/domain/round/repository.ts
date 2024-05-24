@@ -1,7 +1,15 @@
 import { Db } from '@/adapter/db'
 import { PersonsInRounds, Rounds } from '@/adapter/db/schema'
 import { desc, eq } from 'drizzle-orm'
-import { Array as A, Effect, Layer, Option } from 'effect'
+import {
+	Array as A,
+	Effect,
+	Layer,
+	Option,
+	Order,
+	String as S,
+	pipe,
+} from 'effect'
 
 const make = Effect.gen(function* () {
 	const db = yield* Db
@@ -24,7 +32,10 @@ const make = Effect.gen(function* () {
 				),
 			),
 		get10LastByGroupIdWithPairings: (groupId: string) => {
-			console.log('get10LastByGroupIdWithPairings')
+			const byDate = pipe(
+				S.Order,
+				Order.mapInput((p: { readonly at: string }) => p.at),
+			)
 
 			return db((client) =>
 				client.query.Rounds.findMany({
@@ -33,6 +44,9 @@ const make = Effect.gen(function* () {
 					orderBy: desc(Rounds.at),
 					with: { pairings: true },
 				}),
+			).pipe(
+				Effect.map(A.sortBy(byDate)),
+				Effect.map(A.filter((a) => a.pairings.length > 0)),
 			)
 		},
 		findLast: (groupId: string) =>

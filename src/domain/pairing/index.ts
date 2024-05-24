@@ -20,10 +20,8 @@ export const pairPersons = (
 
 		const allPossiblePairsFromPersons = makeAllPossiblePairs(randomPersonIds)
 
-		const passedRoundsWithPairings =
+		const sortedPassedRounds =
 			yield* Round.Repository.get10LastByGroupIdWithPairings(groupId)	
-
-		const sortedPassedRounds =	passedRoundsWithPairings.toSorted((a,b) => new Date(a.at).getTime() - new Date(b.at).getTime()).slice(0,-1)		
 
 		for (const round of sortedPassedRounds) {
 			for (const pairing of round.pairings) {			
