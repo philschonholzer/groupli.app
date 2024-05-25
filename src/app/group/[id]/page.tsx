@@ -26,7 +26,7 @@ export default async function GroupPage(props: { params: { id: string } }) {
 						<label>
 							Group{' '}
 							<input
-								className="bg-slate-900 ring-1 ring-slate-500 rounded-sm"
+								className="ring-1 ring-slate-500 rounded-sm"
 								type="text"
 								name="name"
 								id=""
@@ -54,7 +54,7 @@ export default async function GroupPage(props: { params: { id: string } }) {
 					<label>
 						Name
 						<input
-							className="bg-slate-900 ring-1 ring-slate-500 rounded-sm"
+							className="ring-1 ring-slate-500 rounded-sm"
 							type="text"
 							name="name"
 							defaultValue={''}
