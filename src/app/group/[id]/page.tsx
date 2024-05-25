@@ -75,7 +75,7 @@ export default async function GroupPage(props: { params: { id: string } }) {
 					{rounds.map((round, roundIndex) => (
 						<li key={round.id} className="border rounded">
 							<h3>
-								{round.id} {round.at}
+								{round.id} {new Date(round.at).toLocaleString('sv-SE')}
 							</h3>
 							<ul>
 								{round.pairings.map((pair) => (
