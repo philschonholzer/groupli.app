@@ -2,12 +2,8 @@ import { run } from '@/adapter/effect'
 import { Group, Person, Round } from '@/domain'
 import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Effect } from 'effect'
-import {
-	addPerson,
-	newRound,
-	removePersonFromRound,
-	updateName,
-} from './action'
+import { addPerson, newRound, updateName } from './action'
+import { SkipRoundButton } from './skip-round-button'
 
 export const runtime = 'edge'
 
@@ -76,7 +72,7 @@ export default async function GroupPage(props: { params: { id: string } }) {
 					<button type="submit">New Round</button>
 				</form>
 				<ul className="space-y-4">
-					{rounds.map((round) => (
+					{rounds.map((round, roundIndex) => (
 						<li key={round.id} className="border rounded">
 							<h3>
 								{round.id} {round.at}
@@ -84,33 +80,23 @@ export default async function GroupPage(props: { params: { id: string } }) {
 							<ul>
 								{round.pairings.map((pair) => (
 									<li key={pair.id} className="flex gap-2">
-										<form
-											action={async (formData) => {
-												'use server'
-												await removePersonFromRound(
-													pair.person1.id,
-													round.id,
-													props.params.id,
-												)
-											}}
-										>
-											{pair.person1.name}
-											<button type="submit">✕</button>
-										</form>
+										{pair.person1.name}
+										{roundIndex === 0 && (
+											<SkipRoundButton
+												groupId={props.params.id}
+												roundId={round.id}
+												personId={pair.person1.id}
+											/>
+										)}
 										<p>-</p>
-										<form
-											action={async (formData) => {
-												'use server'
-												await removePersonFromRound(
-													pair.person2.id,
-													round.id,
-													props.params.id,
-												)
-											}}
-										>
-											{pair.person2.name}
-											<button type="submit">✕</button>
-										</form>
+										{pair.person2.name}
+										{roundIndex === 0 && (
+											<SkipRoundButton
+												groupId={props.params.id}
+												roundId={round.id}
+												personId={pair.person2.id}
+											/>
+										)}
 									</li>
 								))}
 							</ul>
