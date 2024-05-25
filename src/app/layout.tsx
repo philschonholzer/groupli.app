@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Grandstander } from 'next/font/google'
 import './globals.css'
+import Header from './header'
 
-const inter = Inter({ subsets: ['latin'] })
+const fontFamily = Grandstander({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
 	title: 'Groupli App',
@@ -16,8 +17,11 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${inter.className} container max-w-3xl mx-auto my-12`}>
-				{children}
+			<body
+				className={`${fontFamily.className} container max-w-3xl mx-auto my-12`}
+			>
+				<Header />
+				<main>{children}</main>
 			</body>
 		</html>
 	)

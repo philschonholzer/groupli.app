@@ -1,3 +1,4 @@
+import { Schema } from '@effect/schema'
 import { Brand, Effect } from 'effect'
 import { Round } from '..'
 import { Repository } from './repository'
@@ -6,6 +7,12 @@ export * from './repository'
 
 export type PersonId = Brand.Branded<number, 'PersonId'>
 export const PersonId = Brand.nominal<PersonId>()
+
+export class Person extends Schema.Class<Person>('Person')({
+	id: Schema.Number.pipe(Schema.fromBrand(PersonId)),
+	name: Schema.String,
+	color: Schema.NullOr(Schema.String),
+}) {}
 
 export const addPerson = (name: string, groupId: string) =>
 	Effect.gen(function* () {

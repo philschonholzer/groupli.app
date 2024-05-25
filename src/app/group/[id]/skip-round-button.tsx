@@ -1,4 +1,6 @@
+import { Button } from '@/components/ui/button'
 import type { PersonId } from '@/domain/person'
+import { CircleArrowOutUpRight } from 'lucide-react'
 import { removePersonFromRound } from './action'
 
 export function SkipRoundButton(props: {
@@ -7,18 +9,27 @@ export function SkipRoundButton(props: {
 	groupId: string
 }) {
 	return (
-		<button
-			type="submit"
-			formAction={async () => {
-				'use server'
-				await removePersonFromRound(
-					props.personId,
-					props.roundId,
-					props.groupId,
-				)
-			}}
-		>
-			✕
-		</button>
+		<div className="text-right -mb-1 -mr-2 hidden group-hover:block">
+			<form
+				className="inline-block"
+				action={async () => {
+					'use server'
+					await removePersonFromRound(
+						props.personId,
+						props.roundId,
+						props.groupId,
+					)
+				}}
+			>
+				<Button
+					variant="ghost"
+					type="submit"
+					className="text-primary text-xs flex gap-2 px-2 h-8"
+					title="Skip Round"
+				>
+					Skip <CircleArrowOutUpRight strokeWidth={3} size={14} />
+				</Button>
+			</form>
+		</div>
 	)
 }
