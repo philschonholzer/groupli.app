@@ -1,12 +1,12 @@
 import { run } from '@/adapter/effect'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { H1, H2, H3 } from '@/components/ui/typography'
 import { Group, Person, Round } from '@/domain'
 import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Effect } from 'effect'
-import { addPerson, newRound, updateName } from './action'
+import { newRound, updateName } from './action'
+import AddPerson from './add-person'
 import PersonCard from './person-card'
 import { SkipRoundButton } from './skip-round-button'
 
@@ -54,30 +54,8 @@ export default async function GroupPage(props: { params: { id: string } }) {
 							</li>
 						))}
 					</ul>
-					<form
-						action={async (formData: FormData) => {
-							'use server'
-							await addPerson(
-								(formData.get('name') as string) ?? 'empty',
-								props.params.id,
-							)
-						}}
-					>
-						<Label htmlFor="add-person">Name</Label>
-						<div className="flex gap-4">
-							<Input
-								id="add-person"
-								className=""
-								type="text"
-								name="name"
-								placeholder='e.g. "Greta"'
-								defaultValue={''}
-							/>
-							<Button variant="secondary" type="submit">
-								Add Person
-							</Button>
-						</div>
-					</form>
+
+					<AddPerson groupId={props.params.id} />
 				</section>
 
 				<section className="space-y-4">
