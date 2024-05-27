@@ -5,6 +5,7 @@ import { H1, H2, H3 } from '@/components/ui/typography'
 import { Group, Person, Round } from '@/domain'
 import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Effect } from 'effect'
+import type { Metadata } from 'next'
 import { addPerson, newRound, updateName } from './action'
 import AddPerson from './add-person'
 import PersonCard from './person-card'
@@ -12,6 +13,12 @@ import { SkipRoundButton } from './skip-round-button'
 
 export const runtime = 'edge'
 
+export const metadata: Metadata = {
+	robots: {
+		index: false,
+		follow: false,
+	},
+}
 export default async function GroupPage(props: { params: { id: string } }) {
 	return Effect.gen(function* () {
 		const persons = yield* Person.Repository.getByGroupId(props.params.id)
