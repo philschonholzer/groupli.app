@@ -5,7 +5,7 @@ import { H1, H2, H3 } from '@/components/ui/typography'
 import { Group, Person, Round } from '@/domain'
 import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Effect } from 'effect'
-import { newRound, updateName } from './action'
+import { addPerson, newRound, updateName } from './action'
 import AddPerson from './add-person'
 import PersonCard from './person-card'
 import { SkipRoundButton } from './skip-round-button'
@@ -18,6 +18,8 @@ export default async function GroupPage(props: { params: { id: string } }) {
 		const personIds = persons.map((person) => person.id)
 		const group = yield* Group.Repository.getById(props.params.id)
 		const rounds = yield* Round.Repository.getByGroupId(props.params.id)
+
+		const addPersonAction = addPerson.bind(null, props.params.id)
 
 		return (
 			<div className="py-16 space-y-12">
@@ -55,7 +57,7 @@ export default async function GroupPage(props: { params: { id: string } }) {
 						))}
 					</ul>
 
-					<AddPerson groupId={props.params.id} />
+					<AddPerson groupId={props.params.id} action={addPersonAction} />
 				</section>
 
 				<section className="space-y-4">

@@ -7,8 +7,25 @@ import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Effect } from 'effect'
 import { revalidatePath } from 'next/cache'
 
-export async function addPerson(name: string, groupId: string) {
+export type AddPersonState =
+	| {
+			kind: 'error'
+			error: string
+	  }
+	| {
+			kind: 'idle' | 'success'
+	  }
+
+export async function addPerson(
+	groupId: string,
+	prevState: AddPersonState,
+	formData: FormData,
+): Promise<AddPersonState> {
 	return Effect.gen(function* () {
+		const name = formData.get('name') as string
+		if (!name) {
+			return 'The name is required... 😅'
+		}
 		yield* Person.addPerson(name, groupId)
 	})
 		.pipe(
@@ -20,9 +37,10 @@ export async function addPerson(name: string, groupId: string) {
 		.then((result) => {
 			if (typeof result === 'string') {
 				console.error('Error', result)
-				return result
+				return { kind: 'error', error: result }
 			}
 			revalidatePath(`/group/${groupId}`)
+			return { kind: 'success' }
 		})
 }
 
