@@ -1,13 +1,13 @@
 import { run } from '@/adapter/effect'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { H1, H2, H3 } from '@/components/ui/typography'
+import { H2, H3 } from '@/components/ui/typography'
 import { Group, Person, Round } from '@/domain'
 import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Effect } from 'effect'
 import type { Metadata } from 'next'
-import { addPerson, newRound, updateName } from './action'
+import { newRound } from './action'
 import AddPerson from './add-person'
+import GroupNameForm from './group-name-form'
 import PersonCard from './person-card'
 import { SkipRoundButton } from './skip-round-button'
 
@@ -24,32 +24,17 @@ export default async function GroupPage(props: { params: { id: string } }) {
 		const persons = yield* Person.Repository.getByGroupId(props.params.id)
 		const personIds = persons.map((person) => person.id)
 		const group = yield* Group.Repository.getById(props.params.id)
+		if (!group) {
+			return <div>Not found</div>
+		}
 		const rounds = yield* Round.Repository.getByGroupId(props.params.id)
 
-		const addPersonAction = addPerson.bind(null, props.params.id)
+		const newRoundAction = newRound.bind(null, props.params.id, personIds)
 
 		return (
 			<div className="py-16 space-y-12">
 				<header>
-					<form
-						action={async (formData: FormData) => {
-							'use server'
-							await updateName(formData.get('name') as string, props.params.id)
-						}}
-					>
-						<H1>
-							<label className="flex items-center gap-4">
-								Group
-								<Input
-									className="text-4xl lg:text-5xl h-20"
-									type="text"
-									name="name"
-									id=""
-									defaultValue={group?.name}
-								/>
-							</label>
-						</H1>
-					</form>
+					<GroupNameForm group={group} />
 				</header>
 				<section className="space-y-4">
 					<H2>Members</H2>
@@ -64,18 +49,13 @@ export default async function GroupPage(props: { params: { id: string } }) {
 						))}
 					</ul>
 
-					<AddPerson groupId={props.params.id} action={addPersonAction} />
+					<AddPerson groupId={props.params.id} />
 				</section>
 
 				<section className="space-y-4">
 					<header className="flex justify-between">
 						<H2>Rounds</H2>
-						<form
-							action={async () => {
-								'use server'
-								await newRound(props.params.id, personIds)
-							}}
-						>
+						<form action={newRoundAction}>
 							<Button type="submit">New Round</Button>
 						</form>
 					</header>

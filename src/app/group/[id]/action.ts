@@ -7,7 +7,7 @@ import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Effect } from 'effect'
 import { revalidatePath } from 'next/cache'
 
-export type AddPersonState =
+export type State =
 	| {
 			kind: 'error'
 			error: string
@@ -18,9 +18,9 @@ export type AddPersonState =
 
 export async function addPerson(
 	groupId: string,
-	prevState: AddPersonState,
+	prevState: State,
 	formData: FormData,
-): Promise<AddPersonState> {
+): Promise<State> {
 	return Effect.gen(function* () {
 		const name = formData.get('name') as string
 		if (!name) {
@@ -64,9 +64,17 @@ export async function newRound(groupId: string, personIds: PersonId[]) {
 		})
 }
 
-export async function updateName(name: string, groupId: string) {
+export async function updateName(
+	groupId: string,
+	prevState: State,
+	formData: FormData,
+): Promise<State> {
 	return Effect.gen(function* () {
-		yield* Group.Repository.updateName(groupId, name)
+		const newName = formData.get('name') as string
+		if (!newName) {
+			return 'The group name can not be empty... 😅'
+		}
+		yield* Group.Repository.updateName(groupId, newName)
 	})
 		.pipe(
 			Effect.catchAll((e) => Effect.succeed(`Error ${JSON.stringify(e)}`)),
@@ -74,9 +82,10 @@ export async function updateName(name: string, groupId: string) {
 		)
 		.then((result) => {
 			if (typeof result === 'string') {
-				return result
+				return { kind: 'error', error: result }
 			}
 			revalidatePath(`/group/${groupId}`)
+			return { kind: 'success' }
 		})
 }
 

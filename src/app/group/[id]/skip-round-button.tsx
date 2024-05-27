@@ -8,19 +8,15 @@ export function SkipRoundButton(props: {
 	roundId: number
 	groupId: string
 }) {
+	const removePerson = removePersonFromRound.bind(
+		null,
+		props.personId,
+		props.roundId,
+		props.groupId,
+	)
 	return (
 		<div className="text-right -mb-1 -mr-2 hidden group-hover:block">
-			<form
-				className="inline-block"
-				action={async () => {
-					'use server'
-					await removePersonFromRound(
-						props.personId,
-						props.roundId,
-						props.groupId,
-					)
-				}}
-			>
+			<form className="inline-block" action={removePerson}>
 				<Button
 					variant="ghost"
 					type="submit"

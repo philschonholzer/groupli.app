@@ -3,18 +3,14 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useRef } from 'react'
-import { useFormState } from 'react-dom'
-import type { AddPersonState } from './action'
+import { useActionState, useRef } from 'react'
+import { addPerson } from './action'
 
 export default function AddPerson(props: {
 	groupId: string
-	action: (
-		prevState: AddPersonState,
-		formData: FormData,
-	) => Promise<AddPersonState>
 }) {
-	const [state, action] = useFormState(props.action, { kind: 'idle' })
+	const addPersonAction = addPerson.bind(null, props.groupId)
+	const [state, action] = useActionState(addPersonAction, { kind: 'idle' })
 	const ref = useRef<HTMLFormElement>(null)
 
 	if (state.kind === 'success' && ref.current) {
