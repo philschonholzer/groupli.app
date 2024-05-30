@@ -3,7 +3,7 @@
 import { DbError } from '@/adapter/db'
 import { runAction } from '@/adapter/effect'
 import { Group, Person, Round } from '@/domain'
-import type { PersonId } from '@/domain/person'
+import { TooManyPersonsInGroup, type PersonId } from '@/domain/person'
 import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Schema } from '@effect/schema'
 import { Effect } from 'effect'
@@ -12,16 +12,14 @@ import { NameRequired } from './errors'
 type AddIdleTag<T> = Schema.Schema.Encoded<T> | { _tag: 'Idle' }
 const AddPersonSchema = Schema.Exit({
 	success: Schema.Undefined,
-	failure: Schema.Union(DbError, NameRequired),
+	failure: Schema.Union(DbError, NameRequired, TooManyPersonsInGroup),
 })
-
-type AddPersonState = AddIdleTag<typeof AddPersonSchema>
 
 export async function addPerson(
 	groupId: string,
-	prevState: AddPersonState,
+	prevState: AddIdleTag<typeof AddPersonSchema>,
 	formData: FormData,
-): Promise<AddPersonState> {
+) {
 	return Effect.gen(function* () {
 		const name = formData.get('name') as string
 		if (!name) {
@@ -39,10 +37,7 @@ export async function addPerson(
 
 export async function newRound(groupId: string, personIds: PersonId[]) {
 	return Effect.gen(function* () {
-		console.log('start newRound', groupId, personIds)
-
 		const { round } = yield* Round.newRound(groupId, personIds)
-
 		return round
 	}).pipe(
 		runAction({
@@ -65,13 +60,11 @@ const UpdateNameSchema = Schema.Exit({
 	failure: Schema.Union(DbError, NameRequired),
 })
 
-type UpdateNameState = AddIdleTag<typeof UpdateNameSchema>
-
 export async function updateName(
 	groupId: string,
-	prevState: UpdateNameState,
+	prevState: AddIdleTag<typeof UpdateNameSchema>,
 	formData: FormData,
-): Promise<UpdateNameState> {
+) {
 	return Effect.gen(function* () {
 		const newName = formData.get('name') as string
 		if (!newName) {

@@ -30,6 +30,6 @@ export const runAction =
 				) {
 					revalidatePath(props.revalidatePath)
 				}
-				return parsed
+				return parsed as typeof parsed | { readonly _tag: 'Idle' }
 			})
 	}

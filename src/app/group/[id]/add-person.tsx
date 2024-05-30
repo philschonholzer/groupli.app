@@ -36,15 +36,19 @@ export default function AddPerson(props: {
 			</div>
 			{state._tag === 'Failure' &&
 				(state.cause._tag === 'Fail' ? (
-					<div>
+					<div className="text-red-600 pt-1">
 						{pipe(
 							state.cause.error,
 							valueTags({
-								NameRequiredError: (error) => (
-									<p className="text-red-600 pt-1">{error.message}</p>
+								NameRequiredError: (error) => <p>{error.message}</p>,
+								TooManyPersonsInGroup: () => (
+									<p>
+										There are already 14 persons in the group. You can't add
+										more.
+									</p>
 								),
 								DbError: (error) => (
-									<p className="text-red-600 pt-1">
+									<p>
 										The Database is not available. Try again later.{' '}
 										{JSON.stringify(error.cause)}
 									</p>
