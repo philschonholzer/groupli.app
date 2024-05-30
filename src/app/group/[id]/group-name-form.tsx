@@ -14,7 +14,7 @@ export default function GroupNameForm(props: {
 }) {
 	const updateGroupName = updateName.bind(null, props.group.id)
 
-	const [state, action] = useActionState(updateGroupName, { kind: 'idle' })
+	const [state, action] = useActionState(updateGroupName, { _tag: 'Idle' })
 	return (
 		<form action={action}>
 			<H1>
@@ -27,11 +27,16 @@ export default function GroupNameForm(props: {
 						id=""
 						defaultValue={props.group.name}
 					/>
-					{state.kind === 'success' && <Check className="text-primary" />}
+					{state._tag === 'Success' && <Check className="text-primary" />}
 				</label>
 			</H1>
 			<div className="text-right pt-2 text-red-600">
-				{state.kind === 'error' && <p>{state.error}</p>}
+				{state._tag === 'Failure' && state.cause._tag === 'Fail' && (
+					<p>
+						{state.cause.error._tag === 'NameRequiredError' &&
+							state.cause.error.message}
+					</p>
+				)}
 			</div>
 		</form>
 	)

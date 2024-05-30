@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@effect/schema':
-    specifier: ^0.66.15
-    version: 0.66.15(effect@3.1.2)(fast-check@3.19.0)
+    specifier: ^0.67.14
+    version: 0.67.14(effect@3.1.2)
   '@radix-ui/react-avatar':
     specifier: ^1.0.4
     version: 1.0.4(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@19.0.0-rc-935180c7e0-20240524)(react@19.0.0-rc-935180c7e0-20240524)
@@ -317,11 +317,10 @@ packages:
       '@edge-runtime/primitives': 4.1.0
     dev: true
 
-  /@effect/schema@0.66.15(effect@3.1.2)(fast-check@3.19.0):
-    resolution: {integrity: sha512-7dNBbCIo+pGs4V3edW9ujqK+f5ZbmzZn4Cm1euRN4NWPBAuPTXuToKLNR370ojimbis6OsuQbpGBNgzEGFMvrg==}
+  /@effect/schema@0.67.14(effect@3.1.2):
+    resolution: {integrity: sha512-JN3UUErMgzGV9UNI/B6gRVzJ4dyZZuy7dN1D0skm9L/0J+LP9c74ucJ8XQt8nTUmmBWSl9EnNF+BYugem3Ehug==}
     peerDependencies:
-      effect: ^3.1.2
-      fast-check: ^3.13.2
+      effect: ^3.2.5
     dependencies:
       effect: 3.1.2
       fast-check: 3.19.0

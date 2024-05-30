@@ -17,7 +17,7 @@ const make = Effect.gen(function* () {
 
 	return {
 		getAll: db((client) => client.query.Rounds.findMany()),
-		getByGroupId: (groupId: string) =>
+		getSixByGroupId: (groupId: string) =>
 			db((client) =>
 				client.query.Rounds.findMany({
 					where: (_, { eq }) => eq(_.group, groupId),
@@ -26,6 +26,7 @@ const make = Effect.gen(function* () {
 						pairings: { with: { person1: true, person2: true } },
 					},
 					orderBy: desc(Rounds.at),
+					limit: 6,
 				}),
 			).pipe(
 				Effect.map(

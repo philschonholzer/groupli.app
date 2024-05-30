@@ -13,17 +13,16 @@ const make = Effect.gen(function* () {
 			roundId: number,
 			pairs: (readonly [person1: PersonId, person2: PersonId])[],
 		) =>
-			db((client) =>
-				client
-					.insert(Pairings)
-					.values(
+			db(
+				(client) =>
+					client.insert(Pairings).values(
 						pairs.map(([person1, person2]) => ({
 							round: roundId,
 							person1,
 							person2,
 						})),
-					)
-					.returning(),
+					) /* 
+					.returning() */,
 			),
 		deleteByRoundId: (roundId: number) =>
 			db((client) =>

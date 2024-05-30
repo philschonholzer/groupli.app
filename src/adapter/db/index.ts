@@ -1,5 +1,6 @@
+import { Schema } from '@effect/schema'
 import { drizzle } from 'drizzle-orm/d1'
-import { Context, Data, Effect, Layer } from 'effect'
+import { Context, Effect, Layer } from 'effect'
 import * as schema from './schema'
 
 const make = (d1Database: D1Database) => {
@@ -10,7 +11,7 @@ const make = (d1Database: D1Database) => {
 			try: () => body(dBclient),
 			catch: (cause) => {
 				console.error('DbError', cause)
-				return new DbError({ cause })
+				return new DbError({ cause: JSON.stringify(cause) })
 			},
 		})
 
@@ -28,4 +29,6 @@ export class Db extends Context.Tag('@adapter/db')<
 	// ) => this.use((_) => _.query(body))
 }
 
-class DbError extends Data.TaggedError('DbError')<{ cause: unknown }> {}
+export class DbError extends Schema.TaggedError<DbError>()('DbError', {
+	cause: Schema.Unknown,
+}) {}

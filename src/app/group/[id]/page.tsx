@@ -27,7 +27,7 @@ export default async function GroupPage(props: { params: { id: string } }) {
 		if (!group) {
 			return <div>Not found</div>
 		}
-		const rounds = yield* Round.Repository.getByGroupId(props.params.id)
+		const rounds = yield* Round.Repository.getSixByGroupId(props.params.id)
 
 		const newRoundAction = newRound.bind(null, props.params.id, personIds)
 
