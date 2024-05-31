@@ -1,27 +1,28 @@
+import { Schema } from '@effect/schema'
 import { Effect, Option } from 'effect'
 import { Pairing } from '..'
-import type { PersonId } from '../person'
+import { Person, type PersonId } from '../person'
 import { Repository } from './repository'
 
 export * from './repository'
 
+export const Round = Schema.Struct({
+	id: Schema.Number,
+	group: Schema.String,
+	at: Schema.String,
+	persons: Schema.Array(Person),
+	pairings: Schema.Array(Pairing.PairEntity),
+})
+export type Round = typeof Round.Type
+
 export const newRound = (groupId: string, personIds: PersonId[]) =>
 	Effect.gen(function* () {
-		console.log('about to create new round', groupId, personIds)
-
 		const { round } = yield* Repository.newRound(groupId, personIds)
-
-		console.log('created new round', round)
-
-		console.log('about to pair persons', groupId, personIds)
 
 		const pairings = yield* Pairing.pairPersons(groupId, personIds)
 
-		console.log('paired persons', pairings)
 		if (Option.isSome(pairings)) {
-			console.log('about to insert pairings', round.id, pairings.value)
 			yield* Pairing.Repository.insert(round.id, pairings.value)
-			console.log('inserted pairings')
 		}
 
 		return { round, pairings }

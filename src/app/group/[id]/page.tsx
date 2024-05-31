@@ -9,6 +9,7 @@ import { newRound } from './action'
 import AddPerson from './add-person'
 import GroupNameForm from './group-name-form'
 import PersonCard from './person-card'
+import PersonPill from './person-pill'
 import { SkipRoundButton } from './skip-round-button'
 
 export const runtime = 'edge'
@@ -40,15 +41,13 @@ export default async function GroupPage(props: { params: { id: string } }) {
 					<H2>Members</H2>
 					<ul className="flex flex-wrap gap-2">
 						{persons.map((person) => (
-							<li key={person.id} className="py-2 px-4 border rounded-full">
-								<p className="overflow-ellipsis overflow-hidden">
-									{person.name}{' '}
-									<span className="opacity-20 text-xs">#{person.id}</span>
-								</p>
-							</li>
+							<PersonPill
+								key={person.id}
+								person={person}
+								groupId={props.params.id}
+							/>
 						))}
 					</ul>
-
 					<AddPerson groupId={props.params.id} />
 				</section>
 

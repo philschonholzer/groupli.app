@@ -25,7 +25,7 @@ export async function addPerson(
 		if (!name) {
 			return yield* new NameRequired({ message: 'The name is required... 😅' })
 		}
-		yield* Person.addPerson(name, groupId)
+		yield* Person.add(name, groupId)
 	}).pipe(
 		runAction({
 			db: getRequestContext().env.DB,
@@ -56,23 +56,18 @@ export async function newRound(groupId: string, personIds: PersonId[]) {
 }
 
 const UpdateNameSchema = Schema.Exit({
-	success: Schema.Undefined,
+	success: Schema.Void,
 	failure: Schema.Union(DbError, NameRequired),
 })
 
-export async function updateName(
+export async function renameGroup(
 	groupId: string,
 	prevState: AddIdleTag<typeof UpdateNameSchema>,
 	formData: FormData,
 ) {
 	return Effect.gen(function* () {
-		const newName = formData.get('name') as string
-		if (!newName) {
-			return yield* new NameRequired({
-				message: 'The group name can not be empty... 😅',
-			})
-		}
-		yield* Group.Repository.updateName(groupId, newName)
+		const newName = formData.get('name') as string | null
+		yield* Group.rename(groupId, newName)
 	}).pipe(
 		runAction({
 			db: getRequestContext().env.DB,
@@ -81,6 +76,41 @@ export async function updateName(
 		}),
 	)
 }
+
+const RenamePersonSchema = Schema.Exit({
+	success: Schema.Void,
+	failure: Schema.Union(DbError, NameRequired),
+})
+export const renamePerson = async (
+	personId: PersonId,
+	groupId: string,
+	prevState: AddIdleTag<typeof RenamePersonSchema>,
+	formData: FormData,
+) =>
+	Effect.gen(function* () {
+		const newName = formData.get('name') as string | null
+		yield* Person.rename(personId, newName)
+	}).pipe(
+		runAction({
+			db: getRequestContext().env.DB,
+			schema: RenamePersonSchema,
+			revalidatePath: `/group/${groupId}`,
+		}),
+	)
+
+export const removePerson = async (personId: PersonId, groupId: string) =>
+	Effect.gen(function* () {
+		yield* Person.removePerson(personId)
+	}).pipe(
+		runAction({
+			db: getRequestContext().env.DB,
+			schema: Schema.Exit({
+				success: Schema.Void,
+				failure: Schema.Union(DbError),
+			}),
+			revalidatePath: `/group/${groupId}`,
+		}),
+	)
 
 export async function removePersonFromRound(
 	personId: PersonId,

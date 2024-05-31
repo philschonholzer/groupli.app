@@ -1,9 +1,16 @@
+import { Schema } from '@effect/schema'
 import { Chunk, Effect, Option, Random, pipe } from 'effect'
-import { Round } from '..'
+import { Person, Round } from '..'
 import type { PersonId } from '../person'
 
 export * from './repository'
 
+export const PairEntity = Schema.Struct({
+	id: Schema.Number,
+	person1: Person.Person,
+	person2: Person.Person,
+})
+export type PairEntity = typeof PairEntity.Type
 export type Pair = [person1: PersonId, person2: PersonId]
 export type PairList = Pair[]
 type PairListWithWeight = {

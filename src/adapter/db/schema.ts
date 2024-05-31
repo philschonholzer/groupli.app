@@ -1,4 +1,4 @@
-import type { PersonId } from '@/domain/person'
+import type { PersonId, Status } from '@/domain/person'
 import { relations } from 'drizzle-orm'
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
@@ -9,6 +9,7 @@ export const Persons = sqliteTable('Persons', {
 		.notNull()
 		.references(() => Groups.id),
 	color: text('Color'),
+	status: text('Status').$type<Status>().notNull().default('active'),
 })
 
 export type Person = typeof Persons.$inferSelect

@@ -19,6 +19,7 @@
 		"@effect/schema": "^0.67.14",
 		"@radix-ui/react-avatar": "^1.0.4",
 		"@radix-ui/react-label": "^2.0.2",
+		"@radix-ui/react-popover": "^1.0.7",
 		"@radix-ui/react-slot": "^1.0.2",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.1.1",
@@ -30,7 +31,8 @@
 		"react": "19.0.0-rc-935180c7e0-20240524",
 		"react-dom": "19.0.0-rc-935180c7e0-20240524",
 		"tailwind-merge": "^2.3.0",
-		"tailwindcss-animate": "^1.0.7"
+		"tailwindcss-animate": "^1.0.7",
+		"temporal-polyfill": "^0.2.4"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.7.3",

@@ -1,12 +1,16 @@
 import { Db } from '@/adapter/db'
 import { Persons } from '@/adapter/db/schema'
-import { Effect, Layer } from 'effect'
+import { Schema } from '@effect/schema'
+import { eq } from 'drizzle-orm'
+import { Array as A, Effect, Layer } from 'effect'
+import type { PersonId } from '.'
+import { Person } from '..'
 
 const make = Effect.gen(function* () {
 	const db = yield* Db
+	const decode = Schema.decodeSync(Person.Person)
 
 	return {
-		getAll: db((client) => client.query.Persons.findMany()),
 		insert: (name: string, groupId: string) =>
 			db((client) =>
 				client
@@ -18,8 +22,20 @@ const make = Effect.gen(function* () {
 		getByGroupId: (groupId: string) =>
 			db((client) =>
 				client.query.Persons.findMany({
-					where: (_, { eq }) => eq(_.group, groupId),
+					where: (_, { eq, and }) =>
+						and(eq(_.group, groupId), eq(_.status, 'active')),
 				}),
+			).pipe(Effect.map(A.map((person) => decode(person)))),
+		updateName: (id: PersonId, name: string) =>
+			db((client) =>
+				client.update(Persons).set({ name }).where(eq(Persons.id, id)),
+			),
+		setInactive: (id: PersonId) =>
+			db((client) =>
+				client
+					.update(Persons)
+					.set({ status: 'inactive' })
+					.where(eq(Persons.id, id)),
 			),
 	}
 })

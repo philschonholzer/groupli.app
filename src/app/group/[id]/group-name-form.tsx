@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { H1 } from '@/components/ui/typography'
 import { Check } from 'lucide-react'
 import { useActionState } from 'react'
-import { updateName } from './action'
+import { renameGroup } from './action'
 
 export default function GroupNameForm(props: {
 	group: {
@@ -12,9 +12,9 @@ export default function GroupNameForm(props: {
 		id: string
 	}
 }) {
-	const updateGroupName = updateName.bind(null, props.group.id)
+	const rename = renameGroup.bind(null, props.group.id)
 
-	const [state, action] = useActionState(updateGroupName, { _tag: 'Idle' })
+	const [state, action] = useActionState(rename, { _tag: 'Idle' })
 	return (
 		<form action={action}>
 			<H1>

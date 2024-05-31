@@ -1,5 +1,6 @@
 import { Db } from '@/adapter/db'
 import { PersonsInRounds, Rounds } from '@/adapter/db/schema'
+import { Schema } from '@effect/schema'
 import { desc, eq } from 'drizzle-orm'
 import {
 	Array as A,
@@ -10,10 +11,15 @@ import {
 	String as S,
 	pipe,
 } from 'effect'
+import { Pairing, Person, Round } from '..'
 import type { PersonId } from '../person'
 
 const make = Effect.gen(function* () {
 	const db = yield* Db
+
+	const decodePerson = Schema.decodeSync(Person.Person)
+	const decodePair = Schema.decodeSync(Pairing.PairEntity)
+	const decode = Schema.decodeSync(Round.Round)
 
 	return {
 		getAll: db((client) => client.query.Rounds.findMany()),
@@ -30,10 +36,15 @@ const make = Effect.gen(function* () {
 				}),
 			).pipe(
 				Effect.map(
-					A.map((a) => ({
-						...a,
-						persons: a.personsInRounds.map((c) => c.person),
-					})),
+					A.map((a) =>
+						decode({
+							id: a.id,
+							at: a.at,
+							group: a.group,
+							pairings: a.pairings.map((c) => decodePair(c)),
+							persons: a.personsInRounds.map((c) => decodePerson(c.person)),
+						}),
+					),
 				),
 			),
 		get10LastByGroupIdWithPairings: (groupId: string) => {
