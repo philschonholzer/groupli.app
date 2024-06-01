@@ -13,7 +13,8 @@
 		"deploy": "pnpm pages:build && wrangler pages deploy",
 		"cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts",
 		"generate": "drizzle-kit generate:sqlite --schema=src/adapter/db/schema.ts",
-		"update-meta": "drizzle-kit up:sqlite"
+		"update-meta": "drizzle-kit up:sqlite",
+		"studio": "drizzle-kit studio"
 	},
 	"dependencies": {
 		"@effect/opentelemetry": "^0.34.14",
