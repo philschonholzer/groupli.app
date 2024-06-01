@@ -1,15 +1,22 @@
-import { getRequestContext } from '@cloudflare/next-on-pages'
 import { WebSdk } from '@effect/opentelemetry'
 import { OTLPExporter } from '@microlabs/otel-cf-workers'
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
-import { Effect, Layer } from 'effect'
+import { Config, Effect, Layer, type Option, Secret } from 'effect'
+
+const GrafanaConfig = Config.nested('OTLP')(
+	Config.all({
+		url: Config.string('URL'),
+		auth: Config.option(Config.secret('AUTH')),
+	}),
+)
 
 export const TracingLayer = Layer.unwrapEffect(
-	Effect.gen(function* ($) {
-		const { OTLP_URL, OTLP_AUTH } = getRequestContext().env
+	Effect.gen(function* () {
+		const { url, auth } = yield* GrafanaConfig
+		const headers = yield* makeHeaders(auth)
 		const traceExporter = new OTLPExporter({
-			url: OTLP_URL,
-			headers: { Authorization: OTLP_AUTH },
+			url,
+			headers,
 		})
 
 		return WebSdk.layer(() => ({
@@ -20,3 +27,12 @@ export const TracingLayer = Layer.unwrapEffect(
 		}))
 	}),
 )
+
+function makeHeaders(auth: Option.Option<Secret.Secret>) {
+	return auth.pipe(
+		Effect.map((a) => ({
+			Authorization: Secret.value(a),
+		})),
+		Effect.orElseSucceed(() => ({})),
+	)
+}

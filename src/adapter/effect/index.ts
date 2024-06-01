@@ -2,13 +2,14 @@ import { Schema } from '@effect/schema'
 import { Effect, type Exit, Layer } from 'effect'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { ConfigLayer } from '../config'
 import { Db } from '../db'
 import { TracingLayer } from '../tracing'
 import { type RepositoryLayer, repositoryLayer } from './repository-layer'
 
 export const run = <A>(effect: Effect.Effect<A, never, RepositoryLayer>) => {
 	const mainLayer = Layer.provide(repositoryLayer, Db.Live())
-	const mainLive = Layer.merge(mainLayer, TracingLayer)
+	const mainLive = Layer.mergeAll(mainLayer, TracingLayer, ConfigLayer)
 
 	return effect.pipe(
 		Effect.withSpan('run'),
@@ -25,7 +26,7 @@ export const runAction =
 	}) =>
 	(effect: Effect.Effect<A, E, RepositoryLayer>) => {
 		const mainLayer = Layer.provide(repositoryLayer, Db.Live())
-		const mainLive = Layer.merge(mainLayer, TracingLayer)
+		const mainLive = Layer.mergeAll(mainLayer, TracingLayer, ConfigLayer)
 
 		return effect
 			.pipe(
