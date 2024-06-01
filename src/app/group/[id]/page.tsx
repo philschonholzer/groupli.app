@@ -21,14 +21,19 @@ export const metadata: Metadata = {
 }
 export default async function GroupPage(props: { params: { id: string } }) {
 	return Effect.gen(function* () {
-		const persons = yield* Person.Repository.getByGroupId(props.params.id)
-		const personIds = persons.map((person) => person.id)
-		const group = yield* Group.Repository.getById(props.params.id)
+		const personsEff = Person.Repository.getByGroupId(props.params.id)
+		const groupEff = Group.Repository.getById(props.params.id)
+		const roundsEff = Round.Repository.getSixByGroupId(props.params.id)
+		const [persons, group, rounds] = yield* Effect.all(
+			[personsEff, groupEff, roundsEff],
+			{ concurrency: 'unbounded' },
+		)
+
 		if (!group) {
 			return <div>Not found</div>
 		}
-		const rounds = yield* Round.Repository.getSixByGroupId(props.params.id)
 
+		const personIds = persons.map((person) => person.id)
 		const newRoundAction = newRound.bind(null, props.params.id, personIds)
 
 		return (
