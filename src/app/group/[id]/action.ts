@@ -4,7 +4,6 @@ import { DbError } from '@/adapter/db'
 import { runAction } from '@/adapter/effect'
 import { Group, Person, Round } from '@/domain'
 import { TooManyPersonsInGroup, type PersonId } from '@/domain/person'
-import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Schema } from '@effect/schema'
 import { Effect } from 'effect'
 import { NameRequired } from './errors'
@@ -29,9 +28,8 @@ export async function addPerson(
 	}).pipe(
 		Effect.withSpan('addPerson'),
 		runAction({
-			db: getRequestContext().env.DB,
 			schema: AddPersonSchema,
-			revalidatePath: `/group/${groupId}`,
+			revalidatePath: () => `/group/${groupId}`,
 		}),
 	)
 }
@@ -43,8 +41,7 @@ export async function newRound(groupId: string, personIds: PersonId[]) {
 	}).pipe(
 		Effect.withSpan('newRound'),
 		runAction({
-			db: getRequestContext().env.DB,
-			revalidatePath: `/group/${groupId}`,
+			revalidatePath: () => `/group/${groupId}`,
 			schema: Schema.Exit({
 				success: Schema.Struct({
 					id: Schema.Number,
@@ -73,9 +70,8 @@ export async function renameGroup(
 	}).pipe(
 		Effect.withSpan('renameGroup'),
 		runAction({
-			db: getRequestContext().env.DB,
 			schema: UpdateNameSchema,
-			revalidatePath: `/group/${groupId}`,
+			revalidatePath: () => `/group/${groupId}`,
 		}),
 	)
 }
@@ -96,9 +92,8 @@ export const renamePerson = async (
 	}).pipe(
 		Effect.withSpan('renamePerson'),
 		runAction({
-			db: getRequestContext().env.DB,
 			schema: RenamePersonSchema,
-			revalidatePath: `/group/${groupId}`,
+			revalidatePath: () => `/group/${groupId}`,
 		}),
 	)
 
@@ -108,12 +103,11 @@ export const removePerson = async (personId: PersonId, groupId: string) =>
 	}).pipe(
 		Effect.withSpan('removePerson'),
 		runAction({
-			db: getRequestContext().env.DB,
 			schema: Schema.Exit({
 				success: Schema.Void,
 				failure: Schema.Union(DbError),
 			}),
-			revalidatePath: `/group/${groupId}`,
+			revalidatePath: () => `/group/${groupId}`,
 		}),
 	)
 
@@ -125,14 +119,13 @@ export async function removePersonFromRound(
 	return Round.removePersonFromRound(personId, roundId, groupId).pipe(
 		Effect.withSpan('removePersonFromRound'),
 		runAction({
-			db: getRequestContext().env.DB,
 			schema: Schema.Exit({
 				success: Schema.Option(
 					Schema.Array(Schema.Tuple(Schema.Number, Schema.Number)),
 				),
 				failure: Schema.Union(DbError, NameRequired),
 			}),
-			revalidatePath: `/group/${groupId}`,
+			revalidatePath: () => `/group/${groupId}`,
 		}),
 	)
 }

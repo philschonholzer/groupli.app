@@ -1,27 +1,21 @@
 'use server'
 
-import { run } from '@/adapter/effect'
+import { DbError } from '@/adapter/db'
+import { runAction } from '@/adapter/effect'
 import { Group } from '@/domain'
-import { getRequestContext } from '@cloudflare/next-on-pages'
+import { Schema } from '@effect/schema'
 import { Effect } from 'effect'
-import { redirect } from 'next/navigation'
 
 export async function newGroup() {
 	return Effect.gen(function* () {
 		return yield* Group.newGroup
-	})
-		.pipe(
-			Effect.catchAll((e) =>
-				Effect.succeed(`Error ${JSON.stringify(e.cause)}`),
-			),
-			run(getRequestContext().env.DB),
-		)
-		.then((result) => {
-			if (typeof result === 'string') {
-				console.error('Error', result)
-				return result
-			}
-			console.log('result', result)
-			redirect(`/group/${result.id}`)
-		})
+	}).pipe(
+		runAction({
+			schema: Schema.Exit({
+				success: Schema.Struct({ id: Schema.String, name: Schema.String }),
+				failure: DbError,
+			}),
+			redirect: ({ id }) => `/group/${id}`,
+		}),
+	)
 }

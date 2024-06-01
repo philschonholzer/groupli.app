@@ -2,9 +2,10 @@ import { Schema } from '@effect/schema'
 import { drizzle } from 'drizzle-orm/d1'
 import { Context, Effect, Layer } from 'effect'
 import * as schema from './schema'
+import { getRequestContext } from '@cloudflare/next-on-pages'
 
-const make = (d1Database: D1Database) => {
-	const dBclient = drizzle(d1Database, { schema: schema })
+const make = () => {
+	const dBclient = drizzle(getRequestContext().env.DB, { schema: schema })
 
 	const query = <A>(body: (client: typeof dBclient) => Promise<A>) =>
 		Effect.tryPromise<A, DbError>({
@@ -22,7 +23,7 @@ export class Db extends Context.Tag('@adapter/db')<
 	Db,
 	ReturnType<typeof make>
 >() {
-	static Live = (d1: D1Database) => Layer.succeed(this, make(d1))
+	static Live = () => Layer.succeed(this, make())
 	// Would be needed with Effect.Tag
 	// static readonly query = <A>(
 	// 	body: (client: DrizzleD1Database<Record<string, never>>) => Promise<A>,

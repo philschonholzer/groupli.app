@@ -2,7 +2,6 @@ import { run } from '@/adapter/effect'
 import { Button } from '@/components/ui/button'
 import { H2, H3 } from '@/components/ui/typography'
 import { Group, Person, Round } from '@/domain'
-import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Effect } from 'effect'
 import type { Metadata } from 'next'
 import { newRound } from './action'
@@ -120,6 +119,6 @@ export default async function GroupPage(props: { params: { id: string } }) {
 		Effect.catchAll((e) =>
 			Effect.succeed(<div>Error {JSON.stringify(e)}</div>),
 		),
-		run(getRequestContext().env.DB),
+		run,
 	)
 }

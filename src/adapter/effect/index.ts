@@ -1,30 +1,30 @@
 import { Schema } from '@effect/schema'
 import { Effect, type Exit, Layer } from 'effect'
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 import { Db } from '../db'
 import { TracingLayer } from '../tracing'
 import { type RepositoryLayer, repositoryLayer } from './repository-layer'
-export const run =
-	<A>(db: D1Database) =>
-	(effect: Effect.Effect<A, never, RepositoryLayer>) => {
-		const mainLayer = Layer.provide(repositoryLayer, Db.Live(db))
-		const mainLive = Layer.merge(mainLayer, TracingLayer)
 
-		return effect.pipe(
-			Effect.withSpan('run'),
-			Effect.provide(mainLive),
-			Effect.runPromise,
-		)
-	}
+export const run = <A>(effect: Effect.Effect<A, never, RepositoryLayer>) => {
+	const mainLayer = Layer.provide(repositoryLayer, Db.Live())
+	const mainLive = Layer.merge(mainLayer, TracingLayer)
+
+	return effect.pipe(
+		Effect.withSpan('run'),
+		Effect.provide(mainLive),
+		Effect.runPromise,
+	)
+}
 
 export const runAction =
 	<A, E, SI extends object>(props: {
-		db: D1Database
 		schema: Schema.Schema<Exit.Exit<A, E>, SI, never>
-		revalidatePath?: string
+		revalidatePath?: (result: A) => string
+		redirect?: (result: A) => string
 	}) =>
 	(effect: Effect.Effect<A, E, RepositoryLayer>) => {
-		const mainLayer = Layer.provide(repositoryLayer, Db.Live(props.db))
+		const mainLayer = Layer.provide(repositoryLayer, Db.Live())
 		const mainLive = Layer.merge(mainLayer, TracingLayer)
 
 		return effect
@@ -38,9 +38,14 @@ export const runAction =
 				if (
 					'_tag' in parsed &&
 					parsed._tag === 'Success' &&
-					props.revalidatePath
+					'value' in result
 				) {
-					revalidatePath(props.revalidatePath)
+					if (props.redirect) {
+						redirect(props.redirect(result.value))
+					}
+					if (props.revalidatePath) {
+						revalidatePath(props.revalidatePath(result.value))
+					}
 				}
 				return parsed as typeof parsed | { readonly _tag: 'Idle' }
 			})
