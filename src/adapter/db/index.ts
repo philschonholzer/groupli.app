@@ -23,7 +23,7 @@ export class Db extends Context.Tag('@adapter/db')<
 	Db,
 	ReturnType<typeof make>
 >() {
-	static Live = () => Layer.succeed(this, make())
+	static Live = Layer.succeed(this, make())
 	// Would be needed with Effect.Tag
 	// static readonly query = <A>(
 	// 	body: (client: DrizzleD1Database<Record<string, never>>) => Promise<A>,

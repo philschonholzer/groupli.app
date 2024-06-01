@@ -8,8 +8,8 @@ import { TracingLayer } from '../tracing'
 import { type RepositoryLayer, repositoryLayer } from './repository-layer'
 
 export const run = <A>(effect: Effect.Effect<A, never, RepositoryLayer>) => {
-	const mainLayer = Layer.provide(repositoryLayer, Db.Live())
-	const mainLive = Layer.mergeAll(mainLayer, TracingLayer, ConfigLayer)
+	const mainLayer = Layer.provide(repositoryLayer, Db.Live)
+	const mainLive = Layer.mergeAll(mainLayer, TracingLayer, ConfigLayer())
 
 	return effect.pipe(
 		Effect.withSpan('run'),
@@ -25,8 +25,8 @@ export const runAction =
 		redirect?: (result: A) => string
 	}) =>
 	(effect: Effect.Effect<A, E, RepositoryLayer>) => {
-		const mainLayer = Layer.provide(repositoryLayer, Db.Live())
-		const mainLive = Layer.mergeAll(mainLayer, TracingLayer, ConfigLayer)
+		const mainLayer = Layer.provide(repositoryLayer, Db.Live)
+		const mainLive = Layer.mergeAll(mainLayer, TracingLayer, ConfigLayer())
 
 		return effect
 			.pipe(
