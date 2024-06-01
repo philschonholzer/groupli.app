@@ -10,11 +10,7 @@ import { getRequestContext } from '@cloudflare/next-on-pages'
 
 export const run = <A>(effect: Effect.Effect<A, never, RepositoryLayer>) => {
 	const mainLayer = Layer.provide(repositoryLayer, Db.Live)
-	const mainLive = Layer.mergeAll(
-		mainLayer,
-		TracingLayer,
-		ConfigLayer(getRequestContext().env),
-	)
+	const mainLive = Layer.mergeAll(mainLayer, TracingLayer, ConfigLayer)
 
 	return effect.pipe(
 		Effect.withSpan('run'),
@@ -31,11 +27,7 @@ export const runAction =
 	}) =>
 	(effect: Effect.Effect<A, E, RepositoryLayer>) => {
 		const mainLayer = Layer.provide(repositoryLayer, Db.Live)
-		const mainLive = Layer.mergeAll(
-			mainLayer,
-			TracingLayer,
-			ConfigLayer(getRequestContext().env),
-		)
+		const mainLive = Layer.mergeAll(mainLayer, TracingLayer, ConfigLayer)
 
 		return effect
 			.pipe(
