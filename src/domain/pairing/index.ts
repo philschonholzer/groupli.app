@@ -34,7 +34,7 @@ export const pairPersons = (groupId: string, personIds: PersonId[]) =>
 			(pairs) => pairs.list,
 			getArrayOption,
 		)
-	})
+	}).pipe(Effect.withSpan('pairPersons'))
 
 function getBestList(pairsWithWeight: PairListWithWeight[]) {
 	return pairsWithWeight.reduce((pairWithLowestWeight, currentPair) => {

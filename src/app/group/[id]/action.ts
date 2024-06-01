@@ -27,6 +27,7 @@ export async function addPerson(
 		}
 		yield* Person.add(name, groupId)
 	}).pipe(
+		Effect.withSpan('addPerson'),
 		runAction({
 			db: getRequestContext().env.DB,
 			schema: AddPersonSchema,
@@ -40,6 +41,7 @@ export async function newRound(groupId: string, personIds: PersonId[]) {
 		const { round } = yield* Round.newRound(groupId, personIds)
 		return round
 	}).pipe(
+		Effect.withSpan('newRound'),
 		runAction({
 			db: getRequestContext().env.DB,
 			revalidatePath: `/group/${groupId}`,
@@ -69,6 +71,7 @@ export async function renameGroup(
 		const newName = formData.get('name') as string | null
 		yield* Group.rename(groupId, newName)
 	}).pipe(
+		Effect.withSpan('renameGroup'),
 		runAction({
 			db: getRequestContext().env.DB,
 			schema: UpdateNameSchema,
@@ -91,6 +94,7 @@ export const renamePerson = async (
 		const newName = formData.get('name') as string | null
 		yield* Person.rename(personId, newName)
 	}).pipe(
+		Effect.withSpan('renamePerson'),
 		runAction({
 			db: getRequestContext().env.DB,
 			schema: RenamePersonSchema,
@@ -102,6 +106,7 @@ export const removePerson = async (personId: PersonId, groupId: string) =>
 	Effect.gen(function* () {
 		yield* Person.removePerson(personId)
 	}).pipe(
+		Effect.withSpan('removePerson'),
 		runAction({
 			db: getRequestContext().env.DB,
 			schema: Schema.Exit({
@@ -118,6 +123,7 @@ export async function removePersonFromRound(
 	groupId: string,
 ) {
 	return Round.removePersonFromRound(personId, roundId, groupId).pipe(
+		Effect.withSpan('removePersonFromRound'),
 		runAction({
 			db: getRequestContext().env.DB,
 			schema: Schema.Exit({

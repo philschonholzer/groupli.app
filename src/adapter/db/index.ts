@@ -13,7 +13,7 @@ const make = (d1Database: D1Database) => {
 				console.error('DbError', cause)
 				return new DbError({ cause: JSON.stringify(cause) })
 			},
-		})
+		}).pipe(Effect.withSpan('query'))
 
 	return query
 }
