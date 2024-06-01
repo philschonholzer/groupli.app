@@ -1,42 +1,54 @@
 {
-  description = "An empty flake template that you can adapt to your own environment";
-
-  # Flake inputs
-  inputs.nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1.*.tar.gz";
-
-  # Flake outputs
-  outputs = { self, nixpkgs }:
-    let
-      # The systems supported for this flake
-      supportedSystems = [
-        "x86_64-linux" # 64-bit Intel/AMD Linux
-        "aarch64-linux" # 64-bit ARM Linux
-        "x86_64-darwin" # 64-bit Intel macOS
-        "aarch64-darwin" # 64-bit ARM macOS
+  description = "Dev deps and grafana with tempo service for tracing";
+  inputs = {
+    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1.*.tar.gz";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    systems.url = "github:nix-systems/default";
+    process-compose-flake.url = "github:Platonic-Systems/process-compose-flake";
+    services-flake.url = "github:juspay/services-flake";
+  };
+  outputs = inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = import inputs.systems;
+      imports = [
+        inputs.process-compose-flake.flakeModule
       ];
+      perSystem = { self', pkgs, lib, ... }: {
+        # `process-compose.foo` will add a flake package output called "foo".
+        # Therefore, this will add a default package that you can build using
+        # `nix build` and run using `nix run`.
+        process-compose."default" = { config, ... }:
+          let
+            dbName = "sample";
+          in
+          {
+            imports = [
+              inputs.services-flake.processComposeModules.default
+            ];
 
-      # Helper to provide system-specific attributes
-      forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: f {
-        pkgs = import nixpkgs { inherit system; };
-      });
-    in
-    {
-      devShells = forEachSupportedSystem ({ pkgs }: {
-        default = pkgs.mkShell {
-          # The Nix packages provided in the environment
-          # Add any you need here
-          packages = with pkgs; [ 
-            nodejs
-            nodePackages.pnpm
+            services.tempo.tempo.enable = true;
+            services.grafana.grafana = {
+              enable = true;
+              http_port = 4000;
+              datasources = with config.services.tempo.tempo; [
+                {
+                  name = "Tempo";
+                  type = "tempo";
+                  access = "proxy";
+                  url = "http://${httpAddress}:${builtins.toString httpPort}";
+                  isDefault = true;
+                }
+              ];
+              
+            };
+          };
+
+        devShells.default = pkgs.mkShell {
+          nativeBuildInputs = with pkgs; [ 
+            pkgs.nodejs
+            pkgs.nodePackages.pnpm
            ];
-
-          # Set any environment variables for your dev shell
-          env = { };
-
-          # Add any shell logic you want executed any time the environment is activated
-          shellHook = ''
-          '';
         };
-      });
+      };
     };
 }

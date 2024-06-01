@@ -38,3 +38,6 @@ next-env.d.ts
 # wrangler files
 .wrangler
 .dev.vars
+
+# service flakes data
+/data
