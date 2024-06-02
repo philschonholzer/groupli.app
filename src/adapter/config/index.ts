@@ -1,14 +1,13 @@
 import { getRequestContext } from '@cloudflare/next-on-pages'
-import { ConfigProvider, Effect, Layer } from 'effect'
+import { ConfigProvider, Layer, Record, pipe } from 'effect'
 
-export const ConfigLayer = Layer.unwrapEffect(
-	Effect.sync(() => {
-		const { DB, ...rest } = getRequestContext().env
-
-		const cloudflareConfigProvider = ConfigProvider.fromJson(
-			JSON.stringify(rest),
-		)
-
-		return Layer.setConfigProvider(cloudflareConfigProvider)
-	}),
+export const ConfigLive = Layer.suspend(() =>
+	pipe(
+		getRequestContext().env,
+		({ DB, ...onlyEnvVars }) => onlyEnvVars,
+		Record.toEntries,
+		(env) => new Map(env),
+		ConfigProvider.fromMap,
+		Layer.setConfigProvider,
+	),
 )

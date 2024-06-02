@@ -1,20 +1,14 @@
 import { Schema } from '@effect/schema'
-import { Effect, type Exit, Layer } from 'effect'
+import { Effect, type Exit } from 'effect'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { ConfigLayer } from '../config'
-import { Db } from '../db'
-import { TracingLayer } from '../tracing'
-import { type RepositoryLayer, repositoryLayer } from './repository-layer'
-import { getRequestContext } from '@cloudflare/next-on-pages'
+import { MainLive } from './main-layer'
+import type { RepositoryLive } from './repository-layer'
 
-export const run = <A>(effect: Effect.Effect<A, never, RepositoryLayer>) => {
-	const mainLayer = Layer.provide(repositoryLayer, Db.Live)
-	const mainLive = Layer.mergeAll(mainLayer, TracingLayer, ConfigLayer)
-
+export const run = <A>(effect: Effect.Effect<A, never, RepositoryLive>) => {
 	return effect.pipe(
 		Effect.withSpan('run'),
-		Effect.provide(mainLive),
+		Effect.provide(MainLive),
 		Effect.runPromise,
 	)
 }
@@ -25,14 +19,11 @@ export const runAction =
 		revalidatePath?: (result: A) => string
 		redirect?: (result: A) => string
 	}) =>
-	(effect: Effect.Effect<A, E, RepositoryLayer>) => {
-		const mainLayer = Layer.provide(repositoryLayer, Db.Live)
-		const mainLive = Layer.mergeAll(mainLayer, TracingLayer, ConfigLayer)
-
+	(effect: Effect.Effect<A, E, RepositoryLive>) => {
 		return effect
 			.pipe(
 				Effect.withSpan('action'),
-				Effect.provide(mainLive),
+				Effect.provide(MainLive),
 				Effect.runPromiseExit,
 			)
 			.then((result) => {

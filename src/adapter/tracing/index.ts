@@ -3,14 +3,12 @@ import { OTLPExporter } from '@microlabs/otel-cf-workers'
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { Config, Effect, Layer, type Option, Secret } from 'effect'
 
-const GrafanaConfig = Config.nested('OTLP')(
-	Config.all({
-		url: Config.string('URL'),
-		auth: Config.option(Config.secret('AUTH')),
-	}),
-)
+const GrafanaConfig = Config.all({
+	url: Config.string('OTLP_URL'),
+	auth: Config.option(Config.secret('OTLP_AUTH')),
+})
 
-export const TracingLayer = Layer.unwrapEffect(
+export const TracingLive = Layer.unwrapEffect(
 	Effect.gen(function* () {
 		const { url, auth } = yield* GrafanaConfig
 		const headers = yield* makeHeaders(auth)
