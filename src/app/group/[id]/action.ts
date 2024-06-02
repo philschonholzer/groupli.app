@@ -3,7 +3,8 @@
 import { DbError } from '@/adapter/db'
 import { runAction } from '@/adapter/effect'
 import { Group, Person, Round } from '@/domain'
-import { TooManyPersonsInGroup, type PersonId } from '@/domain/person'
+import { type PersonId, TooManyPersonsInGroup } from '@/domain/person'
+import { NoRoundFound } from '@/domain/round'
 import { Schema } from '@effect/schema'
 import { Effect } from 'effect'
 import { NameRequired } from './errors'
@@ -49,6 +50,26 @@ export async function newRound(groupId: string, personIds: PersonId[]) {
 					group: Schema.String,
 				}),
 				failure: DbError,
+			}),
+		}),
+	)
+}
+
+export async function shufflePairingsInRound(groupId: string) {
+	return Effect.gen(function* () {
+		const { round } = yield* Round.shufflePairings(groupId)
+		return round
+	}).pipe(
+		Effect.withSpan('newRound'),
+		runAction({
+			revalidatePath: () => `/group/${groupId}`,
+			schema: Schema.Exit({
+				success: Schema.Struct({
+					id: Schema.Number,
+					at: Schema.String,
+					group: Schema.String,
+				}),
+				failure: Schema.Union(DbError, NoRoundFound),
 			}),
 		}),
 	)

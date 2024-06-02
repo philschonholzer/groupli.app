@@ -28,14 +28,24 @@ export const newRound = (groupId: string, personIds: PersonId[]) =>
 		return { round, pairings }
 	})
 
-export const getCurrentRound = (groupId: string) =>
+export const shufflePairings = (groupId: string) =>
 	Effect.gen(function* () {
-		const roundOption = yield* Repository.findLast(groupId)
-		if (Option.isNone(roundOption)) {
-			const round = yield* newRound(groupId, [])
-			return round.round
+		const round = yield* Repository.findLast(groupId)
+		if (Option.isNone(round)) {
+			return yield* new NoRoundFound()
 		}
-		return roundOption.value
+		const personsInRound = yield* Repository.getPersonsInRound(round.value.id)
+		const pairings = yield* Pairing.pairPersons(
+			groupId,
+			personsInRound.map((p) => p.person),
+		)
+
+		if (Option.isSome(pairings)) {
+			yield* Pairing.Repository.deleteByRoundId(round.value.id)
+			yield* Pairing.Repository.insert(round.value.id, pairings.value)
+		}
+
+		return { round: round.value, pairings }
 	})
 
 export const removePersonFromRound = (
@@ -59,3 +69,8 @@ export const removePersonFromRound = (
 		}
 		return pairings
 	})
+
+export class NoRoundFound extends Schema.TaggedError<NoRoundFound>()(
+	'NoRoundFound',
+	{},
+) {}

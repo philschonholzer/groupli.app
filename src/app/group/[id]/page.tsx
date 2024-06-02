@@ -4,7 +4,7 @@ import { H2, H3 } from '@/components/ui/typography'
 import { Group, Person, Round } from '@/domain'
 import { Effect } from 'effect'
 import type { Metadata } from 'next'
-import { newRound } from './action'
+import { newRound, shufflePairingsInRound } from './action'
 import AddPerson from './add-person'
 import GroupNameForm from './group-name-form'
 import PersonCard from './person-card'
@@ -35,6 +35,7 @@ export default async function GroupPage(props: { params: { id: string } }) {
 
 		const personIds = persons.map((person) => person.id)
 		const newRoundAction = newRound.bind(null, props.params.id, personIds)
+		const redo = shufflePairingsInRound.bind(null, props.params.id)
 
 		return (
 			<div className="py-16 space-y-12">
@@ -68,12 +69,21 @@ export default async function GroupPage(props: { params: { id: string } }) {
 								key={round.id}
 								className="border rounded p-4 space-y-4 shadow-sm"
 							>
-								<H3>
-									{new Date(round.at).toLocaleString('sv-SE')}{' '}
-									<span className="text-sm text-foreground/20">
-										#{round.id}
-									</span>
-								</H3>
+								<header className="flex justify-between">
+									<H3>
+										{new Date(round.at).toLocaleDateString('sv-SE')}{' '}
+										<span className="text-sm text-foreground/20">
+											#{round.id}
+										</span>
+									</H3>
+									{roundIndex === 0 && (
+										<form action={redo}>
+											<Button type="submit" variant={'secondary'}>
+												Shuffle
+											</Button>
+										</form>
+									)}
+								</header>
 								<ul className="flex flex-wrap gap-x-2 gap-y-6 justify-center pb-4">
 									{round.pairings.map((pair, pairIndex) => (
 										<li key={pair.id} className="">

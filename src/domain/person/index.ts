@@ -25,9 +25,7 @@ export const add = (name: string, groupId: string) =>
 		if (personsInGroup.length >= 14) {
 			return yield* new TooManyPersonsInGroup()
 		}
-		const person = yield* Repository.insert(name, groupId)
-		const round = yield* Round.getCurrentRound(groupId)
-		return yield* Round.Repository.addPersonToRound(person.id, round.id)
+		return yield* Repository.insert(name, groupId)
 	})
 
 export const rename = (personId: PersonId, newName: string | null) =>
