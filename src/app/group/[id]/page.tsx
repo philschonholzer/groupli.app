@@ -6,6 +6,7 @@ import { Effect } from 'effect'
 import type { Metadata } from 'next'
 import { newRound, shufflePairingsInRound } from './action'
 import AddPerson from './add-person'
+import CopyToClipboard from './copy-to-clipboard'
 import GroupNameForm from './group-name-form'
 import PersonCard from './person-card'
 import PersonPill from './person-pill'
@@ -77,11 +78,14 @@ export default async function GroupPage(props: { params: { id: string } }) {
 										</span>
 									</H3>
 									{roundIndex === 0 && (
-										<form action={redo}>
-											<Button type="submit" variant={'secondary'}>
-												Shuffle
-											</Button>
-										</form>
+										<div className="flex gap-2">
+											<CopyToClipboard round={round} />
+											<form action={redo}>
+												<Button type="submit" variant={'secondary'}>
+													Shuffle
+												</Button>
+											</form>
+										</div>
 									)}
 								</header>
 								<ul className="flex flex-wrap gap-x-2 gap-y-6 justify-center pb-4">

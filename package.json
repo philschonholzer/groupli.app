@@ -30,6 +30,7 @@
 		"@radix-ui/react-slot": "^1.0.2",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.1.1",
+		"copy-text-to-clipboard": "^3.2.0",
 		"drizzle-orm": "^0.31.0",
 		"effect": "^3.2.7",
 		"lucide-react": "^0.381.0",
