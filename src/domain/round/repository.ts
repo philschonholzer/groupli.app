@@ -91,8 +91,7 @@ const make = Effect.gen(function* () {
 				client
 					.insert(PersonsInRounds)
 					.values({ person: personId, round: roundId })
-					.returning()
-					.get(),
+					.returning(),
 			),
 		removePersonFromRound: (personInRoundId: number) =>
 			db((client) =>

@@ -2,7 +2,7 @@ import { Db } from '@/adapter/db'
 import { Persons } from '@/adapter/db/schema'
 import { Schema } from '@effect/schema'
 import { eq } from 'drizzle-orm'
-import { Array as A, Effect, Layer } from 'effect'
+import { Array as A, Effect, Layer, Option } from 'effect'
 import type { PersonId } from '.'
 import { Person } from '..'
 
@@ -13,11 +13,7 @@ const make = Effect.gen(function* () {
 	return {
 		insert: (name: string, groupId: string) =>
 			db((client) =>
-				client
-					.insert(Persons)
-					.values({ name, group: groupId })
-					.returning()
-					.get(),
+				client.insert(Persons).values({ name, group: groupId }).returning(),
 			),
 		getByGroupId: (groupId: string) =>
 			db((client) =>
@@ -37,6 +33,10 @@ const make = Effect.gen(function* () {
 					.set({ status: 'inactive' })
 					.where(eq(Persons.id, id)),
 			),
+		getById: (id: PersonId) =>
+			db((client) =>
+				client.query.Persons.findFirst({ where: eq(Persons.id, id) }),
+			).pipe(Effect.map(Option.fromNullable), Effect.map(Option.map(decode))),
 	}
 })
 
