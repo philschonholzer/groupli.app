@@ -1,7 +1,7 @@
 {
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"editor.codeActionsOnSave": {
-		"source.organizeImports": "explicit"
+		"source.organizeImports.biome": "explicit"
 	},
 	"editor.defaultFormatter": "biomejs.biome",
 	"prettier.enable": false,
