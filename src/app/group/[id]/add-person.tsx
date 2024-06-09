@@ -7,9 +7,10 @@ import { pipe } from 'effect'
 import { valueTags } from 'effect/Match'
 import { useActionState, useRef } from 'react'
 import { addPerson } from './action'
+import type { GroupId } from '@/domain/group'
 
 export default function AddPerson(props: {
-	groupId: string
+	groupId: GroupId
 }) {
 	const addPersonAction = addPerson.bind(null, props.groupId)
 	const [state, action] = useActionState(addPersonAction, { _tag: 'Idle' })

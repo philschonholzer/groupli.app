@@ -3,8 +3,6 @@
 import { DbError } from '@/adapter/db'
 import { runAction } from '@/adapter/effect'
 import { Group, Person, Round } from '@/domain'
-import { type PersonId, TooManyPersonsInGroup } from '@/domain/person'
-import { NoRoundFound } from '@/domain/round'
 import { Schema } from '@effect/schema'
 import { Effect } from 'effect'
 import { NameRequired } from './errors'
@@ -12,11 +10,11 @@ import { NameRequired } from './errors'
 type AddIdleTag<T> = Schema.Schema.Encoded<T> | { _tag: 'Idle' }
 const AddPersonSchema = Schema.Exit({
 	success: Schema.Undefined,
-	failure: Schema.Union(DbError, NameRequired, TooManyPersonsInGroup),
+	failure: Schema.Union(DbError, NameRequired, Person.TooManyPersonsInGroup),
 })
 
 export async function addPerson(
-	groupId: string,
+	groupId: Group.GroupId,
 	prevState: AddIdleTag<typeof AddPersonSchema>,
 	formData: FormData,
 ) {
@@ -35,7 +33,10 @@ export async function addPerson(
 	)
 }
 
-export async function newRound(groupId: string, personIds: PersonId[]) {
+export async function newRound(
+	groupId: Group.GroupId,
+	personIds: Person.PersonId[],
+) {
 	return Effect.gen(function* () {
 		const { round } = yield* Round.newRound(groupId, personIds)
 		return round
@@ -55,7 +56,7 @@ export async function newRound(groupId: string, personIds: PersonId[]) {
 	)
 }
 
-export async function shufflePairingsInRound(groupId: string) {
+export async function shufflePairingsInRound(groupId: Group.GroupId) {
 	return Effect.gen(function* () {
 		const { round } = yield* Round.shufflePairings(groupId)
 		return round
@@ -69,7 +70,7 @@ export async function shufflePairingsInRound(groupId: string) {
 					at: Schema.String,
 					group: Schema.String,
 				}),
-				failure: Schema.Union(DbError, NoRoundFound),
+				failure: Schema.Union(DbError, Round.NoRoundFound),
 			}),
 		}),
 	)
@@ -81,7 +82,7 @@ const UpdateNameSchema = Schema.Exit({
 })
 
 export async function renameGroup(
-	groupId: string,
+	groupId: Group.GroupId,
 	prevState: AddIdleTag<typeof UpdateNameSchema>,
 	formData: FormData,
 ) {
@@ -102,8 +103,8 @@ const RenamePersonSchema = Schema.Exit({
 	failure: Schema.Union(DbError, NameRequired),
 })
 export const renamePerson = async (
-	personId: PersonId,
-	groupId: string,
+	personId: Person.PersonId,
+	groupId: Group.GroupId,
 	prevState: AddIdleTag<typeof RenamePersonSchema>,
 	formData: FormData,
 ) =>
@@ -118,7 +119,10 @@ export const renamePerson = async (
 		}),
 	)
 
-export const removePerson = async (personId: PersonId, groupId: string) =>
+export const removePerson = async (
+	personId: Person.PersonId,
+	groupId: Group.GroupId,
+) =>
 	Effect.gen(function* () {
 		yield* Person.removePerson(personId)
 	}).pipe(
@@ -133,9 +137,9 @@ export const removePerson = async (personId: PersonId, groupId: string) =>
 	)
 
 export async function removePersonFromRound(
-	personId: PersonId,
+	personId: Person.PersonId,
 	roundId: number,
-	groupId: string,
+	groupId: Group.GroupId,
 ) {
 	return Round.removePersonFromRound(personId, roundId, groupId).pipe(
 		Effect.withSpan('removePersonFromRound'),

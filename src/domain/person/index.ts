@@ -1,7 +1,7 @@
 import { NameRequired } from '@/app/group/[id]/errors'
 import { Schema } from '@effect/schema'
 import { Brand, Effect } from 'effect'
-import { Round } from '..'
+import type { GroupId } from '../group'
 import { Repository } from './repository'
 
 export * from './repository'
@@ -19,7 +19,7 @@ export const Person = Schema.Struct({
 })
 export type Person = typeof Person.Type
 
-export const add = (name: string, groupId: string) =>
+export const add = (name: string, groupId: GroupId) =>
 	Effect.gen(function* () {
 		const personsInGroup = yield* Repository.getByGroupId(groupId)
 		if (personsInGroup.length >= 14) {

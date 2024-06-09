@@ -3,7 +3,7 @@ import { describe, test } from 'node:test'
 
 import { Db } from '@/adapter/db'
 import { Effect, Layer, Option } from 'effect'
-import { Pairing, Round } from '../index'
+import { Group, Pairing, Round } from '../index'
 import { PersonId } from '../person'
 import { type PairList, __tests__, pairPersons } from './index'
 
@@ -428,7 +428,7 @@ describe('Pairing', () => {
 		}[]
 		test('pairs none in empty group', () =>
 			Effect.gen(function* () {
-				const actual = yield* pairPersons('groupId', [])
+				const actual = yield* pairPersons(Group.GroupId('groupId'), [])
 
 				assert.equal(Option.isNone(actual), true)
 			}).pipe(
@@ -452,7 +452,10 @@ describe('Pairing', () => {
 			))
 		test('pairs none in group of 1', () =>
 			Effect.gen(function* () {
-				const actual = yield* pairPersons('groupId', [1].map(PersonId))
+				const actual = yield* pairPersons(
+					Group.GroupId('groupId'),
+					[1].map(PersonId),
+				)
 
 				assert.equal(Option.isNone(actual), true)
 			}).pipe(
@@ -476,7 +479,10 @@ describe('Pairing', () => {
 			))
 		test('pairs group of 2 people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const result = yield* pairPersons('groupId', [1, 2].map(PersonId))
+				const result = yield* pairPersons(
+					Group.GroupId('groupId'),
+					[1, 2].map(PersonId),
+				)
 				const actual = yield* result
 
 				assert.deepStrictEqual(actual, [[1, 2]])
@@ -503,7 +509,10 @@ describe('Pairing', () => {
 			))
 		test('pairs group of 3 people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const result = yield* pairPersons('groupId', [1, 2, 3].map(PersonId))
+				const result = yield* pairPersons(
+					Group.GroupId('groupId'),
+					[1, 2, 3].map(PersonId),
+				)
 				const actual = yield* result
 
 				assert.equal(
@@ -534,7 +543,10 @@ describe('Pairing', () => {
 			))
 		test('pairs group of 4 people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const result = yield* pairPersons('groupId', [1, 2, 3, 4].map(PersonId))
+				const result = yield* pairPersons(
+					Group.GroupId('groupId'),
+					[1, 2, 3, 4].map(PersonId),
+				)
 				const actual = yield* result
 
 				assert.equal(
@@ -564,7 +576,7 @@ describe('Pairing', () => {
 		test('pairs group of 5 people with respect to historical data', () =>
 			Effect.gen(function* () {
 				const result = yield* pairPersons(
-					'groupId',
+					Group.GroupId('groupId'),
 					[1, 2, 3, 4, 5].map(PersonId),
 				)
 				const actual = yield* result
@@ -598,7 +610,7 @@ describe('Pairing', () => {
 		test('pairs group of 6 people with respect to historical data', () =>
 			Effect.gen(function* () {
 				const result = yield* pairPersons(
-					'groupId',
+					Group.GroupId('groupId'),
 					[1, 2, 3, 4, 5, 6].map(PersonId),
 				)
 				const actual = yield* result

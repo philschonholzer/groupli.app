@@ -2,7 +2,7 @@ import { run } from '@/adapter/effect'
 import { Button } from '@/components/ui/button'
 import { H2, H3 } from '@/components/ui/typography'
 import { Group, Person, Round } from '@/domain'
-import { Effect } from 'effect'
+import { Effect, Option } from 'effect'
 import type { Metadata } from 'next'
 import { newRound, shufflePairingsInRound } from './action'
 import AddPerson from './add-person'
@@ -20,7 +20,9 @@ export const metadata: Metadata = {
 		follow: false,
 	},
 }
-export default async function GroupPage(props: { params: { id: string } }) {
+export default async function GroupPage(props: {
+	params: { id: Group.GroupId }
+}) {
 	return Effect.gen(function* () {
 		const personsEff = Person.Repository.getByGroupId(props.params.id)
 		const groupEff = Group.Repository.getById(props.params.id)
@@ -30,7 +32,7 @@ export default async function GroupPage(props: { params: { id: string } }) {
 			{ concurrency: 'unbounded' },
 		)
 
-		if (!group) {
+		if (Option.isNone(group)) {
 			return <div>Not found</div>
 		}
 
@@ -41,7 +43,7 @@ export default async function GroupPage(props: { params: { id: string } }) {
 		return (
 			<div className="py-16 space-y-12">
 				<header>
-					<GroupNameForm group={group} />
+					<GroupNameForm group={group.value} />
 				</header>
 				<section className="space-y-4">
 					<H2>Members</H2>

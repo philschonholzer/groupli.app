@@ -8,13 +8,13 @@ import {
 	PopoverTrigger,
 } from '@/components/ui/popover'
 import { H3 } from '@/components/ui/typography'
-import type { Person } from '@/domain'
+import type { Group, Person } from '@/domain'
 import { useActionState } from 'react'
 import { removePerson, renamePerson } from './action'
 
 export default function PersonPill(props: {
 	person: Person.Person
-	groupId: string
+	groupId: Group.GroupId
 }) {
 	const rename = renamePerson.bind(null, props.person.id, props.groupId)
 	const [state, renameAction] = useActionState(rename, { _tag: 'Idle' })

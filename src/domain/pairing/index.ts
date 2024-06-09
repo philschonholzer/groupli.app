@@ -1,7 +1,6 @@
 import { Schema } from '@effect/schema'
 import { Chunk, Effect, Option, Random, pipe } from 'effect'
-import { Person, Round } from '..'
-import type { PersonId } from '../person'
+import { type Group, Person, Round } from '..'
 
 export * from './repository'
 
@@ -11,14 +10,17 @@ export const PairEntity = Schema.Struct({
 	person2: Person.Person,
 })
 export type PairEntity = typeof PairEntity.Type
-export type Pair = [person1: PersonId, person2: PersonId]
+export type Pair = [person1: Person.PersonId, person2: Person.PersonId]
 export type PairList = Pair[]
 type PairListWithWeight = {
 	list: PairList
 	weight: number
 }
 
-export const pairPersons = (groupId: string, personIds: PersonId[]) =>
+export const pairPersons = (
+	groupId: Group.GroupId,
+	personIds: Person.PersonId[],
+) =>
 	Effect.gen(function* () {
 		const sortedPassedRounds =
 			yield* Round.Repository.get10LastByGroupIdWithPairings(groupId)
@@ -45,7 +47,7 @@ function getBestList(pairsWithWeight: PairListWithWeight[]) {
 	}, pairsWithWeight[0])
 }
 
-function generateAllListsOfPairs(persons: PersonId[]): PairList[] {
+function generateAllListsOfPairs(persons: Person.PersonId[]): PairList[] {
 	if (persons.length < 2) {
 		return [[]]
 	}
@@ -74,8 +76,8 @@ function addWeightToPairLists(
 		pairings: {
 			id: number
 			round: number
-			person1: PersonId
-			person2: PersonId
+			person1: Person.PersonId
+			person2: Person.PersonId
 		}[]
 	}[],
 ): PairListWithWeight[] {

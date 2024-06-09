@@ -2,6 +2,7 @@
 
 import { Input } from '@/components/ui/input'
 import { H1 } from '@/components/ui/typography'
+import type { GroupId } from '@/domain/group'
 import { Check } from 'lucide-react'
 import { useActionState } from 'react'
 import { renameGroup } from './action'
@@ -9,7 +10,7 @@ import { renameGroup } from './action'
 export default function GroupNameForm(props: {
 	group: {
 		name: string
-		id: string
+		id: GroupId
 	}
 }) {
 	const rename = renameGroup.bind(null, props.group.id)

@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import type { GroupId } from '@/domain/group'
 import type { PersonId } from '@/domain/person'
 import { CircleArrowOutUpRight } from 'lucide-react'
 import { removePersonFromRound } from './action'
@@ -6,7 +7,7 @@ import { removePersonFromRound } from './action'
 export function SkipRoundButton(props: {
 	personId: PersonId
 	roundId: number
-	groupId: string
+	groupId: GroupId
 }) {
 	const removePerson = removePersonFromRound.bind(
 		null,

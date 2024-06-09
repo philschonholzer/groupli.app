@@ -1,7 +1,6 @@
 import { Schema } from '@effect/schema'
 import { Effect, Option } from 'effect'
-import { Pairing } from '..'
-import { Person, type PersonId } from '../person'
+import { type Group, Pairing, Person } from '..'
 import { Repository } from './repository'
 
 export * from './repository'
@@ -10,12 +9,15 @@ export const Round = Schema.Struct({
 	id: Schema.Number,
 	group: Schema.String,
 	at: Schema.String,
-	persons: Schema.Array(Person),
+	persons: Schema.Array(Person.Person),
 	pairings: Schema.Array(Pairing.PairEntity),
 })
 export type Round = typeof Round.Type
 
-export const newRound = (groupId: string, personIds: PersonId[]) =>
+export const newRound = (
+	groupId: Group.GroupId,
+	personIds: Person.PersonId[],
+) =>
 	Effect.gen(function* () {
 		const { round } = yield* Repository.newRound(groupId, personIds)
 
@@ -28,7 +30,7 @@ export const newRound = (groupId: string, personIds: PersonId[]) =>
 		return { round, pairings }
 	})
 
-export const shufflePairings = (groupId: string) =>
+export const shufflePairings = (groupId: Group.GroupId) =>
 	Effect.gen(function* () {
 		const round = yield* Repository.findLast(groupId)
 		if (Option.isNone(round)) {
@@ -49,9 +51,9 @@ export const shufflePairings = (groupId: string) =>
 	})
 
 export const removePersonFromRound = (
-	personId: PersonId,
+	personId: Person.PersonId,
 	roundId: number,
-	groupId: string,
+	groupId: Group.GroupId,
 ) =>
 	Effect.gen(function* () {
 		const personInRound = yield* Repository.findPersonInRound(personId, roundId)

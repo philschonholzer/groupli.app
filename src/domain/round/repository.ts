@@ -11,8 +11,7 @@ import {
 	String as S,
 	pipe,
 } from 'effect'
-import { Pairing, Person, Round } from '..'
-import type { PersonId } from '../person'
+import { type Group, Pairing, Person, Round } from '..'
 
 const make = Effect.gen(function* () {
 	const db = yield* Db
@@ -23,7 +22,7 @@ const make = Effect.gen(function* () {
 
 	return {
 		getAll: db((client) => client.query.Rounds.findMany()),
-		getSixByGroupId: (groupId: string) =>
+		getSixByGroupId: (groupId: Group.GroupId) =>
 			db((client) =>
 				client.query.Rounds.findMany({
 					where: (_, { eq }) => eq(_.group, groupId),
@@ -47,7 +46,7 @@ const make = Effect.gen(function* () {
 					),
 				),
 			),
-		get10LastByGroupIdWithPairings: (groupId: string) => {
+		get10LastByGroupIdWithPairings: (groupId: Group.GroupId) => {
 			const byDate = pipe(
 				S.Order,
 				Order.mapInput((p: { readonly at: string }) => p.at),
@@ -62,11 +61,11 @@ const make = Effect.gen(function* () {
 				}),
 			).pipe(Effect.map(A.sortBy(byDate)), Effect.map(A.dropRight(1)))
 		},
-		findLast: (groupId: string) =>
+		findLast: (groupId: Group.GroupId) =>
 			db((client) =>
 				client.query.Rounds.findFirst({ orderBy: desc(Rounds.at) }),
 			).pipe(Effect.map(Option.fromNullable)),
-		newRound: (groupId: string, persons: PersonId[]) =>
+		newRound: (groupId: Group.GroupId, persons: Person.PersonId[]) =>
 			Effect.gen(function* () {
 				const [round] = yield* db((client) =>
 					client
@@ -86,7 +85,7 @@ const make = Effect.gen(function* () {
 				)
 				return { round, personsInRound }
 			}),
-		addPersonToRound: (personId: PersonId, roundId: number) =>
+		addPersonToRound: (personId: Person.PersonId, roundId: number) =>
 			db((client) =>
 				client
 					.insert(PersonsInRounds)
@@ -99,7 +98,7 @@ const make = Effect.gen(function* () {
 					.delete(PersonsInRounds)
 					.where(eq(PersonsInRounds.id, personInRoundId)),
 			),
-		findPersonInRound: (personId: PersonId, roundId: number) =>
+		findPersonInRound: (personId: Person.PersonId, roundId: number) =>
 			db((client) =>
 				client.query.PersonsInRounds.findFirst({
 					where: (p, { and, eq }) =>

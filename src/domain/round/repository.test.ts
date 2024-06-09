@@ -3,7 +3,7 @@ import { describe, test } from 'node:test'
 
 import { Db } from '@/adapter/db'
 import { Effect, Layer } from 'effect'
-import { Round } from '..'
+import { Group, Round } from '..'
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 function runTest(data: any) {
@@ -23,8 +23,9 @@ function runTest(data: any) {
 describe('Round Repository', () => {
 	test('get 10 Last Rounds By Group Id With Pairings', () =>
 		Effect.gen(function* () {
-			const actual =
-				yield* Round.Repository.get10LastByGroupIdWithPairings('groupId')
+			const actual = yield* Round.Repository.get10LastByGroupIdWithPairings(
+				Group.GroupId('groupId'),
+			)
 			const expected = [
 				{
 					id: 80,
