@@ -6,14 +6,19 @@ import * as schema from './schema'
 const make = (db: D1Database) => {
 	const dBclient = drizzle(db, { schema: schema })
 
-	const query = <A>(body: (client: typeof dBclient) => Promise<A>) =>
-		Effect.tryPromise<A, DbError>({
+	const query = <A>(body: (client: typeof dBclient) => Promise<A>) => {
+		const sqlStatement = (
+			body(dBclient) as unknown as { toSQL: () => { sql: string } }
+		).toSQL().sql
+
+		return Effect.tryPromise<A, DbError>({
 			try: () => body(dBclient),
 			catch: (cause) => {
 				console.error('DbError', cause)
 				return new DbError({ cause: cause })
 			},
-		}).pipe(Effect.withSpan('query'))
+		}).pipe(Effect.withSpan('Db.query', { attributes: { sql: sqlStatement } }))
+	}
 
 	return query
 }
