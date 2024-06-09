@@ -1,1 +1,0 @@
-ALTER TABLE Persons ADD `Status` text DEFAULT 'active';

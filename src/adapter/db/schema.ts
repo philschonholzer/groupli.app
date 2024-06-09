@@ -9,7 +9,9 @@ export const Persons = sqliteTable('Persons', {
 		.notNull()
 		.references(() => Groups.id),
 	color: text('Color'),
-	status: text('Status').$type<Status>().notNull().default('active'),
+	status: text('Status', { enum: ['active', 'inactive'] })
+		.notNull()
+		.default('active'),
 })
 
 export type Person = typeof Persons.$inferSelect
