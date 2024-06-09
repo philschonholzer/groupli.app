@@ -9,6 +9,10 @@ export const run = <A>(effect: Effect.Effect<A, never, RepositoryLive>) => {
 	return effect.pipe(
 		Effect.withSpan('run'),
 		Effect.provide(MainLive),
+		Effect.catchAllDefect((defect) => {
+			console.error(defect)
+			return Effect.die(defect)
+		}),
 		Effect.runPromise,
 	)
 }
