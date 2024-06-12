@@ -2,18 +2,17 @@ import { Schema } from '@effect/schema'
 import { Effect, type Exit } from 'effect'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { MainLive } from './main-layer'
 import type { RepositoryLive } from './repository-layer'
+import runtime from './runtime'
 
 export const run = <A>(effect: Effect.Effect<A, never, RepositoryLive>) => {
 	return effect.pipe(
 		Effect.withSpan('run'),
-		Effect.provide(MainLive),
 		Effect.catchAllDefect((defect) => {
 			console.error(defect)
 			return Effect.die(defect)
 		}),
-		Effect.runPromise,
+		runtime.runPromise,
 	)
 }
 
@@ -25,11 +24,7 @@ export const runAction =
 	}) =>
 	(effect: Effect.Effect<A, E, RepositoryLive>) => {
 		return effect
-			.pipe(
-				Effect.withSpan('action'),
-				Effect.provide(MainLive),
-				Effect.runPromiseExit,
-			)
+			.pipe(Effect.withSpan('action'), runtime.runPromiseExit)
 			.then((result) => {
 				const parsed = Schema.encodeUnknownSync(props.schema)(result)
 				if (
