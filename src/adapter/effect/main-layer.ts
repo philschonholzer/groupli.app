@@ -1,9 +1,9 @@
+import { getRequestContext } from '@cloudflare/next-on-pages'
 import { Layer } from 'effect'
+import { ConfigLive } from '../config'
 import { Db } from '../db'
 import { TracingLive } from '../tracing'
-import { ConfigLive } from '../config'
 import { RepositoryLive } from './repository-layer'
-import { getRequestContext } from '@cloudflare/next-on-pages'
 
 const DbLive = Layer.suspend(() => Db.Live(getRequestContext().env.DB))
 
