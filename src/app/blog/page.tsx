@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
-import discoverGroupliImage from './discover-groupli-the-app-for-group-pairings/discover-groupli.svg'
 import Image from 'next/image'
+import discoverGroupliImage from './discover-groupli-the-app-for-group-pairings/discover-groupli.svg'
 
 export default function Component() {
 	return (
@@ -17,7 +17,7 @@ export default function Component() {
 						</p>
 					</div>
 				</div>
-				<div className="mx-auto grid gap-8 py-12 md:grid-cols-2 lg:grid-cols-3">
+				<div className="mx-auto grid gap-8 py-12 lg:grid-cols-2">
 					<div className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
 						<Link
 							href="/blog/discover-groupli-the-app-for-group-pairings"
