@@ -1,6 +1,9 @@
 import Link from 'next/link'
 
-const navigation = [{ name: 'About', href: '/about' }]
+const navigation = [
+	{ name: 'Blog', href: '/blog' },
+	{ name: 'About', href: '/about' },
+]
 
 export default function Header() {
 	return (

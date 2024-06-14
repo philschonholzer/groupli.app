@@ -8,6 +8,7 @@ const fontFamily = Grandstander({ subsets: ['latin'] })
 export const metadata: Metadata = {
 	title: 'Groupli App',
 	description: 'Pairing people in groups',
+	metadataBase: new URL('https://groupli.app'),
 }
 
 export default function RootLayout({
