@@ -49,11 +49,7 @@ export default async function GroupPage(props: {
 					<H2>Members</H2>
 					<ul className="flex flex-wrap gap-2">
 						{persons.map((person) => (
-							<PersonPill
-								key={person.id}
-								person={person}
-								groupId={props.params.id}
-							/>
+							<PersonPill key={person.id} person={person} groupId={props.params.id} />
 						))}
 					</ul>
 					<AddPerson groupId={props.params.id} />
@@ -68,16 +64,11 @@ export default async function GroupPage(props: {
 					</header>
 					<ul className="space-y-4">
 						{rounds.map((round, roundIndex) => (
-							<li
-								key={round.id}
-								className="border rounded p-4 space-y-4 shadow-sm"
-							>
+							<li key={round.id} className="border rounded p-4 space-y-4 shadow-sm">
 								<header className="flex justify-between">
 									<H3>
 										{new Date(round.at).toLocaleDateString('sv-SE')}{' '}
-										<span className="text-sm text-foreground/20">
-											#{round.id}
-										</span>
+										<span className="text-sm text-foreground/20">#{round.id}</span>
 									</H3>
 									{roundIndex === 0 && (
 										<div className="flex gap-2">
@@ -137,9 +128,7 @@ export default async function GroupPage(props: {
 			</div>
 		)
 	}).pipe(
-		Effect.catchAll((e) =>
-			Effect.succeed(<div>Error {JSON.stringify(e)}</div>),
-		),
+		Effect.catchAll((e) => Effect.succeed(<div>Error {JSON.stringify(e)}</div>)),
 		run,
 	)
 }

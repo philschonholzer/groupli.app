@@ -21,11 +21,7 @@ export default function CopyToClipboard(props: { round: Round.Round }) {
 		}, 1000)
 	}
 	return (
-		<Button
-			variant={'secondary'}
-			data-copied={copied}
-			onClick={handleCopyClick}
-		>
+		<Button variant={'secondary'} data-copied={copied} onClick={handleCopyClick}>
 			<ClipboardCopy
 				data-copied={copied}
 				className="data-[copied=true]:-rotate-90 h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all data-[copied=true]:scale-0"

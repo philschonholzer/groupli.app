@@ -160,25 +160,19 @@ describe('Pairing', () => {
 				id: 1,
 				at: '',
 				group: '',
-				pairings: [
-					{ id: 1, person1: PersonId(1), person2: PersonId(2), round: 1 },
-				],
+				pairings: [{ id: 1, person1: PersonId(1), person2: PersonId(2), round: 1 }],
 			},
 			{
 				id: 4,
 				at: '',
 				group: '',
-				pairings: [
-					{ id: 2, person1: PersonId(2), person2: PersonId(3), round: 4 },
-				],
+				pairings: [{ id: 2, person1: PersonId(2), person2: PersonId(3), round: 4 }],
 			},
 			{
 				id: 7,
 				at: '',
 				group: '',
-				pairings: [
-					{ id: 2, person1: PersonId(1), person2: PersonId(2), round: 7 },
-				],
+				pairings: [{ id: 2, person1: PersonId(1), person2: PersonId(2), round: 7 }],
 			},
 		])
 		const expected = [
@@ -212,25 +206,19 @@ describe('Pairing', () => {
 				id: 1,
 				at: '',
 				group: '',
-				pairings: [
-					{ id: 1, person1: PersonId(1), person2: PersonId(2), round: 1 },
-				],
+				pairings: [{ id: 1, person1: PersonId(1), person2: PersonId(2), round: 1 }],
 			},
 			{
 				id: 1,
 				at: '',
 				group: '',
-				pairings: [
-					{ id: 2, person1: PersonId(3), person2: PersonId(4), round: 1 },
-				],
+				pairings: [{ id: 2, person1: PersonId(3), person2: PersonId(4), round: 1 }],
 			},
 			{
 				id: 1,
 				at: '',
 				group: '',
-				pairings: [
-					{ id: 3, person1: PersonId(5), person2: PersonId(6), round: 1 },
-				],
+				pairings: [{ id: 3, person1: PersonId(5), person2: PersonId(6), round: 1 }],
 			},
 			{
 				id: 2,

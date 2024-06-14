@@ -8,9 +8,7 @@ export default function AboutPage() {
 			</H1>
 			<div className="space-y-2">
 				<P>Welcome to Groupli!, the ultimate group pairing app!</P>
-				<P>
-					Our mission is to help you pair people in your groups effectively.
-				</P>
+				<P>Our mission is to help you pair people in your groups effectively.</P>
 				<P>
 					Whether you're managing a team, planning an event, or coordinating
 					feedback, Groupli! has got you covered.

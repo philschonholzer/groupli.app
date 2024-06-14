@@ -31,12 +31,10 @@ export default function Home() {
 						</div>
 					</div>
 					<div className="text-center">
-						<H1 className="lg:text-6xl">
-							Every round new pairings. With ease.
-						</H1>
+						<H1 className="lg:text-6xl">Every round new pairings. With ease.</H1>
 						<p className="mt-6 text-lg leading-8 text-gray-600">
-							Pair everyone in your group with someone new. Groupli will take
-							care of the rest.
+							Pair everyone in your group with someone new. Groupli will take care of
+							the rest.
 						</p>
 						<div className="mt-10 flex items-center justify-center gap-x-6">
 							<form action={newGroup}>

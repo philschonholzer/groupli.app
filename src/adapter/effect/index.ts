@@ -27,11 +27,7 @@ export const runAction =
 			.pipe(Effect.withSpan('action'), runtime.runPromiseExit)
 			.then((result) => {
 				const parsed = Schema.encodeUnknownSync(props.schema)(result)
-				if (
-					'_tag' in parsed &&
-					parsed._tag === 'Success' &&
-					'value' in result
-				) {
+				if ('_tag' in parsed && parsed._tag === 'Success' && 'value' in result) {
 					if (props.redirect) {
 						redirect(props.redirect(result.value))
 					}

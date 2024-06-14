@@ -27,9 +27,9 @@ describe('exit', () => {
 		assert.deepStrictEqual(result, { _tag: 'Success', value: undefined })
 	})
 	it('should return failure', () => {
-		const output = Effect.fail(
-			new NameRequired({ message: 'Forgot name' }),
-		).pipe(Effect.runSyncExit)
+		const output = Effect.fail(new NameRequired({ message: 'Forgot name' })).pipe(
+			Effect.runSyncExit,
+		)
 		const result = Schema.encodeSync(ExitState)(output)
 		assert.deepStrictEqual(result, {
 			_tag: 'Failure',

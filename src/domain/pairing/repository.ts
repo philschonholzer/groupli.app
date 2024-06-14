@@ -25,9 +25,7 @@ const make = Effect.gen(function* () {
 					.returning() */,
 			),
 		deleteByRoundId: (roundId: number) =>
-			db((client) =>
-				client.delete(Pairings).where(eq(Pairings.round, roundId)),
-			),
+			db((client) => client.delete(Pairings).where(eq(Pairings.round, roundId))),
 	}
 })
 

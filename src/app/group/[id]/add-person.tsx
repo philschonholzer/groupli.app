@@ -43,10 +43,7 @@ export default function AddPerson(props: {
 							valueTags({
 								NameRequiredError: (error) => <p>{error.message}</p>,
 								TooManyPersonsInGroup: () => (
-									<p>
-										There are already 14 persons in the group. You can't add
-										more.
-									</p>
+									<p>There are already 14 persons in the group. You can't add more.</p>
 								),
 								DbError: (error) => (
 									<p>
