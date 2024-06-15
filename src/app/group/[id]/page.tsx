@@ -59,7 +59,9 @@ export default async function GroupPage(props: {
 					<header className="flex justify-between">
 						<H2>Rounds</H2>
 						<form action={newRoundAction}>
-							<Button type="submit">New Round</Button>
+							<Button type="submit">
+								{rounds.length === 0 ? 'Start First Round' : 'Start Next Round'}
+							</Button>
 						</form>
 					</header>
 					<ul className="space-y-4">
