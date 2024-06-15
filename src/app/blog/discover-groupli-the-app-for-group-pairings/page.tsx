@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Wrapper from '../wrapper'
 import Content from './content.mdx'
+
 export const metadata: Metadata = {
 	title: 'Discover Groupli: The App for Group Pairings',
 	description:
@@ -11,11 +12,6 @@ export const metadata: Metadata = {
 		description:
 			'Groupli is an innovative app designed to mix up your groups in fresh and engaging ways every round, ensuring every pair has the chance to connect and collaborate more effectively. ',
 		url: '/blog/discover-groupli-the-app-for-group-pairings',
-		images: [
-			{
-				url: '/assets/blog/discover-groupli-the-app-for-group-pairings/discover-groupli.svg',
-			},
-		],
 	},
 }
 

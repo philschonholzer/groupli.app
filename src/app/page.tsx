@@ -23,8 +23,11 @@ export default function Home() {
 				<div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
 					<div className="hidden sm:mb-8 sm:flex sm:justify-center">
 						<div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-							Announcing our next round of funding.{' '}
-							<Link href="/funding" className="font-semibold text-primary">
+							Discover Groupli.{' '}
+							<Link
+								href="/blog/discover-groupli-the-app-for-group-pairings"
+								className="font-semibold text-primary"
+							>
 								<span className="absolute inset-0" aria-hidden="true" />
 								Read more <span aria-hidden="true">&rarr;</span>
 							</Link>
@@ -40,7 +43,10 @@ export default function Home() {
 							<form action={newGroup}>
 								<Button type="submit">Get stared</Button>
 							</form>
-							<Link href="/about" className="">
+							<Link
+								href="/blog/discover-groupli-the-app-for-group-pairings"
+								className=""
+							>
 								Learn more <span aria-hidden="true">→</span>
 							</Link>
 						</div>
