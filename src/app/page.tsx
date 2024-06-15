@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { H1 } from '@/components/ui/typography'
-import { newGroup } from './action'
 import Link from 'next/link'
+import { newGroup } from './action'
 
 export const runtime = 'edge'
 export default function Home() {
@@ -35,7 +35,7 @@ export default function Home() {
 					</div>
 					<div className="text-center">
 						<H1 className="lg:text-6xl">Every round new pairings. With ease.</H1>
-						<p className="mt-6 text-lg leading-8 text-gray-600">
+						<p className="mt-6 text-lg leading-8 text-gray-600 text-balance">
 							Pair everyone in your group with someone new. Groupli will take care of
 							the rest.
 						</p>

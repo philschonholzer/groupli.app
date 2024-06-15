@@ -2,7 +2,7 @@ import { H1, P } from '@/components/ui/typography'
 
 export default function FundingPage() {
 	return (
-		<div className="py-16 space-y-12">
+		<div className=" py-12 md:py-24 lg:py-32 space-y-12">
 			<H1>
 				Funding <span className="text-primary">Groupli!</span>
 			</H1>

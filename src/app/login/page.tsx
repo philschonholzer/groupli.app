@@ -2,7 +2,7 @@ import { H1, P } from '@/components/ui/typography'
 
 export default function LoginPage() {
 	return (
-		<div className="py-16 space-y-12">
+		<div className="space-y-12 py-12 md:py-24 lg:py-32">
 			<H1>
 				Login to <span className="text-primary">Groupli!</span>
 			</H1>
