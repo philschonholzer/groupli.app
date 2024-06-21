@@ -50,7 +50,7 @@ export async function newRound(
 					at: Schema.String,
 					group: Schema.String,
 				}),
-				failure: DbError,
+				failure: Schema.Union(DbError, Round.NotEnoughPersonsForRound),
 			}),
 		}),
 	)
@@ -148,7 +148,7 @@ export async function removePersonFromRound(
 				success: Schema.Option(
 					Schema.Array(Schema.Tuple(Schema.Number, Schema.Number)),
 				),
-				failure: Schema.Union(DbError, NameRequired),
+				failure: Schema.Union(DbError, Round.NotEnoughPersonsForRound),
 			}),
 			revalidatePath: () => `/group/${groupId}`,
 		}),

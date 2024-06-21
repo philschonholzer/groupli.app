@@ -19,6 +19,10 @@ export const newRound = (
 	personIds: Person.PersonId[],
 ) =>
 	Effect.gen(function* () {
+		if (personIds.length < 2) {
+			return yield* new NotEnoughPersonsForRound()
+		}
+
 		const { round } = yield* Repository.newRound(groupId, personIds)
 
 		const pairings = yield* Pairing.pairPersons(groupId, personIds)
@@ -56,11 +60,14 @@ export const removePersonFromRound = (
 	groupId: Group.GroupId,
 ) =>
 	Effect.gen(function* () {
+		const personsInRound = yield* Repository.getPersonsInRound(roundId)
+		if (personsInRound.length < 3) {
+			return yield* new NotEnoughPersonsForRound()
+		}
 		const personInRound = yield* Repository.findPersonInRound(personId, roundId)
 		if (Option.isSome(personInRound)) {
 			yield* Repository.removePersonFromRound(personInRound.value.id)
 		}
-		const personsInRound = yield* Repository.getPersonsInRound(roundId)
 		yield* Pairing.Repository.deleteByRoundId(roundId)
 		const pairings = yield* Pairing.pairPersons(
 			groupId,
@@ -74,5 +81,10 @@ export const removePersonFromRound = (
 
 export class NoRoundFound extends Schema.TaggedError<NoRoundFound>()(
 	'NoRoundFound',
+	{},
+) {}
+
+export class NotEnoughPersonsForRound extends Schema.TaggedError<NotEnoughPersonsForRound>()(
+	'NotEnoughPersonsForRound',
 	{},
 ) {}

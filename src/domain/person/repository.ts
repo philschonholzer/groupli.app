@@ -13,6 +13,10 @@ const make = Effect.gen(function* () {
 		insert: (name: string, groupId: Group.GroupId) =>
 			db((client) =>
 				client.insert(Persons).values({ name, group: groupId }).returning(),
+			).pipe(
+				Effect.map(A.head),
+				Effect.map(Option.getOrThrow),
+				Effect.map(decode),
 			),
 		getByGroupId: (groupId: Group.GroupId) =>
 			db((client) =>
