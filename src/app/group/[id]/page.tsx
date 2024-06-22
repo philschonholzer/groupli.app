@@ -61,6 +61,14 @@ export default async function GroupPage(props: {
 							</div>
 						</div>
 					)}
+					{persons.length < 3 && rounds.length === 0 && (
+						<div className="border rounded p-4 space-y-4 shadow-sm h-24 grid place-items-center border-border/50">
+							<div className="text-foreground/40 space-y-1 text-center">
+								<p className=" font-semibold">Not enough members</p>
+								<p className="">Add at least 3 members to your group.</p>
+							</div>
+						</div>
+					)}
 				</section>
 
 				{(persons.length > 2 || rounds.length > 0) && (
