@@ -53,81 +53,98 @@ export default async function GroupPage(props: {
 						))}
 					</ul>
 					<AddPerson groupId={props.params.id} />
+					{persons.length < 3 && rounds.length === 0 && (
+						<div className="border rounded p-4 space-y-4 shadow-sm h-24 grid place-items-center border-border/50">
+							<div className="text-foreground/40 space-y-1 text-center">
+								<p className=" font-semibold">Not enough members</p>
+								<p className="">Add at least 3 members to your group.</p>
+							</div>
+						</div>
+					)}
 				</section>
 
-				<section className="space-y-4">
-					<header className="flex justify-between">
-						<H2>Rounds</H2>
-
-						<StartNextRound
-							groupId={props.params.id}
-							personIds={personIds}
-							roundsCount={rounds.length}
-						/>
-					</header>
-					<ul className="space-y-4">
-						{rounds.map((round, roundIndex) => (
-							<li key={round.id} className="border rounded p-4 space-y-4 shadow-sm">
-								<header className="flex justify-between">
-									<H3>
-										{new Date(round.at).toLocaleDateString('sv-SE')}{' '}
-										<span className="text-sm text-foreground/20">#{round.id}</span>
-									</H3>
-									{roundIndex === 0 && (
-										<div className="flex gap-2">
-											<CopyToClipboard round={round} />
-											<form action={redo}>
-												<Button type="submit" variant={'secondary'}>
-													Shuffle
-												</Button>
-											</form>
-										</div>
-									)}
-								</header>
-								<ul className="flex flex-wrap gap-x-2 gap-y-6 justify-center pb-4">
-									{round.pairings.map((pair, pairIndex) => (
-										<li key={pair.id} className="">
-											<ul
-												className={`flex gap-2 ${
-													pairIndex % 3
-														? 'rotate-6'
-														: pairIndex % 2
-															? '-rotate-3'
-															: 'rotate-3'
-												}`}
-											>
-												<PersonCard
-													person={pair.person1}
-													className="-rotate-12 translate-x-3 z-10"
+				{(persons.length > 2 || rounds.length > 0) && (
+					<section className="space-y-4">
+						<header className="flex justify-between">
+							<H2>Rounds</H2>
+							<StartNextRound
+								groupId={props.params.id}
+								personIds={personIds}
+								roundsCount={rounds.length}
+							/>
+						</header>
+						<ul className="space-y-4">
+							{rounds.map((round, roundIndex) => (
+								<li key={round.id} className="border rounded p-4 space-y-4 shadow-sm">
+									<header className="flex justify-between">
+										<H3>
+											{new Date(round.at).toLocaleDateString('sv-SE')}{' '}
+											<span className="text-sm text-foreground/20">#{round.id}</span>
+										</H3>
+										{roundIndex === 0 && (
+											<div className="flex gap-2">
+												<CopyToClipboard round={round} />
+												<form action={redo}>
+													<Button type="submit" variant={'secondary'}>
+														Shuffle
+													</Button>
+												</form>
+											</div>
+										)}
+									</header>
+									<ul className="flex flex-wrap gap-x-2 gap-y-6 justify-center pb-4">
+										{round.pairings.map((pair, pairIndex) => (
+											<li key={pair.id} className="">
+												<ul
+													className={`flex gap-2 ${
+														pairIndex % 3
+															? 'rotate-6'
+															: pairIndex % 2
+																? '-rotate-3'
+																: 'rotate-3'
+													}`}
 												>
-													{roundIndex === 0 && (
-														<SkipRoundButton
-															groupId={props.params.id}
-															roundId={round.id}
-															personId={pair.person1.id}
-														/>
-													)}
-												</PersonCard>
-												<PersonCard
-													person={pair.person2}
-													className="rotate-6 -translate-x-3"
-												>
-													{roundIndex === 0 && (
-														<SkipRoundButton
-															groupId={props.params.id}
-															roundId={round.id}
-															personId={pair.person2.id}
-														/>
-													)}
-												</PersonCard>
-											</ul>
-										</li>
-									))}
-								</ul>
-							</li>
-						))}
-					</ul>
-				</section>
+													<PersonCard
+														person={pair.person1}
+														className="-rotate-12 translate-x-3 z-10"
+													>
+														{roundIndex === 0 && (
+															<SkipRoundButton
+																groupId={props.params.id}
+																roundId={round.id}
+																personId={pair.person1.id}
+															/>
+														)}
+													</PersonCard>
+													<PersonCard
+														person={pair.person2}
+														className="rotate-6 -translate-x-3"
+													>
+														{roundIndex === 0 && (
+															<SkipRoundButton
+																groupId={props.params.id}
+																roundId={round.id}
+																personId={pair.person2.id}
+															/>
+														)}
+													</PersonCard>
+												</ul>
+											</li>
+										))}
+									</ul>
+								</li>
+							))}
+							{rounds.length === 0 && (
+								<li className="border rounded p-4 space-y-4 shadow-sm h-52 grid place-items-center border-border/50">
+									<div className="text-foreground/40 space-y-1 text-center">
+										<p className=" font-semibold">No rounds yet</p>
+										<p className="">Start your first round to pair everyone.</p>
+									</div>
+								</li>
+							)}
+						</ul>
+					</section>
+				)}
 			</div>
 		)
 	}).pipe(
