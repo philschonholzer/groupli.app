@@ -56,15 +56,7 @@ export default async function GroupPage(props: {
 					{persons.length < 3 && rounds.length === 0 && (
 						<div className="border rounded p-4 space-y-4 shadow-sm h-24 grid place-items-center border-border/50">
 							<div className="text-foreground/40 space-y-1 text-center">
-								<p className=" font-semibold">Not enough members</p>
-								<p className="">Add at least 3 members to your group.</p>
-							</div>
-						</div>
-					)}
-					{persons.length < 3 && rounds.length === 0 && (
-						<div className="border rounded p-4 space-y-4 shadow-sm h-24 grid place-items-center border-border/50">
-							<div className="text-foreground/40 space-y-1 text-center">
-								<p className=" font-semibold">Not enough members</p>
+								<p className=" font-semibold">Add members</p>
 								<p className="">Add at least 3 members to your group.</p>
 							</div>
 						</div>
@@ -145,8 +137,8 @@ export default async function GroupPage(props: {
 							{rounds.length === 0 && (
 								<li className="border rounded p-4 space-y-4 shadow-sm h-52 grid place-items-center border-border/50">
 									<div className="text-foreground/40 space-y-1 text-center">
-										<p className=" font-semibold">No rounds yet</p>
-										<p className="">Start your first round to pair everyone.</p>
+										<p className=" font-semibold">Nothing going on yet...</p>
+										<p className="">Start your first round to pair your group members.</p>
 									</div>
 								</li>
 							)}
