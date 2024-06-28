@@ -4,6 +4,7 @@ import { Schema } from '@effect/schema'
 import { desc, eq } from 'drizzle-orm'
 import {
 	Array as A,
+	Clock,
 	Effect,
 	Layer,
 	Option,
@@ -67,10 +68,11 @@ const make = Effect.gen(function* () {
 			).pipe(Effect.map(Option.fromNullable)),
 		newRound: (groupId: Group.GroupId, persons: Person.PersonId[]) =>
 			Effect.gen(function* () {
+				const now = yield* Clock.currentTimeMillis
 				const [round] = yield* db((client) =>
 					client
 						.insert(Rounds)
-						.values({ group: groupId, at: new Date().toISOString() })
+						.values({ group: groupId, at: new Date(now).toISOString() })
 						.returning(),
 				)
 				if (persons.length === 0) {

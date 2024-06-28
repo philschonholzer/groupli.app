@@ -7,5 +7,3 @@ export const RepositoryLive = Layer.mergeAll(
 	Pairing.Repository.Live,
 	Round.Repository.Live,
 )
-
-export type RepositoryLive = Layer.Layer.Success<typeof RepositoryLive>

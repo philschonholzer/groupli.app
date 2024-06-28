@@ -2,10 +2,10 @@ import { Schema } from '@effect/schema'
 import { Effect, type Exit } from 'effect'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import type { RepositoryLive } from './repository-layer'
+import type { MainLive } from './main-layer'
 import runtime from './runtime'
 
-export const run = <A>(effect: Effect.Effect<A, never, RepositoryLive>) => {
+export const run = <A>(effect: Effect.Effect<A, never, MainLive>) => {
 	return effect.pipe(
 		Effect.withSpan('run'),
 		Effect.catchAllDefect((defect) => {
@@ -22,7 +22,7 @@ export const runAction =
 		revalidatePath?: (result: A) => string
 		redirect?: (result: A) => string
 	}) =>
-	(effect: Effect.Effect<A, E, RepositoryLive>) => {
+	(effect: Effect.Effect<A, E, MainLive>) => {
 		return effect
 			.pipe(Effect.withSpan('action'), runtime.runPromiseExit)
 			.then((result) => {

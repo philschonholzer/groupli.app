@@ -4,13 +4,14 @@ import { H2, H3 } from '@/components/ui/typography'
 import { Group, Person, Round } from '@/domain'
 import { Effect, Option } from 'effect'
 import type { Metadata } from 'next'
-import { newRound, shufflePairingsInRound } from './action'
+import { shufflePairingsInRound } from './action'
 import AddPerson from './add-person'
 import CopyToClipboard from './copy-to-clipboard'
 import GroupNameForm from './group-name-form'
 import PersonCard from './person-card'
 import PersonPill from './person-pill'
 import { SkipRoundButton } from './skip-round-button'
+import StartNextRound from './start-next-round'
 
 export const runtime = 'edge'
 
@@ -37,7 +38,6 @@ export default async function GroupPage(props: {
 		}
 
 		const personIds = persons.map((person) => person.id)
-		const newRoundAction = newRound.bind(null, props.params.id, personIds)
 		const redo = shufflePairingsInRound.bind(null, props.params.id)
 
 		return (
@@ -58,11 +58,12 @@ export default async function GroupPage(props: {
 				<section className="space-y-4">
 					<header className="flex justify-between">
 						<H2>Rounds</H2>
-						<form action={newRoundAction}>
-							<Button type="submit">
-								{rounds.length === 0 ? 'Start First Round' : 'Start Next Round'}
-							</Button>
-						</form>
+
+						<StartNextRound
+							groupId={props.params.id}
+							personIds={personIds}
+							roundsCount={rounds.length}
+						/>
 					</header>
 					<ul className="space-y-4">
 						{rounds.map((round, roundIndex) => (

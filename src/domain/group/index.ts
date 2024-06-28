@@ -1,6 +1,8 @@
+import { Db } from '@/adapter/db'
+import { Uuid } from '@/adapter/uuid'
 import { NameRequired } from '@/app/group/[id]/errors'
 import { Schema } from '@effect/schema'
-import { Brand, Effect } from 'effect'
+import { Brand, Console, Effect } from 'effect'
 import { nanoid } from 'nanoid'
 import { Repository } from './repository'
 
@@ -15,10 +17,11 @@ export const Group = Schema.Struct({
 })
 
 export const newGroup = Effect.gen(function* () {
-	const id = GroupId(nanoid(8))
+	const id = yield* Uuid.id(8)
+	const groupId = GroupId(id)
 	const name = 'New Group'
-	yield* Repository.insert({ id, name })
-	return Group.make({ id, name })
+	yield* Repository.insert({ id: groupId, name })
+	return Group.make({ id: groupId, name })
 })
 
 export const rename = (id: GroupId, newName: string | null) =>
