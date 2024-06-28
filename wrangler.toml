@@ -4,6 +4,13 @@ compatibility_date = "2024-05-02"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"
 
+
+[[d1_databases]]
+binding = "DB"                                       # i.e. available in your Worker on env.DB
+database_name = "stag-d1-groupify"
+database_id = "eec6e894-3346-48a6-a363-a09b26c3276b"
+
+
 # This is a production environment
 [env.production]
 d1_databases = [
