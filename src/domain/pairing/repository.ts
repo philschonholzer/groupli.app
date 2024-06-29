@@ -13,19 +13,33 @@ const make = Effect.gen(function* () {
 			roundId: number,
 			pairs: (readonly [person1: PersonId, person2: PersonId])[],
 		) =>
-			db(
-				(client) =>
+			db((client) =>
+				client.insert(Pairings).values(
+					pairs.map(([person1, person2]) => ({
+						round: roundId,
+						person1,
+						person2,
+					})),
+				),
+			),
+		deleteByRoundId: (roundId: number) =>
+			db((client) => client.delete(Pairings).where(eq(Pairings.round, roundId))),
+		updatePairsByRoundId: (
+			roundId: number,
+			pairs: (readonly [PersonId, PersonId])[],
+		) =>
+			db((client) =>
+				client.batch([
+					client.delete(Pairings).where(eq(Pairings.round, roundId)),
 					client.insert(Pairings).values(
 						pairs.map(([person1, person2]) => ({
 							round: roundId,
 							person1,
 							person2,
 						})),
-					) /* 
-					.returning() */,
+					),
+				]),
 			),
-		deleteByRoundId: (roundId: number) =>
-			db((client) => client.delete(Pairings).where(eq(Pairings.round, roundId))),
 	}
 })
 

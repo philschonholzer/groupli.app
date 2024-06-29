@@ -8,8 +8,8 @@ const make = (db: D1Database) => {
 
 	const query = <A>(body: (client: typeof dBclient) => Promise<A>) => {
 		const sqlStatement = (
-			body(dBclient) as unknown as { toSQL: () => { sql: string } }
-		).toSQL().sql
+			body(dBclient) as unknown as { toSQL?: () => { sql: string } }
+		).toSQL?.().sql
 
 		return Effect.tryPromise<A, DbError>({
 			try: () => body(dBclient),

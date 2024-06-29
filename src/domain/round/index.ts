@@ -47,8 +47,10 @@ export const shufflePairings = (groupId: Group.GroupId) =>
 		)
 
 		if (Option.isSome(pairings)) {
-			yield* Pairing.Repository.deleteByRoundId(round.value.id)
-			yield* Pairing.Repository.insert(round.value.id, pairings.value)
+			yield* Pairing.Repository.updatePairsByRoundId(
+				round.value.id,
+				pairings.value,
+			)
 		}
 
 		return { round: round.value, pairings }
@@ -68,13 +70,12 @@ export const removePersonFromRound = (
 		if (Option.isSome(personInRound)) {
 			yield* Repository.removePersonFromRound(personInRound.value.id)
 		}
-		yield* Pairing.Repository.deleteByRoundId(roundId)
 		const pairings = yield* Pairing.pairPersons(
 			groupId,
 			personsInRound.map((p) => p.person),
 		)
 		if (Option.isSome(pairings)) {
-			yield* Pairing.Repository.insert(roundId, pairings.value)
+			yield* Pairing.Repository.updatePairsByRoundId(roundId, pairings.value)
 		}
 		return pairings
 	})
