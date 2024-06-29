@@ -467,11 +467,10 @@ describe('Pairing', () => {
 			))
 		test('pairs group of 2 people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const result = yield* pairPersons(
+				const actual = yield* pairPersons(
 					Group.GroupId('groupId'),
 					[1, 2].map(PersonId),
-				)
-				const actual = yield* result
+				).pipe(Effect.flatten)
 
 				assert.deepStrictEqual(actual, [[1, 2]])
 
@@ -497,11 +496,10 @@ describe('Pairing', () => {
 			))
 		test('pairs group of 3 people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const result = yield* pairPersons(
+				const actual = yield* pairPersons(
 					Group.GroupId('groupId'),
 					[1, 2, 3].map(PersonId),
-				)
-				const actual = yield* result
+				).pipe(Effect.flatten)
 
 				assert.equal(
 					actual.some(
@@ -531,11 +529,10 @@ describe('Pairing', () => {
 			))
 		test('pairs group of 4 people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const result = yield* pairPersons(
+				const actual = yield* pairPersons(
 					Group.GroupId('groupId'),
 					[1, 2, 3, 4].map(PersonId),
-				)
-				const actual = yield* result
+				).pipe(Effect.flatten)
 
 				assert.equal(
 					actual.some(([p1, p2]) => p1 === 2 && p2 === 3),
@@ -563,11 +560,10 @@ describe('Pairing', () => {
 			))
 		test('pairs group of 5 people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const result = yield* pairPersons(
+				const actual = yield* pairPersons(
 					Group.GroupId('groupId'),
 					[1, 2, 3, 4, 5].map(PersonId),
-				)
-				const actual = yield* result
+				).pipe(Effect.flatten)
 
 				assert.equal(
 					actual.some(
@@ -597,11 +593,10 @@ describe('Pairing', () => {
 			))
 		test('pairs group of 6 people with respect to historical data', () =>
 			Effect.gen(function* () {
-				const result = yield* pairPersons(
+				const actual = yield* pairPersons(
 					Group.GroupId('groupId'),
 					[1, 2, 3, 4, 5, 6].map(PersonId),
-				)
-				const actual = yield* result
+				).pipe(Effect.flatten)
 
 				assert.equal(
 					actual.some(

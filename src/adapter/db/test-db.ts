@@ -1,13 +1,12 @@
-import Database from 'better-sqlite3'
-import { drizzle } from 'drizzle-orm/better-sqlite3'
-import { migrate } from 'drizzle-orm/better-sqlite3/migrator'
+import { createClient } from '@libsql/client'
+import { drizzle } from 'drizzle-orm/libsql'
+import { migrate } from 'drizzle-orm/libsql/migrator'
 import { Effect, Layer } from 'effect'
 import { Db, DbError } from '.'
 import * as schema from './schema'
 
 const make = Effect.gen(function* () {
-	const db = new Database(':memory:')
-	db.pragma('journal_mode = WAL')
+	const db = createClient({ url: ':memory:' })
 	const dBclient = drizzle(db, { schema: schema })
 
 	migrate(dBclient, { migrationsFolder: 'drizzle' })

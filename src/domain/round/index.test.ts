@@ -1,9 +1,9 @@
 import assert from 'node:assert'
 import { describe, it } from 'node:test'
 import { runWithTestDb } from '@/adapter/effect/test-runner'
-import { Console, Effect } from 'effect'
-import { Group, Person, Round } from '..'
+import { Clock, Console, Duration, Effect } from 'effect'
 import { NotEnoughPersonsForRound } from '.'
+import { Group, Person, Round } from '..'
 
 describe('Round domain', () => {
 	it('should start a new round', () =>
@@ -36,6 +36,30 @@ describe('Round domain', () => {
 			assert.equal(error instanceof NotEnoughPersonsForRound, true)
 		}).pipe(
 			Effect.catchAll((e) => Console.log('Error', e)),
+			runWithTestDb,
+		))
+
+	it('should shuffle a round', () =>
+		Effect.gen(function* () {
+			const group = yield* Group.newGroup
+			const jenny = yield* Person.add('Jenny', group.id)
+			const carl = yield* Person.add('Carl', group.id)
+			const lisa = yield* Person.add('Lisa', group.id)
+			const karen = yield* Person.add('Karen', group.id)
+			const members = [jenny.id, carl.id, lisa.id, karen.id]
+
+			const firstRound = yield* Round.newRound(group.id, members)
+
+			yield* Clock.sleep(Duration.seconds(5))
+
+			yield* Round.newRound(group.id, members)
+
+			yield* Round.shufflePairings(group.id).pipe(
+				Effect.tap((_) => assert.notDeepEqual(firstRound.pairings, _.pairings)),
+				Effect.repeatN(6),
+			)
+		}).pipe(
+			Effect.catchAll((e) => Console.log('Error', e, e.cause)),
 			runWithTestDb,
 		))
 })
