@@ -1,8 +1,10 @@
 import Link from 'next/link'
 
 import Image from 'next/image'
+import originStoryImage from './origin-story-of-groupli-to-pair-people/origin-story-groupli-pair-people.svg'
 import discoverGroupliImage from './discover-groupli-the-app-for-group-pairings/discover-groupli.svg'
 import groupliIsLiveImage from './groupli-for-group-pairings-is-live/groupli-is-live.svg'
+import { BlogTeaser } from './blog-teaser'
 
 export default function Component() {
 	return (
@@ -18,57 +20,26 @@ export default function Component() {
 				</div>
 			</div>
 			<div className="mx-auto grid gap-8 py-12 lg:grid-cols-2">
-				<div className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
-					<Link
-						href="/blog/discover-groupli-the-app-for-group-pairings"
-						className="absolute inset-0 z-10"
-						prefetch={false}
-					>
-						<span className="sr-only">Read more</span>
-					</Link>
-					<Image
-						src={discoverGroupliImage}
-						alt="Blog post thumbnail"
-						width={450}
-						height={300}
-						className="h-48 w-full object-cover transition-all duration-300 group-hover:scale-105"
-					/>
-					<div className="bg-white p-6 dark:bg-gray-950">
-						<h2 className="text-xl font-bold line-clamp-2">
-							Discover Groupli: The App for Group Pairings
-						</h2>
-						<p className="mt-2 text-gray-500 line-clamp-3 dark:text-gray-400">
-							Have you ever wished for more variety in your group interactions? Whether
-							you're part of a team, a study group, or a social circle, Groupli is here
-							to transform your experience.
-						</p>
-					</div>
-				</div>
-				<div className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
-					<Link
-						href="/blog/groupli-for-group-pairings-is-live"
-						className="absolute inset-0 z-10"
-						prefetch={false}
-					>
-						<span className="sr-only">Read more</span>
-					</Link>
-					<Image
-						src={groupliIsLiveImage}
-						alt="Blog post thumbnail"
-						width={450}
-						height={300}
-						className="h-48 w-full object-cover transition-all duration-300 group-hover:scale-105"
-					/>
-					<div className="bg-white p-6 dark:bg-gray-950">
-						<h2 className="text-xl font-bold line-clamp-2">
-							Groupli.app is now live!
-						</h2>
-						<p className="mt-2 text-gray-500 line-clamp-3 dark:text-gray-400">
-							Announcing the launch of Groupli, an innovative app designed to mix up
-							your groups in fresh and engaging ways every round.
-						</p>
-					</div>
-				</div>
+				<BlogTeaser
+					slug="origin-story-of-groupli-to-pair-people"
+					image={{ src: originStoryImage, alt: 'Blog post thumbnail' }}
+					title="Origin Story of Groupli: The App to Pair People"
+					teaser="Find out how Groupli came about and the story behind the app."
+				/>
+
+				<BlogTeaser
+					slug="discover-groupli-the-app-for-group-pairings"
+					image={{ src: discoverGroupliImage, alt: 'Blog post thumbnail' }}
+					title="Discover Groupli: The App for Group Pairings"
+					teaser="Discover Groupli, the app that helps you pair people in your group."
+				/>
+
+				<BlogTeaser
+					slug="groupli-for-group-pairings-is-live"
+					image={{ src: groupliIsLiveImage, alt: 'Blog post thumbnail' }}
+					title="Groupli for Group Pairings Is Live"
+					teaser="Groupli is now live! Find out how you can use the app to pair people in your group."
+				/>
 			</div>
 		</div>
 	)
