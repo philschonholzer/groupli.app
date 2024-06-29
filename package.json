@@ -49,9 +49,10 @@
 		"temporal-polyfill": "^0.2.5"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.7.3",
+		"@biomejs/biome": "1.8.2",
 		"@cloudflare/next-on-pages": "^1.11.3",
 		"@cloudflare/workers-types": "^4.20240529.0",
+		"@playwright/test": "^1.44.1",
 		"@tailwindcss/typography": "^0.5.13",
 		"@types/better-sqlite3": "^7.6.10",
 		"@types/mdx": "^2.0.13",

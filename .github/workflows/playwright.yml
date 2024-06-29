@@ -1,0 +1,49 @@
+name: Playwright Tests
+on:
+  push:
+    branches:
+      - '**'
+      - '!main'
+jobs:
+  e2e:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: pnpm install --dev
+
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: Await CF Pages
+        uses: WalshyDev/cf-pages-await@v1.3.1
+        id: cloudflare_preview_url
+        with:
+          apiToken:  ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          project: 'groupify'
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          commitHash: ${{ steps.push-changes.outputs.commit-hash }}
+
+      - name: Run Playwright tests
+        run: pnpm exec playwright test
+        env:
+          BASE_URL: ${{ steps.cloudflare_preview_url.outputs.url }}
+
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

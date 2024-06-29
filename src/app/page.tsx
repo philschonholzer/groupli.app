@@ -41,7 +41,7 @@ export default function Home() {
 						</p>
 						<div className="mt-10 flex items-center justify-center gap-x-6">
 							<form action={newGroup}>
-								<Button type="submit">Get stared</Button>
+								<Button type="submit">Get started</Button>
 							</form>
 							<Link
 								href="/blog/discover-groupli-the-app-for-group-pairings"
