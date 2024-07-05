@@ -8,7 +8,7 @@
 		"start": "next start",
 		"lint": "biome check src",
 		"check": "tsc --noEmit",
-		"test": "zsh -c 'tsx --watch --test src/**/*.test.ts'",
+		"test": "tsx --watch --test $(find src -name '*.test.ts')",
 		"pages:build": "pnpm next-on-pages",
 		"preview": "pnpm pages:build && wrangler pages dev",
 		"cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts",
