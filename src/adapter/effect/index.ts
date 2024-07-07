@@ -1,7 +1,7 @@
 import { Schema } from '@effect/schema'
-import { Effect, type Exit } from 'effect'
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
+import { Cause, type ConfigError, Effect, Exit } from 'effect'
+import { notFound, redirect } from 'next/navigation'
+import { NextNotFound, NextRedirect } from '../next'
 import type { MainLive } from './main-layer'
 import runtime from './runtime'
 
@@ -19,22 +19,37 @@ export const run = <A>(effect: Effect.Effect<A, never, MainLive>) => {
 export const runAction =
 	<A, E, SI extends object>(props: {
 		schema: Schema.Schema<Exit.Exit<A, E>, SI, never>
-		revalidatePath?: (result: A) => string
-		redirect?: (result: A) => string
 	}) =>
-	(effect: Effect.Effect<A, E, MainLive>) => {
+	(effect: Effect.Effect<A, E | NextRedirect | NextNotFound, MainLive>) => {
+		const parse = Schema.encodeUnknownSync(props.schema)
 		return effect
-			.pipe(Effect.withSpan('action'), runtime.runPromiseExit)
+			.pipe(
+				Effect.withSpan('action'),
+				Effect.catchAllDefect((defect) => {
+					console.error(defect)
+					return Effect.die(defect)
+				}),
+				runtime.runPromiseExit,
+			)
 			.then((result) => {
-				const parsed = Schema.encodeUnknownSync(props.schema)(result)
-				if ('_tag' in parsed && parsed._tag === 'Success' && 'value' in result) {
-					if (props.redirect) {
-						redirect(props.redirect(result.value))
-					}
-					if (props.revalidatePath) {
-						revalidatePath(props.revalidatePath(result.value))
-					}
-				}
+				handleRedirectOrNotFound(result)
+				const parsed = parse(result)
 				return parsed as typeof parsed | { readonly _tag: 'Idle' }
 			})
 	}
+
+function handleRedirectOrNotFound<A, E>(
+	result: Exit.Exit<
+		A,
+		ConfigError.ConfigError | NextNotFound | NextRedirect | E
+	>,
+) {
+	if (Exit.isFailure(result) && Cause.isFailType(result.cause)) {
+		if (result.cause.error instanceof NextRedirect) {
+			redirect(result.cause.error.path)
+		}
+		if (result.cause.error instanceof NextNotFound) {
+			notFound()
+		}
+	}
+}

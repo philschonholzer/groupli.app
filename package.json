@@ -11,6 +11,7 @@
 		"test": "tsx --test $(find src -name '*.test.ts')",
 		"test:w": "tsx --watch --test $(find src -name '*.test.ts')",
 		"test:o": "tsx --watch --test --test-only $(find src -name '*.test.ts')",
+		"playwright": "playwright test",
 		"pages:build": "pnpm next-on-pages",
 		"preview": "pnpm pages:build && wrangler pages dev",
 		"cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts",

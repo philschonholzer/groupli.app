@@ -2,6 +2,7 @@
 
 import { DbError } from '@/adapter/db'
 import { runAction } from '@/adapter/effect'
+import { Next } from '@/adapter/next'
 import { Group, Person, Round } from '@/domain'
 import { Schema } from '@effect/schema'
 import { Effect } from 'effect'
@@ -24,11 +25,11 @@ export async function addPerson(
 			return yield* new NameRequired({ message: 'The name is required... 😅' })
 		}
 		yield* Person.add(name, groupId)
+		yield* Next.revalidatePath(`/group/${groupId}`)
 	}).pipe(
 		Effect.withSpan('addPerson'),
 		runAction({
 			schema: AddPersonSchema,
-			revalidatePath: () => `/group/${groupId}`,
 		}),
 	)
 }
@@ -39,11 +40,11 @@ export async function newRound(
 ) {
 	return Effect.gen(function* () {
 		const { round } = yield* Round.newRound(groupId, personIds)
+		yield* Next.revalidatePath(`/group/${groupId}`)
 		return round
 	}).pipe(
 		Effect.withSpan('newRound'),
 		runAction({
-			revalidatePath: () => `/group/${groupId}`,
 			schema: Schema.Exit({
 				success: Schema.Struct({
 					id: Schema.Number,
@@ -59,11 +60,11 @@ export async function newRound(
 export async function shufflePairingsInRound(groupId: Group.GroupId) {
 	return Effect.gen(function* () {
 		const { round } = yield* Round.shufflePairings(groupId)
+		yield* Next.revalidatePath(`/group/${groupId}`)
 		return round
 	}).pipe(
 		Effect.withSpan('newRound'),
 		runAction({
-			revalidatePath: () => `/group/${groupId}`,
 			schema: Schema.Exit({
 				success: Schema.Struct({
 					id: Schema.Number,
@@ -89,11 +90,11 @@ export async function renameGroup(
 	return Effect.gen(function* () {
 		const newName = formData.get('name') as string | null
 		yield* Group.rename(groupId, newName)
+		yield* Next.revalidatePath(`/group/${groupId}`)
 	}).pipe(
 		Effect.withSpan('renameGroup'),
 		runAction({
 			schema: UpdateNameSchema,
-			revalidatePath: () => `/group/${groupId}`,
 		}),
 	)
 }
@@ -111,11 +112,11 @@ export const renamePerson = async (
 	Effect.gen(function* () {
 		const newName = formData.get('name') as string | null
 		yield* Person.rename(personId, newName)
+		yield* Next.revalidatePath(`/group/${groupId}`)
 	}).pipe(
 		Effect.withSpan('renamePerson'),
 		runAction({
 			schema: RenamePersonSchema,
-			revalidatePath: () => `/group/${groupId}`,
 		}),
 	)
 
@@ -125,6 +126,7 @@ export const removePerson = async (
 ) =>
 	Effect.gen(function* () {
 		yield* Person.removePerson(personId)
+		yield* Next.revalidatePath(`/group/${groupId}`)
 	}).pipe(
 		Effect.withSpan('removePerson'),
 		runAction({
@@ -132,7 +134,6 @@ export const removePerson = async (
 				success: Schema.Void,
 				failure: Schema.Union(DbError),
 			}),
-			revalidatePath: () => `/group/${groupId}`,
 		}),
 	)
 
@@ -142,6 +143,7 @@ export async function removePersonFromRound(
 	groupId: Group.GroupId,
 ) {
 	return Round.removePersonFromRound(personId, roundId, groupId).pipe(
+		Effect.tap(() => Next.revalidatePath(`/group/${groupId}`)),
 		Effect.withSpan('removePersonFromRound'),
 		runAction({
 			schema: Schema.Exit({
@@ -150,7 +152,6 @@ export async function removePersonFromRound(
 				),
 				failure: Schema.Union(DbError, Round.NotEnoughPersonsForRound),
 			}),
-			revalidatePath: () => `/group/${groupId}`,
 		}),
 	)
 }
