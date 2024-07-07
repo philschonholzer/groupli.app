@@ -1,4 +1,4 @@
-import { Clock, type Duration, Effect } from 'effect'
+import { Clock, Duration, Effect } from 'effect'
 
 const ClockSymbolKey = 'groupli/Clock'
 
@@ -11,8 +11,10 @@ class ClockImpl implements Clock.Clock {
 
 	readonly internalClock = Clock.make()
 
+	millis = 1718969790332
+
 	unsafeCurrentTimeMillis(): number {
-		return 1718969790332
+		return this.millis
 	}
 
 	unsafeCurrentTimeNanos(): bigint {
@@ -32,7 +34,9 @@ class ClockImpl implements Clock.Clock {
 	}
 
 	sleep(duration: Duration.Duration): Effect.Effect<void> {
-		throw new Error('Method not implemented.')
+		return Effect.sync(() => {
+			this.millis += Duration.toMillis(duration)
+		})
 	}
 }
 
