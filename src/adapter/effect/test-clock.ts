@@ -34,8 +34,9 @@ class ClockImpl implements Clock.Clock {
 	}
 
 	sleep(duration: Duration.Duration): Effect.Effect<void> {
-		this.millis += Duration.toMillis(duration)
-		return Effect.void
+		return Effect.sync(() => {
+			this.millis += Duration.toMillis(duration)
+		})
 	}
 }
 

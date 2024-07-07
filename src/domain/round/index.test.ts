@@ -62,4 +62,43 @@ describe('Round domain', () => {
 			Effect.catchAll((e) => Console.log('Error', e, e.cause)),
 			runWithTestDb,
 		))
+
+	describe('removePersonFromRound', () => {
+		it('should remove a person from a round', () =>
+			Effect.gen(function* () {
+				const group = yield* Group.newGroup
+				const jenny = yield* Person.add('Jenny', group.id)
+				const carl = yield* Person.add('Carl', group.id)
+				const petra = yield* Person.add('Petra', group.id)
+
+				assertRemovedCorrectPerson(group.id, jenny.id, [
+					jenny.id,
+					carl.id,
+					petra.id,
+				]).pipe(Effect.repeatN(6))
+			}).pipe(
+				Effect.catchAll((e) => Console.log('Error', e)),
+				runWithTestDb,
+			))
+	})
 })
+
+const assertRemovedCorrectPerson = (
+	groupId: Group.GroupId,
+	jennyId: Person.PersonId,
+	personIds: Person.PersonId[],
+) =>
+	Effect.gen(function* () {
+		yield* Clock.sleep(1000)
+		const round = yield* Round.newRound(groupId, personIds)
+		yield* Round.removePersonFromRound(jennyId, round.round.id, groupId)
+
+		const rounds = yield* Round.Repository.getSixByGroupId(groupId)
+
+		assert.equal(
+			rounds[0].pairings
+				.flatMap((s) => [s.person1.id, s.person2.id])
+				.includes(jennyId),
+			false,
+		)
+	})

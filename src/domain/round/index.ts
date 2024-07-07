@@ -70,9 +70,11 @@ export const removePersonFromRound = (
 		if (Option.isSome(personInRound)) {
 			yield* Repository.removePersonFromRound(personInRound.value.id)
 		}
+
+		const personsLeftInRound = yield* Repository.getPersonsInRound(roundId)
 		const pairings = yield* Pairing.pairPersons(
 			groupId,
-			personsInRound.map((p) => p.person),
+			personsLeftInRound.map((p) => p.person),
 		)
 		if (Option.isSome(pairings)) {
 			yield* Pairing.Repository.updatePairsByRoundId(roundId, pairings.value)
