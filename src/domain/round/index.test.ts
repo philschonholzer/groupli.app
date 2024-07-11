@@ -71,7 +71,7 @@ describe('Round domain', () => {
 				const carl = yield* Person.add('Carl', group.id)
 				const petra = yield* Person.add('Petra', group.id)
 
-				assertRemovedCorrectPerson(group.id, jenny.id, [
+				yield* assertRemovedCorrectPerson(group.id, jenny.id, [
 					jenny.id,
 					carl.id,
 					petra.id,
@@ -85,20 +85,20 @@ describe('Round domain', () => {
 
 const assertRemovedCorrectPerson = (
 	groupId: Group.GroupId,
-	jennyId: Person.PersonId,
+	personToRemoveId: Person.PersonId,
 	personIds: Person.PersonId[],
 ) =>
 	Effect.gen(function* () {
 		yield* Clock.sleep(1000)
 		const round = yield* Round.newRound(groupId, personIds)
-		yield* Round.removePersonFromRound(jennyId, round.round.id, groupId)
+		yield* Round.removePersonFromRound(personToRemoveId, round.round.id, groupId)
 
 		const rounds = yield* Round.Repository.getSixByGroupId(groupId)
 
 		assert.equal(
 			rounds[0].pairings
 				.flatMap((s) => [s.person1.id, s.person2.id])
-				.includes(jennyId),
+				.includes(personToRemoveId),
 			false,
 		)
 	})
