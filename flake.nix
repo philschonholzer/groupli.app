@@ -1,7 +1,7 @@
 {
   description = "Dev deps and grafana with tempo service for tracing";
   inputs = {
-    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1.*.tar.gz";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
     systems.url = "github:nix-systems/default";
     process-compose-flake.url = "github:Platonic-Systems/process-compose-flake";
@@ -46,7 +46,7 @@
         devShells.default = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [ 
             pkgs.nodejs
-            pkgs.nodePackages.pnpm
+            pkgs.pnpm
            ];
         };
       };
