@@ -1,7 +1,7 @@
-import { Effect } from 'effect'
 import { NodeSdk } from '@effect/opentelemetry'
-import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
+import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
+import { Effect } from 'effect'
 
 // Function to simulate a task with possible subtasks
 const task = (

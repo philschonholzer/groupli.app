@@ -41,7 +41,7 @@ export default async function GroupPage(props: {
 		const redo = shufflePairingsInRound.bind(null, props.params.id)
 
 		return (
-			<div className="py-16 space-y-12">
+			<div className="space-y-12 py-16">
 				<header>
 					<GroupNameForm group={group.value} />
 				</header>
@@ -54,8 +54,8 @@ export default async function GroupPage(props: {
 					</ul>
 					<AddPerson groupId={props.params.id} />
 					{persons.length < 3 && rounds.length === 0 && (
-						<div className="border rounded p-4 space-y-4 shadow-sm h-24 grid place-items-center border-border/50">
-							<div className="text-foreground/40 space-y-1 text-center">
+						<div className="grid h-24 place-items-center space-y-4 rounded border border-border/50 p-4 shadow-sm">
+							<div className="space-y-1 text-center text-foreground/40">
 								<p className=" font-semibold">Add members</p>
 								<p className="">Add at least 3 members to your group.</p>
 							</div>
@@ -75,11 +75,11 @@ export default async function GroupPage(props: {
 						</header>
 						<ul className="space-y-4">
 							{rounds.map((round, roundIndex) => (
-								<li key={round.id} className="border rounded p-4 space-y-4 shadow-sm">
+								<li key={round.id} className="space-y-4 rounded border p-4 shadow-sm">
 									<header className="flex justify-between">
 										<H3>
 											{new Date(round.at).toLocaleDateString('sv-SE')}{' '}
-											<span className="text-sm text-foreground/20">#{round.id}</span>
+											<span className="text-foreground/20 text-sm">#{round.id}</span>
 										</H3>
 										{roundIndex === 0 && (
 											<div className="flex gap-2">
@@ -92,7 +92,7 @@ export default async function GroupPage(props: {
 											</div>
 										)}
 									</header>
-									<ul className="flex flex-wrap gap-x-2 gap-y-6 justify-center pb-4">
+									<ul className="flex flex-wrap justify-center gap-x-2 gap-y-6 pb-4">
 										{round.pairings.map((pair, pairIndex) => (
 											<li key={pair.id} className="">
 												<ul
@@ -106,7 +106,7 @@ export default async function GroupPage(props: {
 												>
 													<PersonCard
 														person={pair.person1}
-														className="-rotate-12 translate-x-3 z-10"
+														className="-rotate-12 z-10 translate-x-3"
 													>
 														{roundIndex === 0 && (
 															<SkipRoundButton
@@ -118,7 +118,7 @@ export default async function GroupPage(props: {
 													</PersonCard>
 													<PersonCard
 														person={pair.person2}
-														className="rotate-6 -translate-x-3"
+														className="-translate-x-3 rotate-6"
 													>
 														{roundIndex === 0 && (
 															<SkipRoundButton
@@ -135,8 +135,8 @@ export default async function GroupPage(props: {
 								</li>
 							))}
 							{rounds.length === 0 && (
-								<li className="border rounded p-4 space-y-4 shadow-sm h-52 grid place-items-center border-border/50">
-									<div className="text-foreground/40 space-y-1 text-center">
+								<li className="grid h-52 place-items-center space-y-4 rounded border border-border/50 p-4 shadow-sm">
+									<div className="space-y-1 text-center text-foreground/40">
 										<p className=" font-semibold">Nothing going on yet...</p>
 										<p className="">Start your first round to pair your group members.</p>
 									</div>

@@ -24,11 +24,11 @@ export default function PersonPill(props: {
 			<PopoverTrigger asChild>
 				<li
 					key={props.person.id}
-					className="py-2 px-4 border rounded-full hover:ring cursor-pointer data-[state=open]:ring-2 transition-all"
+					className="cursor-pointer rounded-full border px-4 py-2 transition-all hover:ring data-[state=open]:ring-2"
 				>
-					<p className="overflow-ellipsis overflow-hidden">
+					<p className="overflow-hidden overflow-ellipsis">
 						{props.person.name}{' '}
-						<span className="opacity-20 text-xs">#{props.person.id}</span>
+						<span className="text-xs opacity-20">#{props.person.id}</span>
 					</p>
 				</li>
 			</PopoverTrigger>
@@ -47,7 +47,7 @@ export default function PersonPill(props: {
 							<Button type="submit">Save</Button>
 						</div>
 						{state._tag === 'Failure' && state.cause._tag === 'Fail' && (
-							<div className="text-red-600 pt-1">
+							<div className="pt-1 text-red-600">
 								{state.cause.error._tag === 'NameRequiredError' &&
 									state.cause.error.message}
 							</div>

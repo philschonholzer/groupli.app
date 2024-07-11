@@ -45,7 +45,7 @@ function Form(props: {
 				</PopoverAnchor>
 				<PopoverContent align="end" className="bg-red-500 p-6">
 					{state._tag === 'Failure' && (
-						<div className="text-white text-sm">
+						<div className="text-sm text-white">
 							{state.cause._tag === 'Fail' ? (
 								<>
 									{pipe(

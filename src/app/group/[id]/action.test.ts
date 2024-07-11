@@ -1,7 +1,7 @@
-import { Schema } from '@effect/schema'
-import { Effect } from 'effect'
 import assert from 'node:assert'
 import { describe, it } from 'node:test'
+import { Schema } from '@effect/schema'
+import { Effect } from 'effect'
 
 class NameRequired extends Schema.TaggedError<NameRequired>()(
 	'NameRequiredError',

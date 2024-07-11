@@ -6,7 +6,7 @@ export default function Wrapper(props: {
 	meta: Partial<Metadata>
 }) {
 	return (
-		<div className="max-w-xl mx-auto">
+		<div className="mx-auto max-w-xl">
 			<Header
 				title={props.meta.title?.toString() ?? 'Ohne Titel'}
 				lead={props.meta.description ?? 'Ohne Beschreibung'}

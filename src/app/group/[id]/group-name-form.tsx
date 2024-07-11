@@ -22,7 +22,7 @@ export default function GroupNameForm(props: {
 				<label className="flex items-center gap-4">
 					Group
 					<Input
-						className="text-4xl lg:text-5xl h-20"
+						className="h-20 text-4xl lg:text-5xl"
 						type="text"
 						name="name"
 						id=""
@@ -31,7 +31,7 @@ export default function GroupNameForm(props: {
 					{state._tag === 'Success' && <Check className="text-primary" />}
 				</label>
 			</H1>
-			<div className="text-right pt-2 text-red-600">
+			<div className="pt-2 text-right text-red-600">
 				{state._tag === 'Failure' && state.cause._tag === 'Fail' && (
 					<p>
 						{state.cause.error._tag === 'NameRequiredError' &&

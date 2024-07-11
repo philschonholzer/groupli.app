@@ -1,17 +1,14 @@
-import Link from 'next/link'
-
-import Image from 'next/image'
-import originStoryImage from './origin-story-of-groupli-to-pair-people/origin-story-groupli-pair-people.svg'
+import { BlogTeaser } from './blog-teaser'
 import discoverGroupliImage from './discover-groupli-the-app-for-group-pairings/discover-groupli.svg'
 import groupliIsLiveImage from './groupli-for-group-pairings-is-live/groupli-is-live.svg'
-import { BlogTeaser } from './blog-teaser'
+import originStoryImage from './origin-story-of-groupli-to-pair-people/origin-story-groupli-pair-people.svg'
 
 export default function Component() {
 	return (
 		<div className="w-full py-12 md:py-24 lg:py-32">
 			<div className="flex flex-col items-center justify-center space-y-4 text-center">
 				<div className="space-y-2">
-					<h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">
+					<h1 className="font-bold text-4xl tracking-tighter sm:text-5xl">
 						Latest Blog Posts
 					</h1>
 					<p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">

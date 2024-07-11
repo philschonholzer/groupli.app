@@ -34,12 +34,12 @@ export function SkipRoundButton(props: {
 	}, [state, toast])
 
 	return (
-		<div className="text-right -mb-1 -mr-2 hidden group-hover:block">
+		<div className="-mb-1 -mr-2 hidden text-right group-hover:block">
 			<form className="inline-block" action={action}>
 				<Button
 					variant="ghost"
 					type="submit"
-					className="text-primary text-xs flex gap-2 px-2 h-8"
+					className="flex h-8 gap-2 px-2 text-primary text-xs"
 					title="Skip Round"
 				>
 					Skip <CircleArrowOutUpRight strokeWidth={3} size={14} />

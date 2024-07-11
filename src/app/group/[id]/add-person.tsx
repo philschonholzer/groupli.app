@@ -3,11 +3,11 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import type { GroupId } from '@/domain/group'
 import { pipe } from 'effect'
 import { valueTags } from 'effect/Match'
 import { useActionState, useRef } from 'react'
 import { addPerson } from './action'
-import type { GroupId } from '@/domain/group'
 
 export default function AddPerson(props: {
 	groupId: GroupId
@@ -37,7 +37,7 @@ export default function AddPerson(props: {
 			</div>
 			{state._tag === 'Failure' &&
 				(state.cause._tag === 'Fail' ? (
-					<div className="text-red-600 pt-1">
+					<div className="pt-1 text-red-600">
 						{pipe(
 							state.cause.error,
 							valueTags({
@@ -55,7 +55,7 @@ export default function AddPerson(props: {
 						)}
 					</div>
 				) : (
-					<p className="text-red-600 pt-1">
+					<p className="pt-1 text-red-600">
 						Upps, something went wrong. Please try again later.{' '}
 						{JSON.stringify(state.cause)}
 					</p>

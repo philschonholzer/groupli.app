@@ -1,9 +1,9 @@
 import { Clock, Effect, Layer } from 'effect'
 import { DbTest } from '../db/test-db'
 import { Uuid } from '../uuid'
-import { make } from './test-clock'
-import { RepositoryLive } from './repository-layer'
 import type { MainLive } from './main-layer'
+import { RepositoryLive } from './repository-layer'
+import { make } from './test-clock'
 
 Clock.make()
 export function runWithTestDb<A, I>(effect: Effect.Effect<A, I, MainLive>) {

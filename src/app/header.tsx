@@ -14,7 +14,7 @@ export default function Header() {
 			>
 				<div className="flex lg:flex-1">
 					<Link href={'/'}>
-						<span className="text-primary font-bold">Groupli!</span>
+						<span className="font-bold text-primary">Groupli!</span>
 					</Link>
 				</div>
 				<div className="flex lg:hidden">
@@ -30,7 +30,7 @@ export default function Header() {
 						<a
 							key={item.name}
 							href={item.href}
-							className="text-sm font-semibold leading-6 text-gray-900"
+							className="font-semibold text-gray-900 text-sm leading-6"
 						>
 							{item.name}
 						</a>
@@ -39,7 +39,7 @@ export default function Header() {
 				<div className="hidden lg:flex lg:flex-1 lg:justify-end">
 					<Link
 						href="/login"
-						className="text-sm font-semibold leading-6 text-gray-900"
+						className="font-semibold text-gray-900 text-sm leading-6"
 					>
 						Log in <span aria-hidden="true">&rarr;</span>
 					</Link>

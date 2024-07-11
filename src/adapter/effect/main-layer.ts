@@ -1,11 +1,11 @@
 import { getRequestContext } from '@cloudflare/next-on-pages'
+import type { Resource } from '@effect/opentelemetry/Resource'
 import { Layer } from 'effect'
 import { ConfigLive } from '../config'
 import { Db } from '../db'
 import { TracingLive } from '../tracing'
 import { Uuid } from '../uuid'
 import { RepositoryLive } from './repository-layer'
-import type { Resource } from '@effect/opentelemetry/Resource'
 
 const DbLive = Layer.suspend(() => Db.Live(getRequestContext().env.DB))
 

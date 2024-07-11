@@ -11,7 +11,7 @@ export function BlogTeaser(props: {
 	teaser: string
 }) {
 	return (
-		<div className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+		<div className="group relative overflow-hidden rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl">
 			<Link
 				href={`/blog/${props.slug}`}
 				className="absolute inset-0 z-10"
@@ -27,8 +27,8 @@ export function BlogTeaser(props: {
 				className="h-48 w-full object-cover transition-all duration-300 group-hover:scale-105"
 			/>
 			<div className="bg-white p-6 dark:bg-gray-950">
-				<h2 className="text-xl font-bold line-clamp-2">{props.title}</h2>
-				<p className="mt-2 text-gray-500 line-clamp-3 dark:text-gray-400">
+				<h2 className="line-clamp-2 font-bold text-xl">{props.title}</h2>
+				<p className="mt-2 line-clamp-3 text-gray-500 dark:text-gray-400">
 					{props.teaser}
 				</p>
 			</div>
