@@ -24,4 +24,4 @@ const make = Effect.gen(function* () {
 })
 
 // @ts-ignore
-export const DbTest = Layer.effect(Db, make)
+export const InMemoryDb = Layer.effect(Db, make)

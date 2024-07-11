@@ -13,7 +13,7 @@ export class Uuid extends Effect.Tag('@adapter/uuid')<
 	{ id: (size: number) => Effect.Effect<UuidString> }
 >() {
 	static Live = Layer.succeed(this, make)
-	static Test = Layer.succeed(this, {
+	static Stub = Layer.succeed(this, {
 		id: () => Effect.sync(() => 'test-uuid') as Effect.Effect<UuidString>,
 	})
 }

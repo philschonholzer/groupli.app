@@ -7,7 +7,7 @@ const makeCacheImpl = Effect.gen(function* () {
 		isRevalidated: Effect.succeed(false),
 	}
 })
-const makeCacheTestImpl = Effect.gen(function* () {
+const makeCacheStub = Effect.gen(function* () {
 	const ref = yield* Ref.make({ isRevalidated: false })
 	return {
 		revalidatePath: (path: string) =>
@@ -21,5 +21,5 @@ export class NextCache extends Effect.Tag('@dep/next')<
 	Effect.Effect.Success<typeof makeCacheImpl>
 >() {
 	static Live = Layer.effect(this, makeCacheImpl)
-	static Test = Layer.effect(this, makeCacheTestImpl)
+	static Stub = Layer.effect(this, makeCacheStub)
 }

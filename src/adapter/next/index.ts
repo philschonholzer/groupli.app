@@ -27,5 +27,7 @@ export class Next extends Effect.Tag('@adapter/next')<
 	Effect.Effect.Success<typeof make>
 >() {
 	static Live = Layer.effect(this, make).pipe(Layer.provide(NextCache.Live))
-	static Test = Layer.effect(this, make).pipe(Layer.provideMerge(NextCache.Test))
+	static Nullable = Layer.effect(this, make).pipe(
+		Layer.provideMerge(NextCache.Stub),
+	)
 }
