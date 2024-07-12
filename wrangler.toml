@@ -9,7 +9,7 @@ pages_build_output_dir = ".vercel/output/static"
 binding = "DB"                                       # i.e. available in your Worker on env.DB
 database_name = "stag-d1-groupify"
 database_id = "eec6e894-3346-48a6-a363-a09b26c3276b"
-
+migrations_dir = "drizzle" 
 
 # This is a production environment
 [env.production]
