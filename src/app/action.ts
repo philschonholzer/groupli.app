@@ -10,7 +10,7 @@ export async function newGroup() {
 		return 'Hi'
 	}).pipe(
 		Effect.withSpan('newGroup'),
-		// Effect.provide(TracingLive),
+		Effect.provide(TracingLive),
 		runtime.runPromise,
 	)
 }
