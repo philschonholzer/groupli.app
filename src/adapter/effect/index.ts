@@ -2,6 +2,7 @@ import { Schema } from '@effect/schema'
 import { Cause, type ConfigError, Effect, Exit } from 'effect'
 import { notFound, redirect } from 'next/navigation'
 import { NextNotFound, NextRedirect } from '../next'
+import { TracingLive } from '../tracing'
 import type { MainLive } from './main-layer'
 import runtime from './runtime'
 
@@ -12,6 +13,7 @@ export const run = <A>(effect: Effect.Effect<A, never, MainLive>) => {
 			console.error(defect)
 			return Effect.die(defect)
 		}),
+		Effect.provide(TracingLive),
 		runtime.runPromise,
 	)
 }
@@ -29,6 +31,7 @@ export const runAction =
 					console.error(defect)
 					return Effect.die(defect)
 				}),
+				Effect.provide(TracingLive),
 				runtime.runPromiseExit,
 			)
 			.then((result) => {

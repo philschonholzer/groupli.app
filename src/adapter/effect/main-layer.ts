@@ -4,13 +4,12 @@ import { Layer } from 'effect'
 import { ConfigLive } from '../config'
 import { Db } from '../db'
 import { Next } from '../next'
-import { TracingLive } from '../tracing'
 import { Uuid } from '../uuid'
 import { RepositoryLive } from './repository-layer'
 
 const DbLive = Layer.suspend(() => Db.Live(getRequestContext().env.DB))
 
-const AdapterLive = Layer.mergeAll(TracingLive, Uuid.Live, Next.Live).pipe(
+const AdapterLive = Layer.mergeAll(Uuid.Live, Next.Live).pipe(
 	Layer.provide(ConfigLive),
 )
 
