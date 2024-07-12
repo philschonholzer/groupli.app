@@ -22,9 +22,7 @@ export default function RootLayout({
 			<body
 				className={`${fontFamily.className} container mx-auto my-12 max-w-3xl`}
 			>
-				<Header />
 				<main>{children}</main>
-				<Toaster />
 			</body>
 		</html>
 	)
