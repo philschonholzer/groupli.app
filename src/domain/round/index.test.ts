@@ -2,7 +2,7 @@ import assert from 'node:assert'
 import { describe, it } from 'node:test'
 import { runWithInMemoryDb } from '@/adapter/effect/run-with-in-memory-db'
 import { Uuid } from '@/adapter/uuid'
-import { Clock, Console, Duration, Effect } from 'effect'
+import { Clock, Console, Duration, Effect, TestClock } from 'effect'
 import { NotEnoughPersonsForRound } from '.'
 import { Group, Person, Round } from '..'
 
@@ -19,7 +19,7 @@ describe('Round domain', () => {
 					value: [[1, 2]],
 				},
 				round: {
-					at: '2024-06-21T11:36:30.332Z',
+					at: '1970-01-01T00:00:00.000Z',
 					group: 'test-uuid-0',
 					id: 1,
 				},
@@ -51,7 +51,7 @@ describe('Round domain', () => {
 
 			const firstRound = yield* Round.newRound(group.id, members)
 
-			yield* Clock.sleep(Duration.seconds(5))
+			yield* TestClock.adjust('1 minute')
 
 			yield* Round.newRound(group.id, members)
 
@@ -75,7 +75,7 @@ describe('Round domain', () => {
 
 			const firstRound = yield* Round.newRound(group.id, members)
 
-			yield* Clock.sleep(Duration.seconds(5))
+			yield* TestClock.adjust('5 seconds')
 
 			yield* createSecondGroup
 
@@ -114,7 +114,7 @@ const assertRemovedCorrectPerson = (
 	personIds: Person.PersonId[],
 ) =>
 	Effect.gen(function* () {
-		yield* Clock.sleep(1000)
+		yield* TestClock.adjust('1 second')
 		const round = yield* Round.newRound(groupId, personIds)
 		yield* Round.removePersonFromRound(personToRemoveId, round.round.id, groupId)
 
@@ -129,9 +129,6 @@ const assertRemovedCorrectPerson = (
 	})
 
 const createSecondGroup = Effect.gen(function* () {
-	const uuid = yield* Uuid.id(8)
-
-	yield* Console.log('New Group Id for second group', uuid)
 	const group2 = yield* Group.newGroup
 	const peter = yield* Person.add('Peter', group2.id)
 	const mona = yield* Person.add('Mona', group2.id)
