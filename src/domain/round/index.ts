@@ -1,18 +1,25 @@
 import { Schema } from '@effect/schema'
-import { Effect, Option } from 'effect'
+import { Brand, Effect, Option } from 'effect'
 import { type Group, Pairing, Person } from '..'
 import { Repository } from './repository'
 
 export * from './repository'
 
+export type RoundId = Brand.Branded<number, 'PersonId'>
+export const RoundId = Brand.nominal<RoundId>()
+
 export const Round = Schema.Struct({
-	id: Schema.Number,
+	id: Schema.Number.pipe(Schema.fromBrand(RoundId)),
 	group: Schema.String,
 	at: Schema.String,
+})
+
+export const RoundExtended = Schema.Struct({
+	...Round.fields,
 	persons: Schema.Array(Person.Person),
 	pairings: Schema.Array(Pairing.PairEntity),
 })
-export type Round = typeof Round.Type
+export type RoundExtended = typeof RoundExtended.Type
 
 export const newRound = (
 	groupId: Group.GroupId,
@@ -58,7 +65,7 @@ export const shufflePairings = (groupId: Group.GroupId) =>
 
 export const removePersonFromRound = (
 	personId: Person.PersonId,
-	roundId: number,
+	roundId: RoundId,
 	groupId: Group.GroupId,
 ) =>
 	Effect.gen(function* () {

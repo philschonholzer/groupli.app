@@ -1,6 +1,6 @@
 import assert from 'node:assert'
 import { describe, it } from 'node:test'
-import { runWithTestDb } from '@/adapter/effect/test-runner'
+import { runWithInMemoryDb } from '@/adapter/effect/test-runner'
 import { NameRequired } from '@/app/group/[id]/errors'
 import { Console, Effect } from 'effect'
 import { nanoid } from 'nanoid'
@@ -18,14 +18,14 @@ describe('Person', () => {
 			assert.equal(result.status, 'active')
 		}).pipe(
 			Effect.catchAll((e) => Console.log('Error', e, e.cause)),
-			runWithTestDb,
+			runWithInMemoryDb,
 		))
 	it('should allow to add 14 persons to a group', () =>
 		Effect.gen(function* () {
 			const group = yield* Group.newGroup
 			const person = yield* Person.add(nanoid(), group.id).pipe(Effect.repeatN(13))
 			assert.equal(person.id, 14)
-		}).pipe(runWithTestDb))
+		}).pipe(runWithInMemoryDb))
 	it('should not allow to add more than 14 persons to a group', () =>
 		Effect.gen(function* () {
 			const group = yield* Group.newGroup
@@ -36,7 +36,7 @@ describe('Person', () => {
 
 			assert.equal(error instanceof Person.TooManyPersonsInGroup, true)
 			assert.equal(error._tag, 'TooManyPersonsInGroup')
-		}).pipe(runWithTestDb))
+		}).pipe(runWithInMemoryDb))
 	it('should rename a person', () =>
 		Effect.gen(function* () {
 			const group = yield* Group.newGroup
@@ -45,7 +45,7 @@ describe('Person', () => {
 			const [result] = yield* Person.Repository.getByGroupId(group.id)
 
 			assert.equal(result.name, 'bar')
-		}).pipe(runWithTestDb))
+		}).pipe(runWithInMemoryDb))
 	it('should not rename a person with an empty name', () =>
 		Effect.gen(function* () {
 			const group = yield* Group.newGroup
@@ -53,7 +53,7 @@ describe('Person', () => {
 			const error = yield* Person.rename(person.id, '').pipe(Effect.flip)
 
 			assert.equal(error instanceof NameRequired, true)
-		}).pipe(runWithTestDb))
+		}).pipe(runWithInMemoryDb))
 	it('should remove a person', () =>
 		Effect.gen(function* () {
 			const group = yield* Group.newGroup
@@ -64,5 +64,5 @@ describe('Person', () => {
 			)
 
 			assert.equal(result.status, 'inactive')
-		}).pipe(runWithTestDb))
+		}).pipe(runWithInMemoryDb))
 })

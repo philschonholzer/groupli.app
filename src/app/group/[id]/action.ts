@@ -139,7 +139,7 @@ export const removePerson = async (
 
 export async function removePersonFromRound(
 	personId: Person.PersonId,
-	roundId: number,
+	roundId: Round.RoundId,
 	groupId: Group.GroupId,
 ) {
 	return Round.removePersonFromRound(personId, roundId, groupId).pipe(

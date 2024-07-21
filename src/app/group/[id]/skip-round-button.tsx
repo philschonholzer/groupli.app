@@ -2,16 +2,15 @@
 
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
-import type { GroupId } from '@/domain/group'
-import type { PersonId } from '@/domain/person'
+import type { Group, Person, Round } from '@/domain'
 import { CircleArrowOutUpRight } from 'lucide-react'
 import { useActionState, useEffect } from 'react'
 import { removePersonFromRound } from './action'
 
 export function SkipRoundButton(props: {
-	personId: PersonId
-	roundId: number
-	groupId: GroupId
+	personId: Person.PersonId
+	roundId: Round.RoundId
+	groupId: Group.GroupId
 }) {
 	const removePerson = removePersonFromRound.bind(
 		null,

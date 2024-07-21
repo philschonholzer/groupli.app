@@ -1,9 +1,9 @@
-import type { PersonId, Status } from '@/domain/person'
+import type { Group, Round, Person } from '@/domain'
 import { relations } from 'drizzle-orm'
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 export const Persons = sqliteTable('Persons', {
-	id: integer('Id').$type<PersonId>().primaryKey(),
+	id: integer('Id').$type<Person.PersonId>().primaryKey(),
 	name: text('Name').notNull(),
 	group: text('Group')
 		.notNull()
@@ -14,15 +14,13 @@ export const Persons = sqliteTable('Persons', {
 		.default('active'),
 })
 
-export type Person = typeof Persons.$inferSelect
-
 export const Groups = sqliteTable('Groups', {
-	id: text('Id').primaryKey(),
+	id: text('Id').$type<Group.GroupId>().primaryKey(),
 	name: text('Name').notNull(),
 })
 
 export const Rounds = sqliteTable('Rounds', {
-	id: integer('Id').primaryKey(),
+	id: integer('Id').$type<Round.RoundId>().primaryKey(),
 	at: text('At').notNull(),
 	group: text('Group')
 		.notNull()
@@ -36,10 +34,11 @@ export const roundsRelations = relations(Rounds, ({ one, many }) => ({
 export const PersonsInRounds = sqliteTable('PersonsInRounds', {
 	id: integer('Id').primaryKey(),
 	person: integer('Person')
-		.$type<PersonId>()
+		.$type<Person.PersonId>()
 		.notNull()
 		.references(() => Persons.id),
 	round: integer('Rounds')
+		.$type<Round.RoundId>()
 		.notNull()
 		.references(() => Rounds.id),
 })
@@ -61,14 +60,15 @@ export const personsInRoundsRelations = relations(
 export const Pairings = sqliteTable('Pairings', {
 	id: integer('Id').primaryKey(),
 	person1: integer('Person1')
-		.$type<PersonId>()
+		.$type<Person.PersonId>()
 		.notNull()
 		.references(() => Persons.id),
 	person2: integer('Person2')
-		.$type<PersonId>()
+		.$type<Person.PersonId>()
 		.notNull()
 		.references(() => Persons.id),
 	round: integer('Round')
+		.$type<Round.RoundId>()
 		.notNull()
 		.references(() => Rounds.id),
 })

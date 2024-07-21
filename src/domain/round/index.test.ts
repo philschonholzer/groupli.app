@@ -1,6 +1,7 @@
 import assert from 'node:assert'
 import { describe, it } from 'node:test'
-import { runWithTestDb } from '@/adapter/effect/test-runner'
+import { runWithInMemoryDb } from '@/adapter/effect/test-runner'
+import { Uuid } from '@/adapter/uuid'
 import { Clock, Console, Duration, Effect } from 'effect'
 import { NotEnoughPersonsForRound } from '.'
 import { Group, Person, Round } from '..'
@@ -19,13 +20,13 @@ describe('Round domain', () => {
 				},
 				round: {
 					at: '2024-06-21T11:36:30.332Z',
-					group: 'test-uuid',
+					group: 'test-uuid-0',
 					id: 1,
 				},
 			})
 		}).pipe(
 			Effect.catchAll((e) => Console.log('Error', e, e.cause)),
-			runWithTestDb,
+			runWithInMemoryDb,
 		))
 	it('should not allow a new round with less then 2 persons', () =>
 		Effect.gen(function* () {
@@ -36,7 +37,7 @@ describe('Round domain', () => {
 			assert.equal(error instanceof NotEnoughPersonsForRound, true)
 		}).pipe(
 			Effect.catchAll((e) => Console.log('Error', e)),
-			runWithTestDb,
+			runWithInMemoryDb,
 		))
 
 	it('should shuffle a round', () =>
@@ -60,7 +61,31 @@ describe('Round domain', () => {
 			)
 		}).pipe(
 			Effect.catchAll((e) => Console.log('Error', e, e.cause)),
-			runWithTestDb,
+			runWithInMemoryDb,
+		))
+
+	it('should shuffle the correct round', () =>
+		Effect.gen(function* () {
+			const group = yield* Group.newGroup
+			const jenny = yield* Person.add('Jenny', group.id)
+			const carl = yield* Person.add('Carl', group.id)
+			const lisa = yield* Person.add('Lisa', group.id)
+			const karen = yield* Person.add('Karen', group.id)
+			const members = [jenny.id, carl.id, lisa.id, karen.id]
+
+			const firstRound = yield* Round.newRound(group.id, members)
+
+			yield* Clock.sleep(Duration.seconds(5))
+
+			yield* createSecondGroup
+
+			yield* Round.shufflePairings(group.id).pipe(
+				Effect.tap((_) => assert.equal(firstRound.round.group, _.round.group)),
+				Effect.repeatN(6),
+			)
+		}).pipe(
+			Effect.catchAll((e) => Console.log('Error', e, e.cause)),
+			runWithInMemoryDb,
 		))
 
 	describe('removePersonFromRound', () => {
@@ -78,7 +103,7 @@ describe('Round domain', () => {
 				]).pipe(Effect.repeatN(6))
 			}).pipe(
 				Effect.catchAll((e) => Console.log('Error', e)),
-				runWithTestDb,
+				runWithInMemoryDb,
 			))
 	})
 })
@@ -102,3 +127,16 @@ const assertRemovedCorrectPerson = (
 			false,
 		)
 	})
+
+const createSecondGroup = Effect.gen(function* () {
+	const uuid = yield* Uuid.id(8)
+
+	yield* Console.log('New Group Id for second group', uuid)
+	const group2 = yield* Group.newGroup
+	const peter = yield* Person.add('Peter', group2.id)
+	const mona = yield* Person.add('Mona', group2.id)
+	const jester = yield* Person.add('Jester', group2.id)
+	const members2 = [peter.id, mona.id, jester.id]
+
+	yield* Round.newRound(group2.id, members2)
+})

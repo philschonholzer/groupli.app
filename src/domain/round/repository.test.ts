@@ -1,27 +1,23 @@
 import assert from 'node:assert'
-import { describe, test } from 'node:test'
+import { describe, it, test } from 'node:test'
 
 import { Db } from '@/adapter/db'
 import { Effect, Layer } from 'effect'
 import { Group, Round } from '..'
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-function runTest(data: any) {
+function runWithStubDb(data: any) {
 	return <A, I>(effect: Effect.Effect<A, I, Round.Repository>) => {
 		const query = () => Effect.succeed(data)
-		const DbTest = Layer.succeed(Db, Db.of(query))
-		const RoundRepository = Round.Repository.Live.pipe(Layer.provide(DbTest))
+		const DbStub = Layer.succeed(Db, Db.of(query))
+		const RoundRepository = Round.Repository.Live.pipe(Layer.provide(DbStub))
 
-		return effect.pipe(
-			Effect.provide(RoundRepository),
-			(a) => a,
-			Effect.runPromise,
-		)
+		return effect.pipe(Effect.provide(RoundRepository), Effect.runPromise)
 	}
 }
 
 describe('Round Repository', () => {
-	test('get 10 Last Rounds By Group Id With Pairings', () =>
+	it('should return last rounds but not the current one', () =>
 		Effect.gen(function* () {
 			const actual = yield* Round.Repository.get10LastByGroupIdWithPairings(
 				Group.GroupId('groupId'),
@@ -54,13 +50,15 @@ describe('Round Repository', () => {
 			]
 			assert.deepStrictEqual(actual, expected)
 		}).pipe(
-			runTest([
+			runWithStubDb([
+				// this should NOT be returned
 				{
 					id: 82,
 					at: '2024-05-24T06:58:46.933Z',
 					group: '4HWfqZAd',
 					pairings: [],
 				},
+				// this should be returned
 				{
 					id: 81,
 					at: '2024-05-19T06:56:38.355Z',

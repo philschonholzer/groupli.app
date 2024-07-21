@@ -2,7 +2,7 @@ import { Db } from '@/adapter/db'
 import { Pairings } from '@/adapter/db/schema'
 import { eq } from 'drizzle-orm'
 import { Effect, Layer } from 'effect'
-import type { PersonId } from '../person'
+import type { Person, Round } from '..'
 
 const make = Effect.gen(function* () {
 	const db = yield* Db
@@ -10,8 +10,8 @@ const make = Effect.gen(function* () {
 	return {
 		getAll: db((client) => client.query.Pairings.findMany()),
 		insert: (
-			roundId: number,
-			pairs: (readonly [person1: PersonId, person2: PersonId])[],
+			roundId: Round.RoundId,
+			pairs: (readonly [person1: Person.PersonId, person2: Person.PersonId])[],
 		) =>
 			db((client) =>
 				client.insert(Pairings).values(
@@ -22,11 +22,11 @@ const make = Effect.gen(function* () {
 					})),
 				),
 			),
-		deleteByRoundId: (roundId: number) =>
+		deleteByRoundId: (roundId: Round.RoundId) =>
 			db((client) => client.delete(Pairings).where(eq(Pairings.round, roundId))),
 		updatePairsByRoundId: (
-			roundId: number,
-			pairs: (readonly [PersonId, PersonId])[],
+			roundId: Round.RoundId,
+			pairs: (readonly [Person.PersonId, Person.PersonId])[],
 		) =>
 			db((client) =>
 				client.batch([

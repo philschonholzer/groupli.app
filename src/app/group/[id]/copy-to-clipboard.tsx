@@ -7,7 +7,9 @@ import { set } from 'effect/Record'
 import { Check, ClipboardCopy } from 'lucide-react'
 import { useState } from 'react'
 
-export default function CopyToClipboard(props: { round: Round.Round }) {
+export default function CopyToClipboard(props: {
+	round: Round.RoundExtended
+}) {
 	const [copied, setCopied] = useState(false)
 	const text = props.round.pairings
 		.map(({ person1, person2 }) => [person1.name, person2.name].join(' - '))
@@ -30,9 +32,6 @@ export default function CopyToClipboard(props: { round: Round.Round }) {
 				data-copied={copied}
 				className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all data-[copied=true]:rotate-0 data-[copied=true]:scale-100"
 			/>
-			{/* <Sun className="dark:-rotate-90 h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:scale-0" />
-      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" /> */}
-
 			<span className="sr-only">Copy to clipboard</span>
 		</Button>
 	)

@@ -19,7 +19,7 @@ const make = Effect.gen(function* () {
 
 	const decodePerson = Schema.decodeSync(Person.Person)
 	const decodePair = Schema.decodeSync(Pairing.PairEntity)
-	const decode = Schema.decodeSync(Round.Round)
+	const decodeExtended = Schema.decodeSync(Round.RoundExtended)
 
 	return {
 		getAll: db((client) => client.query.Rounds.findMany()),
@@ -37,7 +37,7 @@ const make = Effect.gen(function* () {
 			).pipe(
 				Effect.map(
 					A.map((a) =>
-						decode({
+						decodeExtended({
 							id: a.id,
 							at: a.at,
 							group: a.group,
@@ -64,17 +64,20 @@ const make = Effect.gen(function* () {
 		},
 		findLast: (groupId: Group.GroupId) =>
 			db((client) =>
-				client.query.Rounds.findFirst({ orderBy: desc(Rounds.at) }),
+				client.query.Rounds.findFirst({
+					where: eq(Rounds.group, groupId),
+					orderBy: desc(Rounds.at),
+				}),
 			).pipe(Effect.map(Option.fromNullable)),
 		newRound: (groupId: Group.GroupId, persons: Person.PersonId[]) =>
 			Effect.gen(function* () {
 				const now = yield* Clock.currentTimeMillis
-				const [round] = yield* db((client) =>
+				const round = yield* db((client) =>
 					client
 						.insert(Rounds)
 						.values({ group: groupId, at: new Date(now).toISOString() })
 						.returning(),
-				)
+				).pipe(Effect.map(A.head), Effect.map(Option.getOrThrow))
 				if (persons.length === 0) {
 					return { round, personsInRound: [] }
 				}
@@ -87,7 +90,7 @@ const make = Effect.gen(function* () {
 				)
 				return { round, personsInRound }
 			}),
-		addPersonToRound: (personId: Person.PersonId, roundId: number) =>
+		addPersonToRound: (personId: Person.PersonId, roundId: Round.RoundId) =>
 			db((client) =>
 				client
 					.insert(PersonsInRounds)
@@ -100,14 +103,14 @@ const make = Effect.gen(function* () {
 					.delete(PersonsInRounds)
 					.where(eq(PersonsInRounds.id, personInRoundId)),
 			),
-		findPersonInRound: (personId: Person.PersonId, roundId: number) =>
+		findPersonInRound: (personId: Person.PersonId, roundId: Round.RoundId) =>
 			db((client) =>
 				client.query.PersonsInRounds.findFirst({
 					where: (p, { and, eq }) =>
 						and(eq(p.person, personId), eq(p.round, roundId)),
 				}),
 			).pipe(Effect.map(Option.fromNullable)),
-		getPersonsInRound: (roundId: number) =>
+		getPersonsInRound: (roundId: Round.RoundId) =>
 			db((client) =>
 				client.query.PersonsInRounds.findMany({
 					where: eq(PersonsInRounds.round, roundId),
