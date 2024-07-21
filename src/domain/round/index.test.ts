@@ -1,6 +1,6 @@
 import assert from 'node:assert'
 import { describe, it } from 'node:test'
-import { runWithInMemoryDb } from '@/adapter/effect/test-runner'
+import { runWithInMemoryDb } from '@/adapter/effect/run-with-in-memory-db'
 import { Uuid } from '@/adapter/uuid'
 import { Clock, Console, Duration, Effect } from 'effect'
 import { NotEnoughPersonsForRound } from '.'

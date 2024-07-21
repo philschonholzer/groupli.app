@@ -1,6 +1,6 @@
 import assert from 'node:assert'
 import { describe, it } from 'node:test'
-import { runWithInMemoryDb } from '@/adapter/effect/test-runner'
+import { runWithInMemoryDb } from '@/adapter/effect/run-with-in-memory-db'
 import { NameRequired } from '@/app/group/[id]/errors'
 import { Console, Effect } from 'effect'
 import { nanoid } from 'nanoid'

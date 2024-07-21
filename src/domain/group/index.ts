@@ -1,9 +1,7 @@
-import { Db } from '@/adapter/db'
 import { Uuid } from '@/adapter/uuid'
 import { NameRequired } from '@/app/group/[id]/errors'
 import { Schema } from '@effect/schema'
-import { Brand, Console, Effect } from 'effect'
-import { nanoid } from 'nanoid'
+import { Brand, Effect } from 'effect'
 import { Repository } from './repository'
 
 export * from './repository'
