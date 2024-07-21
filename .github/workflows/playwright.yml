@@ -40,6 +40,7 @@ jobs:
         run: pnpm exec playwright test
         env:
           BASE_URL: ${{ steps.cloudflare_preview_url.outputs.url }}
+          E2E_GROUP_TEST_ID: ${{ secrets.E2E_GROUP_TEST_ID }}
 
       - uses: actions/upload-artifact@v4
         if: failure()
