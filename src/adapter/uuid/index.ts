@@ -1,17 +1,8 @@
-import { Brand, Context, Effect, Layer } from 'effect'
-import { nanoid } from 'nanoid'
+import { Brand, Effect, Layer } from 'effect'
+import { NanoId } from './nanoid'
 
 type UuidString = Brand.Branded<string, 'UuidString'>
 const UuidString = Brand.nominal<UuidString>()
-
-const makeNanoidMock = () => {
-	let count = 0
-	return () => `test-uuid-${count++}`
-}
-export class NanoId extends Context.Tag('NanoId')<NanoId, typeof nanoid>() {
-	static Live = Layer.succeed(this, nanoid)
-	static Stub = Layer.succeed(this, makeNanoidMock())
-}
 
 const make = Effect.gen(function* () {
 	const nanoid = yield* NanoId
