@@ -1,7 +1,7 @@
 import assert from 'node:assert'
-import { describe, it } from 'node:test'
 import { Schema } from '@effect/schema'
 import { Effect } from 'effect'
+import { describe, it } from 'vitest'
 import { Next, NextNotFound, NextRedirect } from '../next'
 import { NextCache } from '../next/next-cache'
 

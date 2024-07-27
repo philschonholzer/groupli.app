@@ -1,5 +1,5 @@
 import assert from 'node:assert'
-import { describe, it, test } from 'node:test'
+import { describe, it } from 'vitest'
 
 import { Db } from '@/adapter/db'
 import { Effect, Layer } from 'effect'
@@ -10,7 +10,7 @@ function runWithStubDb(data: any) {
 	return <A, I>(effect: Effect.Effect<A, I, Round.Repository>) => {
 		const query = () => Effect.succeed(data)
 		const DbStub = Layer.succeed(Db, Db.of(query))
-		const RoundRepository = Round.Repository.Live.pipe(Layer.provide(DbStub))
+		const RoundRepository = Round.Repository.Layer.pipe(Layer.provide(DbStub))
 
 		return effect.pipe(Effect.provide(RoundRepository), Effect.runPromise)
 	}

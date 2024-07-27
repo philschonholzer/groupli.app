@@ -1,5 +1,5 @@
 import assert from 'node:assert'
-import { describe, test } from 'node:test'
+import { describe, test } from 'vitest'
 
 import { Db } from '@/adapter/db'
 import { Effect, Layer, Option } from 'effect'
@@ -17,8 +17,8 @@ function runTest(data: any) {
 		const query = () => Effect.succeed(data)
 		const DbTest = Layer.succeed(Db, Db.of(query))
 		const repoLayer = Layer.mergeAll(
-			Round.Repository.Live,
-			Pairing.Repository.Live,
+			Round.Repository.Layer,
+			Pairing.Repository.Layer,
 		)
 		const RoundRepository = repoLayer.pipe(Layer.provide(DbTest))
 

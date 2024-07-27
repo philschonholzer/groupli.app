@@ -1,8 +1,7 @@
 import assert from 'node:assert'
-import { describe, it } from 'node:test'
 import { runWithInMemoryDb } from '@/adapter/effect/run-with-in-memory-db'
-import { Uuid } from '@/adapter/uuid'
-import { Clock, Console, Duration, Effect, TestClock } from 'effect'
+import { Console, Effect, TestClock } from 'effect'
+import { describe, it } from 'vitest'
 import { NotEnoughPersonsForRound } from '.'
 import { Group, Person, Round } from '..'
 

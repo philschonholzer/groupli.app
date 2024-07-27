@@ -48,7 +48,7 @@ export default function AddPerson(props: {
 								DbError: (error) => (
 									<p>
 										The Database is not available. Try again later.{' '}
-										{JSON.stringify(error.cause)}
+										{JSON.stringify(error.message)}
 									</p>
 								),
 							}),

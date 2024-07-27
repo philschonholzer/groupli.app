@@ -1,9 +1,9 @@
 import assert from 'node:assert'
-import { describe, it } from 'node:test'
 import { runWithInMemoryDb } from '@/adapter/effect/run-with-in-memory-db'
 import { NameRequired } from '@/app/group/[id]/errors'
-import { Console, Effect } from 'effect'
+import { Effect } from 'effect'
 import { nanoid } from 'nanoid'
+import { describe, it } from 'vitest'
 import { Group, Person } from '..'
 
 describe('Person', () => {
@@ -16,10 +16,7 @@ describe('Person', () => {
 			assert.deepStrictEqual(person, result)
 			assert.equal(result.name, 'foo')
 			assert.equal(result.status, 'active')
-		}).pipe(
-			Effect.catchAll((e) => Console.log('Error', e, e.cause)),
-			runWithInMemoryDb,
-		))
+		}).pipe(runWithInMemoryDb))
 	it('should allow to add 14 persons to a group', () =>
 		Effect.gen(function* () {
 			const group = yield* Group.newGroup

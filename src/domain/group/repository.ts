@@ -31,5 +31,5 @@ export class Repository extends Effect.Tag('@domain/group/repository')<
 	Repository,
 	Effect.Effect.Success<typeof make>
 >() {
-	static Live = Layer.effect(this, make)
+	static Layer = Layer.effect(this, make)
 }
