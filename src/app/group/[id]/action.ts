@@ -5,8 +5,8 @@ import { runAction } from '@/adapter/effect'
 import { Next } from '@/adapter/next'
 import { Group, Person, Round } from '@/domain'
 import { Schema } from '@effect/schema'
-import { Effect } from 'effect'
-import { NameRequired } from './errors'
+import { Effect, flow } from 'effect'
+import { NameRequired, SchemaError } from './errors'
 
 type AddIdleTag<T> = Schema.Schema.Encoded<T> | { _tag: 'Idle' }
 const AddPersonSchema = Schema.Exit({
@@ -101,24 +101,39 @@ export async function renameGroup(
 
 const RenamePersonSchema = Schema.Exit({
 	success: Schema.Void,
-	failure: Schema.Union(DbError, NameRequired),
+	failure: Schema.Union(DbError, NameRequired, SchemaError),
 })
-export const renamePerson = async (
-	personId: Person.PersonId,
-	groupId: Group.GroupId,
-	prevState: AddIdleTag<typeof RenamePersonSchema>,
-	formData: FormData,
-) =>
-	Effect.gen(function* () {
-		const newName = formData.get('name') as string | null
-		yield* Person.rename(personId, newName)
-		yield* Next.revalidatePath(`/group/${groupId}`)
-	}).pipe(
-		Effect.withSpan('renamePerson'),
-		runAction({
-			schema: RenamePersonSchema,
+
+export const renamePerson = flow(
+	(
+		personId: Person.PersonId,
+		groupId: Group.GroupId,
+		prevState: AddIdleTag<typeof RenamePersonSchema>,
+		formData: FormData,
+	) => ({
+		personId: Schema.decode(Schema.typeSchema(Person.Person.fields.id))(personId),
+		groupId: Schema.decode(Group.Group.fields.id)(groupId),
+		formData: Schema.decodeUnknown(Schema.Struct({ name: Schema.String }))(
+			Object.fromEntries(formData.entries()),
+		),
+	}),
+	Effect.all,
+	Effect.flatMap(({ personId, groupId, formData }) =>
+		Effect.gen(function* () {
+			yield* Person.rename(personId, formData.name)
+			yield* Next.revalidatePath(`/group/${groupId}`)
 		}),
-	)
+	),
+
+	(a) => a,
+	Effect.withSpan('renamePerson'),
+	Effect.catchTag('ParseError', (e) =>
+		Effect.fail(new SchemaError({ message: e.message })),
+	),
+	runAction({
+		schema: RenamePersonSchema,
+	}),
+)
 
 export const removePerson = async (
 	personId: Person.PersonId,
