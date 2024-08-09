@@ -11,6 +11,8 @@ import { H3 } from '@/components/ui/typography'
 import type { Group, Person } from '@/domain'
 import { useActionState } from 'react'
 import { removePerson, renamePerson } from './action'
+import { pipe } from 'effect'
+import { valueTags } from 'effect/Match'
 
 export default function PersonPill(props: {
 	person: Person.Person
@@ -48,8 +50,19 @@ export default function PersonPill(props: {
 						</div>
 						{state._tag === 'Failure' && state.cause._tag === 'Fail' && (
 							<div className="pt-1 text-red-600">
-								{state.cause.error._tag === 'NameRequiredError' &&
-									state.cause.error.message}
+								{pipe(
+									state.cause.error,
+									valueTags({
+										NameRequiredError: (error) => <p>{error.message}</p>,
+										SchemaError: (error) => <p>Falsche Eingaben: {error.message}</p>,
+										DbError: (error) => (
+											<p>
+												The Database is not available. Try again later.{' '}
+												{JSON.stringify(error.message)}
+											</p>
+										),
+									}),
+								)}
 							</div>
 						)}
 					</form>

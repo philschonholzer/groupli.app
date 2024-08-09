@@ -1,4 +1,6 @@
+import { SchemaError } from '@/app/group/[id]/errors'
 import { Schema } from '@effect/schema'
+import type { ParseError } from '@effect/schema/ParseResult'
 import { Cause, type ConfigError, Effect, Exit } from 'effect'
 import { notFound, redirect } from 'next/navigation'
 import { NextNotFound, NextRedirect } from '../next'
@@ -22,10 +24,19 @@ export const runAction =
 	<A, E, SI extends object>(props: {
 		schema: Schema.Schema<Exit.Exit<A, E>, SI, never>
 	}) =>
-	(effect: Effect.Effect<A, E | NextRedirect | NextNotFound, MainLive>) => {
+	(
+		effect: Effect.Effect<
+			A,
+			E | NextRedirect | NextNotFound | ParseError,
+			MainLive
+		>,
+	) => {
 		const parse = Schema.encodeUnknownSync(props.schema)
 		return effect
 			.pipe(
+				Effect.catchTag('ParseError', (e) => {
+					return Effect.fail(new SchemaError({ message: e.message }))
+				}),
 				Effect.withSpan('action'),
 				Effect.catchAllDefect((defect) => {
 					console.error(defect)

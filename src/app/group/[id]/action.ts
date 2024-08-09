@@ -5,13 +5,14 @@ import { runAction } from '@/adapter/effect'
 import { Next } from '@/adapter/next'
 import { Group, Person, Round } from '@/domain'
 import { Schema } from '@effect/schema'
-import { Effect, flow } from 'effect'
+import { Effect } from 'effect'
 import { NameRequired, SchemaError } from './errors'
 
 type AddIdleTag<T> = Schema.Schema.Encoded<T> | { _tag: 'Idle' }
 const AddPersonSchema = Schema.Exit({
 	success: Schema.Undefined,
 	failure: Schema.Union(DbError, NameRequired, Person.TooManyPersonsInGroup),
+	defect: Schema.Void,
 })
 
 export async function addPerson(
@@ -52,6 +53,7 @@ export async function newRound(
 					group: Schema.String,
 				}),
 				failure: Schema.Union(DbError, Round.NotEnoughPersonsForRound),
+				defect: Schema.Void,
 			}),
 		}),
 	)
@@ -72,6 +74,7 @@ export async function shufflePairingsInRound(groupId: Group.GroupId) {
 					group: Schema.String,
 				}),
 				failure: Schema.Union(DbError, Round.NoRoundFound),
+				defect: Schema.Void,
 			}),
 		}),
 	)
@@ -80,6 +83,7 @@ export async function shufflePairingsInRound(groupId: Group.GroupId) {
 const UpdateNameSchema = Schema.Exit({
 	success: Schema.Void,
 	failure: Schema.Union(DbError, NameRequired),
+	defect: Schema.Void,
 })
 
 export async function renameGroup(
@@ -99,41 +103,100 @@ export async function renameGroup(
 	)
 }
 
-const RenamePersonSchema = Schema.Exit({
-	success: Schema.Void,
-	failure: Schema.Union(DbError, NameRequired, SchemaError),
+const FormDataFromSelf = Schema.instanceOf(FormData).annotations({
+	identifier: 'FormDataFromSelf',
 })
 
-export const renamePerson = flow(
-	(
-		personId: Person.PersonId,
-		groupId: Group.GroupId,
-		prevState: AddIdleTag<typeof RenamePersonSchema>,
-		formData: FormData,
-	) => ({
-		personId: Schema.decode(Schema.typeSchema(Person.Person.fields.id))(personId),
-		groupId: Schema.decode(Group.Group.fields.id)(groupId),
-		formData: Schema.decodeUnknown(Schema.Struct({ name: Schema.String }))(
-			Object.fromEntries(formData.entries()),
-		),
-	}),
-	Effect.all,
-	Effect.flatMap(({ personId, groupId, formData }) =>
+const RecordFromFormData = Schema.transform(
+	FormDataFromSelf,
+	Schema.Record({ key: Schema.String, value: Schema.String }),
+	{
+		strict: false,
+		decode: (formData) => Object.fromEntries(formData.entries()),
+		encode: (data) => {
+			const formData = new FormData()
+			for (const [key, value] of Object.entries(data)) {
+				formData.append(key, value)
+			}
+			return formData
+		},
+	},
+).annotations({ identifier: 'RecordFromFormData' })
+
+const FormDataSchema = <A, I extends Record<string, string>, R>(
+	schema: Schema.Schema<A, I, R>,
+) => Schema.compose(RecordFromFormData, schema, { strict: false })
+
+const RenamePersonInputSchema = Schema.Struct({
+	personId: Person.Person.fields.id,
+	groupId: Group.Group.fields.id,
+	formData: FormDataSchema(
+		Schema.Struct({
+			name: Schema.String.annotations({
+				title: 'Member',
+				message: () => 'not a string',
+			}).pipe(Schema.minLength(2, { message: (s) => `${s.actual} is too short` })),
+		}),
+	),
+}).annotations({ title: 'Rename Person' })
+const RenamePersonOutputSchema = Schema.Exit({
+	success: Schema.Void,
+	failure: Schema.Union(DbError, NameRequired, SchemaError),
+	defect: Schema.Void,
+})
+
+const action =
+	<
+		S extends Schema.Schema.Any,
+		FA,
+		FB,
+		FC,
+		FD,
+		FE,
+		I extends
+			| [FA]
+			| [FA, FB]
+			| [FA, FB, FC]
+			| [FA, FB, FC, FD]
+			| [FA, FB, FC, FD, FE],
+	>(args: {
+		input: {
+			schema: S
+			transformer?: (...input: I) => Schema.Schema.Encoded<S>
+		}
+		logic: (input: Schema.Schema.Type<S>) => Effect.Effect<void, any, any> // TODO: void is not correct for other actions
+	}) =>
+	async (...initialValue: I) => {
+		const input = args.input.transformer
+			? args.input.transformer(...initialValue)
+			: initialValue
+
+		const result = Schema.decode(args.input.schema)(input).pipe(
+			Effect.flatMap(args.logic),
+			runAction({
+				schema: RenamePersonOutputSchema,
+			}),
+		)
+		return result
+	}
+
+const a = action({
+	input: {
+		schema: RenamePersonInputSchema,
+		transformer: (
+			personId: Person.PersonId,
+			groupId: Group.GroupId,
+			prevState: AddIdleTag<typeof RenamePersonOutputSchema>,
+			formData: FormData,
+		) => ({ personId, groupId, formData }),
+	},
+	logic: ({ personId, groupId, formData }) =>
 		Effect.gen(function* () {
 			yield* Person.rename(personId, formData.name)
 			yield* Next.revalidatePath(`/group/${groupId}`)
 		}),
-	),
-
-	(a) => a,
-	Effect.withSpan('renamePerson'),
-	Effect.catchTag('ParseError', (e) =>
-		Effect.fail(new SchemaError({ message: e.message })),
-	),
-	runAction({
-		schema: RenamePersonSchema,
-	}),
-)
+})
+export const renamePerson = a
 
 export const removePerson = async (
 	personId: Person.PersonId,
@@ -148,6 +211,7 @@ export const removePerson = async (
 			schema: Schema.Exit({
 				success: Schema.Void,
 				failure: Schema.Union(DbError),
+				defect: Schema.Void,
 			}),
 		}),
 	)
@@ -166,6 +230,7 @@ export async function removePersonFromRound(
 					Schema.Array(Schema.Tuple(Schema.Number, Schema.Number)),
 				),
 				failure: Schema.Union(DbError, Round.NotEnoughPersonsForRound),
+				defect: Schema.Void,
 			}),
 		}),
 	)
