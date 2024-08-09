@@ -200,7 +200,7 @@ const action =
 		>
 		output: SO
 	}) =>
-	async (...initialValue: I) => {
+	async (...initialValue: I): Promise<AddIdleTag<SO>> => {
 		const input = args.input.transformer
 			? args.input.transformer(...initialValue)
 			: initialValue
