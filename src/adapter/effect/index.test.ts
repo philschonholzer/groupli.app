@@ -42,6 +42,7 @@ describe('exit', () => {
 	const ExitState = Schema.Exit({
 		success: Schema.Void,
 		failure: FailureSchema,
+		defect: Schema.Void,
 	})
 
 	it('should return success', () => {
