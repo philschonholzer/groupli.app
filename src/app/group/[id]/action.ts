@@ -139,15 +139,42 @@ const RenamePersonInputSchema = Schema.Struct({
 		}),
 	),
 }).annotations({ title: 'Rename Person' })
+
 const RenamePersonOutputSchema = Schema.Exit({
 	success: Schema.Void,
 	failure: Schema.Union(DbError, NameRequired, SchemaError),
 	defect: Schema.Void,
 })
 
+type ExitSuccessValue<
+	A extends { _tag: 'Success'; value: O } | { _tag: 'Failure' },
+	O = unknown,
+> = Extract<A, { _tag: 'Success' }>['value']
+type ExitFailCause<
+	A extends
+		| { _tag: 'Success' }
+		| {
+				_tag: 'Failure'
+				cause: C
+		  },
+	C = unknown,
+> = Extract<A, { _tag: 'Failure' }>['cause']
+
+type CauseFail<
+	A extends
+		| { _tag: 'Fail'; error: E }
+		| { _tag: 'Empty' }
+		| { _tag: 'Die' }
+		| { _tag: 'Interrupt' }
+		| { _tag: 'Parallel' }
+		| { _tag: 'Sequential' },
+	E = unknown,
+> = Extract<A, { _tag: 'Fail' }>['error']
+
 const action =
 	<
-		S extends Schema.Schema.Any,
+		SI extends Schema.Schema.Any,
+		SO extends Schema.Schema.AnyNoContext,
 		FA,
 		FB,
 		FC,
@@ -161,10 +188,17 @@ const action =
 			| [FA, FB, FC, FD, FE],
 	>(args: {
 		input: {
-			schema: S
-			transformer?: (...input: I) => Schema.Schema.Encoded<S>
+			schema: SI
+			transformer?: (...input: I) => Schema.Schema.Encoded<SI>
 		}
-		logic: (input: Schema.Schema.Type<S>) => Effect.Effect<void, any, any> // TODO: void is not correct for other actions
+		logic: (
+			input: Schema.Schema.Type<SI>,
+		) => Effect.Effect<
+			ExitSuccessValue<Schema.Schema.Type<SO>>,
+			CauseFail<ExitFailCause<Schema.Schema.Type<SO>>>,
+			any
+		>
+		output: SO
 	}) =>
 	async (...initialValue: I) => {
 		const input = args.input.transformer
@@ -174,7 +208,7 @@ const action =
 		const result = Schema.decode(args.input.schema)(input).pipe(
 			Effect.flatMap(args.logic),
 			runAction({
-				schema: RenamePersonOutputSchema,
+				schema: args.output,
 			}),
 		)
 		return result
@@ -195,6 +229,7 @@ const a = action({
 			yield* Person.rename(personId, formData.name)
 			yield* Next.revalidatePath(`/group/${groupId}`)
 		}),
+	output: RenamePersonOutputSchema,
 })
 export const renamePerson = a
 
