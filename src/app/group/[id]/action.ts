@@ -81,7 +81,19 @@ export async function shufflePairingsInRound(groupId: Group.GroupId) {
 	)
 }
 
-const UpdateNameSchema = Schema.Exit({
+const UpdateNameInputSchema = Schema.Struct({
+	groupId: Group.Group.fields.id,
+	formData: FormDataSchema(
+		Schema.Struct({
+			name: Schema.String.annotations({
+				title: 'Group Name',
+				message: () => 'not a string',
+			}).pipe(Schema.minLength(2, { message: (s) => `${s.actual} is too short` })),
+		}),
+	),
+})
+
+const UpdateNameOutputSchema = Schema.Exit({
 	success: Schema.Void,
 	failure: Schema.Union(DbError, NameRequired),
 	defect: Schema.Void,
@@ -89,17 +101,20 @@ const UpdateNameSchema = Schema.Exit({
 
 export async function renameGroup(
 	groupId: Group.GroupId,
-	prevState: AddIdleTag<typeof UpdateNameSchema>,
+	prevState: AddIdleTag<typeof UpdateNameOutputSchema>,
 	formData: FormData,
 ) {
-	return Effect.gen(function* () {
-		const newName = formData.get('name') as string | null
-		yield* Group.rename(groupId, newName)
-		yield* Next.revalidatePath(`/group/${groupId}`)
-	}).pipe(
+	return Schema.decode(UpdateNameInputSchema)({ groupId, formData }).pipe(
+		Effect.flatMap(({ groupId, formData }) =>
+			Effect.gen(function* () {
+				const newName = formData.name
+				yield* Group.rename(groupId, newName)
+				yield* Next.revalidatePath(`/group/${groupId}`)
+			}),
+		),
 		Effect.withSpan('renameGroup'),
 		runAction({
-			schema: UpdateNameSchema,
+			schema: UpdateNameOutputSchema,
 		}),
 	)
 }
