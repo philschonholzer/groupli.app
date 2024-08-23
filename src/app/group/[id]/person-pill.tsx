@@ -70,7 +70,12 @@ export default function PersonPill(props: {
 				<hr />
 				<section>
 					<H3>Delete</H3>
-					<form action={removePerson.bind(null, props.person.id, props.groupId)}>
+					<form
+						action={removePerson.bind(null, {
+							personId: props.person.id,
+							groupId: props.groupId,
+						})}
+					>
 						<Button variant="destructive" type="submit">
 							Delete {props.person.name}
 						</Button>

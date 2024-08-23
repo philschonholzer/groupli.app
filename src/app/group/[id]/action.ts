@@ -4,6 +4,7 @@ import { DbError } from '@/adapter/db'
 import { runAction } from '@/adapter/effect'
 import { Next } from '@/adapter/next'
 import { Group, Person, Round } from '@/domain'
+import { FormDataSchema } from '@/lib/schema-helpers'
 import { Schema } from '@effect/schema'
 import { Effect } from 'effect'
 import { NameRequired, SchemaError } from './errors'
@@ -103,30 +104,6 @@ export async function renameGroup(
 	)
 }
 
-const FormDataFromSelf = Schema.instanceOf(FormData).annotations({
-	identifier: 'FormDataFromSelf',
-})
-
-const RecordFromFormData = Schema.transform(
-	FormDataFromSelf,
-	Schema.Record({ key: Schema.String, value: Schema.String }),
-	{
-		strict: false,
-		decode: (formData) => Object.fromEntries(formData.entries()),
-		encode: (data) => {
-			const formData = new FormData()
-			for (const [key, value] of Object.entries(data)) {
-				formData.append(key, value)
-			}
-			return formData
-		},
-	},
-).annotations({ identifier: 'RecordFromFormData' })
-
-const FormDataSchema = <A, I extends Record<string, string>, R>(
-	schema: Schema.Schema<A, I, R>,
-) => Schema.compose(RecordFromFormData, schema, { strict: false })
-
 const RenamePersonInputSchema = Schema.Struct({
 	personId: Person.Person.fields.id,
 	groupId: Group.Group.fields.id,
@@ -170,42 +147,71 @@ type CauseFail<
 		| { _tag: 'Sequential' },
 	E = unknown,
 > = Extract<A, { _tag: 'Fail' }>['error']
+// First Overload: Schema without transformer
+function action<
+	SI extends Schema.Schema.Any,
+	SO extends Schema.Schema.AnyNoContext,
+>(args: {
+	input: SI
+	logic: (
+		input: Schema.Schema.Type<SI>,
+	) => Effect.Effect<
+		ExitSuccessValue<Schema.Schema.Type<SO>>,
+		CauseFail<ExitFailCause<Schema.Schema.Type<SO>>>,
+		any
+	>
+	output: SO
+}): (initialValue: Schema.Schema.Type<SI>) => Promise<AddIdleTag<SO>>
 
-const action =
-	<
-		SI extends Schema.Schema.Any,
-		SO extends Schema.Schema.AnyNoContext,
-		FA,
-		FB,
-		FC,
-		FD,
-		FE,
-		I extends
-			| [FA]
-			| [FA, FB]
-			| [FA, FB, FC]
-			| [FA, FB, FC, FD]
-			| [FA, FB, FC, FD, FE],
-	>(args: {
-		input: {
-			schema: SI
-			transformer?: (...input: I) => Schema.Schema.Encoded<SI>
-		}
-		logic: (
-			input: Schema.Schema.Type<SI>,
-		) => Effect.Effect<
-			ExitSuccessValue<Schema.Schema.Type<SO>>,
-			CauseFail<ExitFailCause<Schema.Schema.Type<SO>>>,
-			any
-		>
-		output: SO
-	}) =>
-	async (...initialValue: I): Promise<AddIdleTag<SO>> => {
-		const input = args.input.transformer
-			? args.input.transformer(...initialValue)
-			: initialValue
+// Second Overload: Schema with transformer
+function action<
+	SI extends Schema.Schema.Any,
+	SO extends Schema.Schema.AnyNoContext,
+	I extends any[],
+>(args: {
+	input: {
+		schema: SI
+		transformer: (...input: I) => Schema.Schema.Encoded<SI>
+	}
+	logic: (
+		input: Schema.Schema.Type<SI>,
+	) => Effect.Effect<
+		ExitSuccessValue<Schema.Schema.Type<SO>>,
+		CauseFail<ExitFailCause<Schema.Schema.Type<SO>>>,
+		any
+	>
+	output: SO
+}): (...initialValue: I) => Promise<AddIdleTag<SO>>
 
-		const result = Schema.decode(args.input.schema)(input).pipe(
+function action<
+	SI extends Schema.Schema.Any,
+	SO extends Schema.Schema.AnyNoContext,
+	I extends any[],
+>(args: {
+	input:
+		| {
+				schema: SI
+				transformer?: (...input: I) => Schema.Schema.Encoded<SI>
+		  }
+		| SI
+	logic: (
+		input: Schema.Schema.Type<SI>,
+	) => Effect.Effect<
+		ExitSuccessValue<Schema.Schema.Type<SO>>,
+		CauseFail<ExitFailCause<Schema.Schema.Type<SO>>>,
+		any
+	>
+	output: SO
+}) {
+	return async (...initialValue: any[]): Promise<AddIdleTag<SO>> => {
+		const input =
+			'transformer' in args.input
+				? args.input.transformer(...initialValue)
+				: initialValue[0]
+
+		const result = Schema.decode(
+			'schema' in args.input ? args.input.schema : args.input,
+		)(input).pipe(
 			Effect.flatMap(args.logic),
 			runAction({
 				schema: args.output,
@@ -213,16 +219,17 @@ const action =
 		)
 		return result
 	}
+}
 
-const a = action({
+export const renamePerson = action({
 	input: {
-		schema: RenamePersonInputSchema,
 		transformer: (
 			personId: Person.PersonId,
 			groupId: Group.GroupId,
 			prevState: AddIdleTag<typeof RenamePersonOutputSchema>,
 			formData: FormData,
 		) => ({ personId, groupId, formData }),
+		schema: RenamePersonInputSchema,
 	},
 	logic: ({ personId, groupId, formData }) =>
 		Effect.gen(function* () {
@@ -231,25 +238,23 @@ const a = action({
 		}),
 	output: RenamePersonOutputSchema,
 })
-export const renamePerson = a
 
-export const removePerson = async (
-	personId: Person.PersonId,
-	groupId: Group.GroupId,
-) =>
-	Effect.gen(function* () {
-		yield* Person.removePerson(personId)
-		yield* Next.revalidatePath(`/group/${groupId}`)
-	}).pipe(
-		Effect.withSpan('removePerson'),
-		runAction({
-			schema: Schema.Exit({
-				success: Schema.Void,
-				failure: Schema.Union(DbError),
-				defect: Schema.Void,
-			}),
+export const removePerson = action({
+	input: Schema.Struct({
+		personId: Person.Person.fields.id,
+		groupId: Group.Group.fields.id,
+	}),
+	logic: ({ personId, groupId }) =>
+		Effect.gen(function* () {
+			yield* Person.removePerson(personId)
+			yield* Next.revalidatePath(`/group/${groupId}`)
 		}),
-	)
+	output: Schema.Exit({
+		success: Schema.Void,
+		failure: Schema.Union(DbError),
+		defect: Schema.Void,
+	}),
+})
 
 export async function removePersonFromRound(
 	personId: Person.PersonId,
