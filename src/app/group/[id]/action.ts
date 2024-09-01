@@ -95,16 +95,17 @@ const UpdateNameInputSchema = Schema.Struct({
 
 const UpdateNameOutputSchema = Schema.Exit({
 	success: Schema.Void,
-	failure: Schema.Union(DbError, NameRequired),
+	failure: Schema.Union(DbError, NameRequired, SchemaError),
 	defect: Schema.Void,
 })
 
-export async function renameGroup(
+export const renameGroup = (
 	groupId: Group.GroupId,
 	prevState: AddIdleTag<typeof UpdateNameOutputSchema>,
 	formData: FormData,
-) {
-	return Schema.decode(UpdateNameInputSchema)({ groupId, formData }).pipe(
+) =>
+	Effect.succeed({ groupId, formData }).pipe(
+		Effect.flatMap(Schema.decode(UpdateNameInputSchema)),
 		Effect.flatMap(({ groupId, formData }) =>
 			Effect.gen(function* () {
 				const newName = formData.name
@@ -117,26 +118,6 @@ export async function renameGroup(
 			schema: UpdateNameOutputSchema,
 		}),
 	)
-}
-
-const RenamePersonInputSchema = Schema.Struct({
-	personId: Person.Person.fields.id,
-	groupId: Group.Group.fields.id,
-	formData: FormDataSchema(
-		Schema.Struct({
-			name: Schema.String.annotations({
-				title: 'Member',
-				message: () => 'not a string',
-			}).pipe(Schema.minLength(2, { message: (s) => `${s.actual} is too short` })),
-		}),
-	),
-}).annotations({ title: 'Rename Person' })
-
-const RenamePersonOutputSchema = Schema.Exit({
-	success: Schema.Void,
-	failure: Schema.Union(DbError, NameRequired, SchemaError),
-	defect: Schema.Void,
-})
 
 type ExitSuccessValue<
 	A extends { _tag: 'Success'; value: O } | { _tag: 'Failure' },
@@ -219,15 +200,20 @@ function action<
 	output: SO
 }) {
 	return async (...initialValue: any[]): Promise<AddIdleTag<SO>> => {
-		const input =
-			'transformer' in args.input
-				? args.input.transformer(...initialValue)
-				: initialValue[0]
+		const result = Effect.gen(function* () {
+			const input =
+				'transformer' in args.input
+					? yield* Effect.tryPromise(() => args.input.transformer(...initialValue))
+					: initialValue[0]
 
-		const result = Schema.decode(
-			'schema' in args.input ? args.input.schema : args.input,
-		)(input).pipe(
-			Effect.flatMap(args.logic),
+			const decoded = yield* Schema.decode(
+				'schema' in args.input ? args.input.schema : args.input,
+			)(input)
+
+			const result = yield* yield* Effect.tryPromise(() => args.logic(decoded))
+
+			return result
+		}).pipe(
 			runAction({
 				schema: args.output,
 			}),
@@ -236,6 +222,25 @@ function action<
 	}
 }
 
+const RenamePersonInputSchema = Schema.Struct({
+	personId: Person.Person.fields.id,
+	groupId: Group.Group.fields.id,
+	formData: FormDataSchema(
+		Schema.Struct({
+			name: Schema.String.annotations({
+				title: 'Member',
+				message: () => 'not a string',
+			}).pipe(Schema.minLength(2, { message: (s) => `${s.actual} is too short` })),
+		}),
+	),
+}).annotations({ title: 'Rename Person' })
+
+const RenamePersonOutputSchema = Schema.Exit({
+	success: Schema.Void,
+	failure: Schema.Union(DbError, NameRequired, SchemaError),
+	defect: Schema.Void,
+})
+
 export const renamePerson = action({
 	input: {
 		transformer: (
@@ -243,7 +248,11 @@ export const renamePerson = action({
 			groupId: Group.GroupId,
 			prevState: AddIdleTag<typeof RenamePersonOutputSchema>,
 			formData: FormData,
-		) => ({ personId, groupId, formData }),
+		) => {
+			console.log('personId', personId)
+
+			return { personId, groupId, formData }
+		},
 		schema: RenamePersonInputSchema,
 	},
 	logic: ({ personId, groupId, formData }) =>

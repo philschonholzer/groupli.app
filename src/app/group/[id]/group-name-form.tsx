@@ -34,7 +34,8 @@ export default function GroupNameForm(props: {
 			<div className="pt-2 text-right text-red-600">
 				{state._tag === 'Failure' && state.cause._tag === 'Fail' && (
 					<p>
-						{state.cause.error._tag === 'NameRequiredError' &&
+						{(state.cause.error._tag === 'SchemaError' ||
+							state.cause.error._tag === 'NameRequiredError') &&
 							state.cause.error.message}
 					</p>
 				)}
