@@ -205,15 +205,13 @@ function action<
 				'transformer' in args.input
 					? yield* Effect.tryPromise(() => args.input.transformer(...initialValue))
 					: initialValue[0]
-
-			const decoded = yield* Schema.decode(
-				'schema' in args.input ? args.input.schema : args.input,
-			)(input)
-
-			const result = yield* yield* Effect.tryPromise(() => args.logic(decoded))
-
-			return result
+			return input
 		}).pipe(
+			Effect.flatMap(
+				Schema.decode('schema' in args.input ? args.input.schema : args.input),
+			),
+			Effect.flatMap((decoded) => Effect.tryPromise(() => args.logic(decoded))),
+			Effect.flatten,
 			runAction({
 				schema: args.output,
 			}),
