@@ -12,6 +12,7 @@ type AddIdleTag<T> = Schema.Schema.Encoded<T> | { _tag: 'Idle' }
 const AddPersonSchema = Schema.Exit({
 	success: Schema.Undefined,
 	failure: Schema.Union(DbError, NameRequired, Person.TooManyPersonsInGroup),
+	defect: Schema.Void,
 })
 
 export async function addPerson(
@@ -52,6 +53,7 @@ export async function newRound(
 					group: Schema.String,
 				}),
 				failure: Schema.Union(DbError, Round.NotEnoughPersonsForRound),
+				defect: Schema.Void,
 			}),
 		}),
 	)
@@ -72,6 +74,7 @@ export async function shufflePairingsInRound(groupId: Group.GroupId) {
 					group: Schema.String,
 				}),
 				failure: Schema.Union(DbError, Round.NoRoundFound),
+				defect: Schema.Void,
 			}),
 		}),
 	)
@@ -80,6 +83,7 @@ export async function shufflePairingsInRound(groupId: Group.GroupId) {
 const UpdateNameSchema = Schema.Exit({
 	success: Schema.Void,
 	failure: Schema.Union(DbError, NameRequired),
+	defect: Schema.Void,
 })
 
 export async function renameGroup(
@@ -102,6 +106,7 @@ export async function renameGroup(
 const RenamePersonSchema = Schema.Exit({
 	success: Schema.Void,
 	failure: Schema.Union(DbError, NameRequired),
+	defect: Schema.Void,
 })
 export const renamePerson = async (
 	personId: Person.PersonId,
@@ -133,6 +138,7 @@ export const removePerson = async (
 			schema: Schema.Exit({
 				success: Schema.Void,
 				failure: Schema.Union(DbError),
+				defect: Schema.Void,
 			}),
 		}),
 	)
@@ -151,6 +157,7 @@ export async function removePersonFromRound(
 					Schema.Array(Schema.Tuple(Schema.Number, Schema.Number)),
 				),
 				failure: Schema.Union(DbError, Round.NotEnoughPersonsForRound),
+				defect: Schema.Void,
 			}),
 		}),
 	)

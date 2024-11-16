@@ -17,6 +17,7 @@ export async function newGroup() {
 			schema: Schema.Exit({
 				success: Schema.Struct({ id: Schema.String, name: Schema.String }),
 				failure: DbError,
+				defect: Schema.Void,
 			}),
 		}),
 	)
