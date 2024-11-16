@@ -17,8 +17,8 @@ d1_databases = [
 ]
 
 [env.production.vars]
-NODE_VERSION = "22.11.0"
-PNPM_VERSION = "9.4.0"
+NODE_VERSION = "20.18.0"
+PNPM_VERSION = "9.12.3"
 
 # This is a staging environment
 [env.preview]
@@ -27,8 +27,8 @@ d1_databases = [
 ]
 
 [env.preview.vars]
-NODE_VERSION = "22.11.0"
-PNPM_VERSION = "9.4.0"
+NODE_VERSION = "20.18.0"
+PNPM_VERSION = "9.12.3"
 
 # Automatically place your workloads in an optimal location to minimize latency.
 # If you are running back-end logic in a Pages Function, running it closer to your back-end infrastructure

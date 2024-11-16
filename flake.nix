@@ -45,8 +45,8 @@
 
         devShells.default = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [ 
-            pkgs.nodejs
-            pkgs.pnpm
+						nodejs
+						pnpm
            ];
         };
       };
