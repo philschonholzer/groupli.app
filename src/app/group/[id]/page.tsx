@@ -22,12 +22,13 @@ export const metadata: Metadata = {
 	},
 }
 export default async function GroupPage(props: {
-	params: { id: Group.GroupId }
+	params: Promise<{ id: Group.GroupId }>
 }) {
+	const { id } = await props.params
 	return Effect.gen(function* () {
-		const personsEff = Person.Repository.getByGroupId(props.params.id)
-		const groupEff = Group.Repository.getById(props.params.id)
-		const roundsEff = Round.Repository.getSixByGroupId(props.params.id)
+		const personsEff = Person.Repository.getByGroupId(id)
+		const groupEff = Group.Repository.getById(id)
+		const roundsEff = Round.Repository.getSixByGroupId(id)
 		const [persons, group, rounds] = yield* Effect.all(
 			[personsEff, groupEff, roundsEff],
 			{ concurrency: 'unbounded' },
@@ -38,7 +39,7 @@ export default async function GroupPage(props: {
 		}
 
 		const personIds = persons.map((person) => person.id)
-		const redo = shufflePairingsInRound.bind(null, props.params.id)
+		const redo = shufflePairingsInRound.bind(null, id)
 
 		return (
 			<div className="space-y-12 py-16">
@@ -49,10 +50,10 @@ export default async function GroupPage(props: {
 					<H2>Members</H2>
 					<ul className="flex flex-wrap gap-2">
 						{persons.map((person) => (
-							<PersonPill key={person.id} person={person} groupId={props.params.id} />
+							<PersonPill key={person.id} person={person} groupId={id} />
 						))}
 					</ul>
-					<AddPerson groupId={props.params.id} />
+					<AddPerson groupId={id} />
 					{persons.length < 3 && rounds.length === 0 && (
 						<div className="grid h-24 place-items-center space-y-4 rounded border border-border/50 p-4 shadow-sm">
 							<div className="space-y-1 text-center text-foreground/40">
@@ -68,7 +69,7 @@ export default async function GroupPage(props: {
 						<header className="flex justify-between">
 							<H2>Rounds</H2>
 							<StartNextRound
-								groupId={props.params.id}
+								groupId={id}
 								personIds={personIds}
 								roundsCount={rounds.length}
 							/>
@@ -110,7 +111,7 @@ export default async function GroupPage(props: {
 													>
 														{roundIndex === 0 && (
 															<SkipRoundButton
-																groupId={props.params.id}
+																groupId={id}
 																roundId={round.id}
 																personId={pair.person1.id}
 															/>
@@ -122,7 +123,7 @@ export default async function GroupPage(props: {
 													>
 														{roundIndex === 0 && (
 															<SkipRoundButton
-																groupId={props.params.id}
+																groupId={id}
 																roundId={round.id}
 																personId={pair.person2.id}
 															/>
