@@ -4,23 +4,26 @@ compatibility_date = "2024-05-02"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"
 
+[vars]
+NODE_VERSION = "22.11.0"
+PNPM_VERSION = "9.4.0"
 
 [[d1_databases]]
 binding = "DB"                                       # i.e. available in your Worker on env.DB
 database_name = "stag-d1-groupify"
 database_id = "eec6e894-3346-48a6-a363-a09b26c3276b"
-migrations_dir = "drizzle" 
+migrations_dir = "drizzle"
 
 # This is a production environment
 [env.production]
 d1_databases = [
-    { binding = "DB", database_name = "prod-d1-groupify", database_id = "10b4b6ee-e9ed-4400-871f-8d20a21b8b51" },
+	{ binding = "DB", database_name = "prod-d1-groupify", database_id = "10b4b6ee-e9ed-4400-871f-8d20a21b8b51" },
 ]
 
 # This is a staging environment
 [env.preview]
 d1_databases = [
-    { binding = "DB", database_name = "stag-d1-groupify", database_id = "eec6e894-3346-48a6-a363-a09b26c3276b" },
+	{ binding = "DB", database_name = "stag-d1-groupify", database_id = "eec6e894-3346-48a6-a363-a09b26c3276b" },
 ]
 # Automatically place your workloads in an optimal location to minimize latency.
 # If you are running back-end logic in a Pages Function, running it closer to your back-end infrastructure
