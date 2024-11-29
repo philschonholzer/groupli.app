@@ -22,8 +22,9 @@ export default function RootLayout({
 		<html lang="en">
 			<Script
 				defer
-				src="https://cloud.umami.is/script.js"
+				src="/stats/script.js"
 				data-website-id="deb1d29f-dfc1-4366-9624-328157877ea7"
+				data-host-url="https://groupli.app"
 			/>
 
 			<body
