@@ -1,10 +1,11 @@
+import type { StaticImport } from 'next/dist/shared/lib/get-img-props'
 import Image from 'next/image'
 import Link from 'next/link'
 
 export function BlogTeaser(props: {
 	slug: string
 	image: {
-		src: any
+		src: string | StaticImport
 		alt: string
 	}
 	title: string

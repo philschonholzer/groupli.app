@@ -1,4 +1,4 @@
-import type { Group, Round, Person } from '@/domain'
+import type { Group, Person, Round } from '@/domain'
 import { relations } from 'drizzle-orm'
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 

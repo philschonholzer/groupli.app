@@ -19,13 +19,13 @@ export default function GroupNameForm(props: {
 	return (
 		<form action={action}>
 			<H1>
-				<label className="flex items-center gap-4">
+				<label htmlFor="name" className="flex items-center gap-4">
 					Group
 					<Input
 						className="h-20 text-4xl lg:text-5xl"
 						type="text"
 						name="name"
-						id=""
+						id="name"
 						defaultValue={props.group.name}
 					/>
 					{state._tag === 'Success' && <Check className="text-primary" />}

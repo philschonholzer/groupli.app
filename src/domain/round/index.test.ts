@@ -31,7 +31,9 @@ describe('Round domain', () => {
 		Effect.gen(function* () {
 			const group = yield* Group.newGroup
 			const person = yield* Person.add('Jenny', group.id)
-			const error = yield* Round.newRound(group.id, [person.id]).pipe(Effect.flip)
+			const error = yield* Round.newRound(group.id, [person.id]).pipe(
+				Effect.flip,
+			)
 
 			assert.equal(error instanceof NotEnoughPersonsForRound, true)
 		}).pipe(
@@ -115,7 +117,11 @@ const assertRemovedCorrectPerson = (
 	Effect.gen(function* () {
 		yield* TestClock.adjust('1 second')
 		const round = yield* Round.newRound(groupId, personIds)
-		yield* Round.removePersonFromRound(personToRemoveId, round.round.id, groupId)
+		yield* Round.removePersonFromRound(
+			personToRemoveId,
+			round.round.id,
+			groupId,
+		)
 
 		const rounds = yield* Round.Repository.getSixByGroupId(groupId)
 

@@ -23,7 +23,9 @@ const make = Effect.gen(function* () {
 				client.insert(Groups).values({ id: props.id, name: props.name }),
 			),
 		updateName: (id: Group.GroupId, name: string) =>
-			db((client) => client.update(Groups).set({ name }).where(eq(Groups.id, id))),
+			db((client) =>
+				client.update(Groups).set({ name }).where(eq(Groups.id, id)),
+			),
 	}
 })
 

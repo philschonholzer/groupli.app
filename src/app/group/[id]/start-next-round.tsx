@@ -55,8 +55,8 @@ function Form(props: {
 												<div className="space-y-2">
 													<p className="font-semibold">Not enough people</p>
 													<p className="opacity-90">
-														There are not enough people to start a pairing round. Add some
-														more members.
+														There are not enough people to start a pairing
+														round. Add some more members.
 													</p>
 												</div>
 											),

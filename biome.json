@@ -8,12 +8,18 @@
 		"rules": {
 			"recommended": true,
 			"complexity": { "noStaticOnlyClass": "off" },
-			"nursery": {"useSortedClasses": {"level":"warn", "fix":"safe", "options": {}}}
+			"nursery": {
+				"useSortedClasses": {
+					"level": "warn",
+					"fix": "safe",
+					"options": {}
+				}
+			}
 		}
 	},
 	"formatter": {
 		"enabled": true,
-		"indentWidth": 1,
+		"indentWidth": 2,
 		"indentStyle": "tab"
 	},
 	"javascript": {
