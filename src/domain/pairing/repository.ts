@@ -2,6 +2,7 @@ import { Db } from '@/adapter/db'
 import { Pairings } from '@/adapter/db/schema'
 import { eq } from 'drizzle-orm'
 import { Effect, Layer } from 'effect'
+import { retryUntil } from 'effect/STM'
 import type { Person, Round } from '..'
 
 const make = Effect.gen(function* () {
@@ -29,19 +30,25 @@ const make = Effect.gen(function* () {
 		updatePairsByRoundId: (
 			roundId: Round.RoundId,
 			pairs: (readonly [Person.PersonId, Person.PersonId])[],
-		) =>
-			db((client) =>
-				client.batch([
-					client.delete(Pairings).where(eq(Pairings.round, roundId)),
-					client.insert(Pairings).values(
-						pairs.map(([person1, person2]) => ({
-							round: roundId,
-							person1,
-							person2,
-						})),
+		) => {
+			//this was once using batch of libsql, but better-sqlite3 does not support it
+			//I tryed transaction but it was executed twice
+			return db((client) =>
+				client.delete(Pairings).where(eq(Pairings.round, roundId)),
+			).pipe(
+				Effect.flatMap(() =>
+					db((client) =>
+						client.insert(Pairings).values(
+							pairs.map(([person1, person2]) => ({
+								round: roundId,
+								person1,
+								person2,
+							})),
+						),
 					),
-				]),
-			),
+				),
+			)
+		},
 	}
 })
 
