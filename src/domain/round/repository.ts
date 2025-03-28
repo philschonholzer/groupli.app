@@ -1,6 +1,5 @@
 import { Db } from '@/adapter/db'
 import { PersonsInRounds, Rounds } from '@/adapter/db/schema'
-import { Schema } from '@effect/schema'
 import { desc, eq } from 'drizzle-orm'
 import {
 	Array as A,
@@ -10,6 +9,7 @@ import {
 	Option,
 	Order,
 	String as S,
+	Schema,
 	pipe,
 } from 'effect'
 import { type Group, Pairing, Person, Round } from '..'

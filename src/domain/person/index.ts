@@ -1,6 +1,5 @@
 import { NameRequired } from '@/app/group/[id]/errors'
-import { Schema } from '@effect/schema'
-import { Brand, Effect } from 'effect'
+import { Brand, Effect, Schema } from 'effect'
 import type { GroupId } from '../group'
 import { Repository } from './repository'
 

@@ -4,8 +4,7 @@ import { DbError } from '@/adapter/db'
 import { runAction } from '@/adapter/effect'
 import { Next } from '@/adapter/next'
 import { Group } from '@/domain'
-import { Schema } from '@effect/schema'
-import { Effect } from 'effect'
+import { Effect, Schema } from 'effect'
 
 export async function newGroup() {
 	return Effect.gen(function* () {

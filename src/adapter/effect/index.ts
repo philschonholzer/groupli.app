@@ -1,5 +1,4 @@
-import { Schema } from '@effect/schema'
-import { Cause, type ConfigError, Effect, Exit } from 'effect'
+import { Cause, type ConfigError, Effect, Exit, Schema } from 'effect'
 import { notFound, redirect } from 'next/navigation'
 import { NextNotFound, NextRedirect } from '../next'
 import { TracingLive } from '../tracing'

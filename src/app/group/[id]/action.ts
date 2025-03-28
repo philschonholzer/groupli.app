@@ -4,8 +4,7 @@ import { DbError } from '@/adapter/db'
 import { runAction } from '@/adapter/effect'
 import { Next } from '@/adapter/next'
 import { Group, Person, Round } from '@/domain'
-import { Schema } from '@effect/schema'
-import { Effect } from 'effect'
+import { Effect, Schema } from 'effect'
 import { NameRequired } from './errors'
 
 type AddIdleTag<T> = Schema.Schema.Encoded<T> | { _tag: 'Idle' }
