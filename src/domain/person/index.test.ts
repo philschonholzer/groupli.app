@@ -20,10 +20,9 @@ describe('Person', () => {
 	it('should allow to add 14 persons to a group', () =>
 		Effect.gen(function* () {
 			const group = yield* Group.newGroup
-			const person = yield* Person.add(nanoid(), group.id).pipe(
-				Effect.repeatN(13),
-			)
-			assert.equal(person.id, 14)
+			yield* Person.add(nanoid(), group.id).pipe(Effect.repeatN(13))
+			const persons = yield* Person.Repository.getByGroupId(group.id)
+			assert.equal(persons.length, 14)
 		}).pipe(runWithInMemoryDb))
 	it('should not allow to add more than 14 persons to a group', () =>
 		Effect.gen(function* () {
