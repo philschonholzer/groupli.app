@@ -1,5 +1,4 @@
-import { Schema } from '@effect/schema'
-import { Effect, Layer } from 'effect'
+import { Effect, Layer, Schema } from 'effect'
 import { NextCache } from './next-cache'
 
 export class NextRedirect extends Schema.TaggedError<NextRedirect>()(

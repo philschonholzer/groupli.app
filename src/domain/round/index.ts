@@ -1,5 +1,4 @@
-import { Schema } from '@effect/schema'
-import { Brand, Effect, Option } from 'effect'
+import { Brand, Effect, Option, Schema } from 'effect'
 import { type Group, Pairing, Person } from '..'
 import { Repository } from './repository'
 

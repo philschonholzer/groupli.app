@@ -1,5 +1,4 @@
-import { Schema } from '@effect/schema'
-import { Chunk, Effect, Option, Random, pipe } from 'effect'
+import { Chunk, Effect, Option, Random, Schema, pipe } from 'effect'
 import { type Group, Person, Round } from '..'
 
 export * from './repository'

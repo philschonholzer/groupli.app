@@ -1,5 +1,4 @@
-import { Schema } from '@effect/schema'
-import { Context, Effect, Layer } from 'effect'
+import { Context, Effect, Layer, Schema } from 'effect'
 import { DatabaseClient } from './db-client'
 import { OrmClient } from './orm-client'
 

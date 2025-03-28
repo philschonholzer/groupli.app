@@ -1,8 +1,7 @@
 import { Db } from '@/adapter/db'
 import { Groups } from '@/adapter/db/schema'
-import { Schema } from '@effect/schema'
 import { eq } from 'drizzle-orm'
-import { Array as A, Effect, Layer, Option } from 'effect'
+import { Array as A, Effect, Layer, Option, Schema } from 'effect'
 import { Group } from '..'
 
 const make = Effect.gen(function* () {
