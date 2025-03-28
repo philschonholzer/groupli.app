@@ -22,10 +22,9 @@
 	},
 	"dependencies": {
 		"@effect/opentelemetry": "^0.39.15",
-		"@effect/schema": "^0.75.5",
+		"@libsql/client": "^0.15.1",
 		"@mdx-js/loader": "^3.1.0",
 		"@mdx-js/react": "^3.1.0",
-		"@microlabs/otel-cf-workers": "1.0.0-rc.48",
 		"@next/mdx": "15.0.3",
 		"@opentelemetry/exporter-trace-otlp-http": "^0.54.2",
 		"@opentelemetry/sdk-trace-base": "^1.27.0",
@@ -36,10 +35,11 @@
 		"@radix-ui/react-popover": "1.1.2",
 		"@radix-ui/react-slot": "1.1.0",
 		"@radix-ui/react-toast": "^1.2.2",
+		"better-sqlite3": "^11.9.1",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.1.1",
 		"copy-text-to-clipboard": "^3.2.0",
-		"drizzle-orm": "^0.36.3",
+		"drizzle-orm": "^0.41.0",
 		"effect": "^3.10.15",
 		"lucide-react": "^0.460.0",
 		"nanoid": "^5.0.8",
@@ -53,9 +53,6 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
-		"@cloudflare/next-on-pages": "^1.13.5",
-		"@cloudflare/workers-types": "^4.20241112.0",
-		"@libsql/client": "^0.14.0",
 		"@playwright/test": "^1.48.2",
 		"@tailwindcss/typography": "^0.5.15",
 		"@types/better-sqlite3": "^7.6.11",
@@ -64,14 +61,13 @@
 		"@types/react": "npm:types-react@19.0.0-rc.1",
 		"@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
 		"autoprefixer": "^10.4.20",
-		"drizzle-kit": "^0.28.1",
+		"drizzle-kit": "^0.30.6",
 		"postcss": "^8.4.49",
 		"tailwindcss": "^3.4.15",
 		"tsx": "^4.19.2",
 		"typescript": "5.6.3",
 		"vercel": "^39.0.2",
-		"vitest": "^2.1.5",
-		"wrangler": "^3.87.0"
+		"vitest": "^2.1.5"
 	},
 	"pnpm": {
 		"overrides": {

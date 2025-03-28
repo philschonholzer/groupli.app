@@ -1,8 +1,7 @@
 import { WebSdk } from '@effect/opentelemetry'
-import { OTLPExporter } from '@microlabs/otel-cf-workers'
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { Config, Effect, Layer, type Option, Secret } from 'effect'
-import { ConfigLive } from '../config'
 
 const GrafanaConfig = Config.all({
 	url: Config.string('OTLP_URL'),
@@ -13,7 +12,7 @@ export const TracingLive = Layer.unwrapEffect(
 	Effect.gen(function* () {
 		const { url, auth } = yield* GrafanaConfig
 		const headers = yield* makeHeaders(auth)
-		const traceExporter = new OTLPExporter({
+		const traceExporter = new OTLPTraceExporter({
 			url,
 			headers,
 		})
@@ -25,7 +24,7 @@ export const TracingLive = Layer.unwrapEffect(
 			spanProcessor: new BatchSpanProcessor(traceExporter),
 		}))
 	}),
-).pipe(Layer.provide(ConfigLive))
+)
 
 function makeHeaders(auth: Option.Option<Secret.Secret>) {
 	return auth.pipe(

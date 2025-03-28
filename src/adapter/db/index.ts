@@ -1,12 +1,10 @@
 import { Context, Effect, Layer, Schema } from 'effect'
-import { DatabaseClient } from './db-client'
 import { OrmClient } from './orm-client'
 
 const make = Effect.gen(function* () {
-	const dbClient = yield* DatabaseClient
 	const ormClient = yield* OrmClient
 
-	const db = ormClient(dbClient)
+	const db = ormClient
 
 	const query = <A>(body: (client: typeof db) => Promise<A>) => {
 		const sqlStatement = (
@@ -32,10 +30,7 @@ export class Db extends Context.Tag('@adapter/db')<Db, _Db>() {
 	// static readonly query = <A>(
 	// 	body: (client: DrizzleD1Database<Record<string, never>>) => Promise<A>,
 	// ) => this.use((_) => _.query(body))
-	static Live = Layer.effect(this, make).pipe(
-		Layer.provide(DatabaseClient.D1),
-		Layer.provide(OrmClient.D1Drizzle),
-	)
+	static Live = Layer.effect(this, make).pipe(Layer.provide(OrmClient.Live))
 	static Layer = Layer.effect(this, make)
 }
 

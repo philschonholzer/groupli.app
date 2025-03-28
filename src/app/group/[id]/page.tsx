@@ -13,8 +13,6 @@ import PersonPill from './person-pill'
 import { SkipRoundButton } from './skip-round-button'
 import StartNextRound from './start-next-round'
 
-export const runtime = 'edge'
-
 export const metadata: Metadata = {
 	robots: {
 		index: false,
