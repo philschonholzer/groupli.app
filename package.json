@@ -5,7 +5,7 @@
 	"packageManager": "pnpm@9.12.3",
 	"scripts": {
 		"dev": "next dev",
-		"build": "next build",
+		"build": "DB_URL=\"\" next build",
 		"start": "next start",
 		"lint": "biome check src",
 		"check": "tsc --noEmit",
