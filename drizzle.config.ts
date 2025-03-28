@@ -6,7 +6,7 @@ export default defineConfig({
 	strict: true,
 	out: './drizzle',
 	dbCredentials: {
-		url: './foobar.db',
+		url: './data.sqlite',
 	},
 	// https://orm.drizzle.team/kit-docs/config-reference#dbcredentials
 })

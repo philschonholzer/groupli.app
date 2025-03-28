@@ -3,7 +3,6 @@ import { H1 } from '@/components/ui/typography'
 import Link from 'next/link'
 import { newGroup } from './action'
 
-export const runtime = 'edge'
 export default function Home() {
 	return (
 		<div className="bg-white">
