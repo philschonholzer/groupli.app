@@ -28,9 +28,18 @@ export default function RootLayout({
 			/>
 
 			<body
-				className={`${fontFamily.className} container mx-auto my-12 max-w-3xl`}
+				className={`${fontFamily.className} container mx-auto my-16 max-w-3xl`}
 			>
 				<Header />
+				<div className="mb-4 border-red-500 border-l-4 bg-red-100 p-4 text-red-700">
+					<p>Attention! Groupli is moving to a new database. </p>
+					<p>
+						<b>Everything you do now can be lost!</b>
+					</p>
+					<p>
+						As soon as the data has been moved, this message will be removed.
+					</p>
+				</div>
 				<main>{children}</main>
 				<Toaster />
 			</body>
