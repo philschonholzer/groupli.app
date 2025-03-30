@@ -23,7 +23,7 @@ export default function RootLayout({
 			<Script
 				defer
 				src="/stats/script.js"
-				data-website-id="deb1d29f-dfc1-4366-9624-328157877ea7"
+				data-website-id="7b9c5bf7-b440-4741-9707-fa00a25137a2"
 				data-host-url="https://groupli.app"
 			/>
 

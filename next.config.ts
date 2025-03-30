@@ -6,11 +6,11 @@ const nextConfig = {
 		return [
 			{
 				source: '/stats/:match*',
-				destination: 'https://cloud.umami.is/:match*',
+				destination: 'https://umami.schoenholzer.com/:match*',
 			},
 			{
 				source: '/api/send',
-				destination: 'https://cloud.umami.is/api/send',
+				destination: 'https://umami.schoenholzer.com/api/send',
 			},
 		]
 	},
