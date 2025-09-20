@@ -1,10 +1,10 @@
 'use server'
 
+import { Effect, Schema } from 'effect'
 import { DbError } from '@/adapter/db'
 import { runAction } from '@/adapter/effect'
 import { Next } from '@/adapter/next'
 import { Group } from '@/domain'
-import { Effect, Schema } from 'effect'
 
 export async function newGroup() {
 	return Effect.gen(function* () {

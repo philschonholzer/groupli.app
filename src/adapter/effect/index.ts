@@ -53,5 +53,6 @@ function handleRedirectOrNotFound<A, E>(
 		if (result.cause.error instanceof NextNotFound) {
 			notFound()
 		}
+		console.error('Error in result:', result)
 	}
 }
