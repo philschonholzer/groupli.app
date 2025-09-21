@@ -24,9 +24,9 @@ export default function PersonPill(props: {
 			<PopoverTrigger asChild>
 				<li
 					key={props.person.id}
-					className="cursor-pointer rounded-full border px-4 py-2 transition-all hover:ring data-[state=open]:ring-2"
+					className="cursor-pointer rounded-full border px-4 py-2 transition-all hover:ring-3 data-[state=open]:ring-2"
 				>
-					<p className="overflow-hidden overflow-ellipsis">
+					<p className="overflow-hidden text-ellipsis">
 						{props.person.name}{' '}
 						<span className="text-xs opacity-20">#{props.person.id}</span>
 					</p>

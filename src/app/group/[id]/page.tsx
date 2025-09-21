@@ -53,7 +53,7 @@ export default async function GroupPage(props: {
 					</ul>
 					<AddPerson groupId={id} />
 					{persons.length < 3 && rounds.length === 0 && (
-						<div className="grid h-24 place-items-center space-y-4 rounded border border-border/50 p-4 shadow-sm">
+						<div className="grid h-24 place-items-center space-y-4 rounded border border-border/50 p-4 shadow-xs">
 							<div className="space-y-1 text-center text-foreground/40">
 								<p className=" font-semibold">Add members</p>
 								<p className="">Add at least 3 members to your group.</p>
@@ -76,7 +76,7 @@ export default async function GroupPage(props: {
 							{rounds.map((round, roundIndex) => (
 								<li
 									key={round.id}
-									className="space-y-4 rounded border p-4 shadow-sm"
+									className="space-y-4 rounded border p-4 shadow-xs"
 								>
 									<header className="flex justify-between">
 										<H3>
@@ -139,7 +139,7 @@ export default async function GroupPage(props: {
 								</li>
 							))}
 							{rounds.length === 0 && (
-								<li className="grid h-52 place-items-center space-y-4 rounded border border-border/50 p-4 shadow-sm">
+								<li className="grid h-52 place-items-center space-y-4 rounded border border-border/50 p-4 shadow-xs">
 									<div className="space-y-1 text-center text-foreground/40">
 										<p className=" font-semibold">Nothing going on yet...</p>
 										<p className="">
