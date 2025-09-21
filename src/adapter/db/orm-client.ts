@@ -23,9 +23,6 @@ export class OrmClient extends Context.Tag('@adapter/db/orm-client')<
 	OrmClient,
 	BetterSQLite3Database<typeof schema>
 >() {
-	static Live = Layer.succeed(
-		this,
-		makeOrmClient(process.env.DB_URL || './data.sqlite'),
-	)
+	static Live = Layer.succeed(this, makeOrmClient(process.env.DB_URL ?? '')) // Use InMemory db for build. UB_URL is set to empty in build script.
 	static InMemory = Layer.succeed(this, makeOrmClient(''))
 }
