@@ -10,8 +10,10 @@ const makeCacheImpl = Effect.gen(function* () {
 const makeCacheStub = Effect.gen(function* () {
 	const ref = yield* Ref.make({ isRevalidated: false })
 	return {
-		revalidatePath: (path: string) =>
-			Ref.update(ref, () => ({ isRevalidated: true })),
+		revalidatePath: (_path: string) =>
+			Ref.update(ref, () => ({
+				isRevalidated: true,
+			})) as Effect.Effect<undefined>,
 		isRevalidated: Ref.get(ref).pipe(Effect.map((s) => s.isRevalidated)),
 	}
 })
