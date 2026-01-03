@@ -34,3 +34,11 @@
 
 1. `pnpm dev`
 1. Open <http://localhost:3000>
+
+## Production
+
+### Backup
+
+```sh
+sqlite3 db/data.sqlite ".backup 'db/backups/backup_$(date +\%Y-%m-%d_%H-%M-%S).sqlite'" && mc mirror db/backups infomaniak/default/groupli/backup
+```
