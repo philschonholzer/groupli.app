@@ -50,6 +50,7 @@
             nodejs
             pnpm
             biome
+            rclone
           ];
         };
       };
