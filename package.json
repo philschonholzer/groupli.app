@@ -46,7 +46,7 @@
 		"effect": "^3.17.14",
 		"lucide-react": "^0.544.0",
 		"nanoid": "^5.1.5",
-		"next": "15.5.3",
+		"next": "15.5.9",
 		"react": "19.1.1",
 		"react-dom": "19.1.1",
 		"server-only": "^0.0.1",
