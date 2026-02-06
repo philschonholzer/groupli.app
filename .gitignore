@@ -34,7 +34,8 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+# Note: next-env.d.ts should be committed to git
+# It contains type declarations needed for SVG/image imports
 
 # wrangler files
 .wrangler
