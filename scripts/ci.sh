@@ -65,14 +65,15 @@ ensure_playwright_browsers() {
 	fi
 	
 	# Detect environment and install accordingly
-	if command -v nix-env >/dev/null 2>&1; then
-		# NixOS or Nix package manager - browsers managed by Nix
-		echo -e "${YELLOW}Nix environment detected - installing browsers without system dependencies${NC}"
-		pnpm exec playwright install chromium firefox
-	elif [ -f /.dockerenv ] || grep -q docker /proc/1/cgroup 2>/dev/null; then
+	# Check Docker first, before Nix (nixpacks containers have both)
+	if [ -f /.dockerenv ] || grep -q docker /proc/1/cgroup 2>/dev/null; then
 		# Docker environment - install with system dependencies
 		echo -e "${YELLOW}Docker environment detected - installing with system dependencies${NC}"
 		pnpm exec playwright install --with-deps chromium firefox
+	elif command -v nix-env >/dev/null 2>&1; then
+		# NixOS or Nix package manager (non-Docker) - browsers managed by Nix
+		echo -e "${YELLOW}Nix environment detected - installing browsers without system dependencies${NC}"
+		pnpm exec playwright install chromium firefox
 	else
 		# Other systems - try with --with-deps, fall back if it fails
 		echo -e "${YELLOW}Attempting to install with system dependencies...${NC}"
