@@ -56,32 +56,14 @@ ensure_playwright_browsers() {
 	echo ""
 	echo -e "${BLUE}🎭 Checking Playwright browsers...${NC}"
 	echo ""
-	
-	# Check if browsers are already provided by Nix devShell
-	if [ -n "$PLAYWRIGHT_BROWSERS_PATH" ]; then
-		echo -e "${GREEN}✅ Playwright browsers already provided by Nix (PLAYWRIGHT_BROWSERS_PATH set)${NC}"
-		echo ""
-		return 0
-	fi
-	
-	# Detect environment and install accordingly
-	# NixOS detection: check for nixos-version command or /etc/NIXOS file
-	if [ -f /etc/NIXOS ] || command -v nixos-version >/dev/null 2>&1; then
-		# Running on NixOS - system dependencies managed by Nix, don't use --with-deps
-		echo -e "${YELLOW}NixOS detected - installing browsers without system dependencies${NC}"
-		pnpm exec playwright install chromium firefox
-	elif command -v nix-env >/dev/null 2>&1; then
-		# Nix is available but not NixOS (e.g., nixpacks in Docker)
-		# This is likely a CI environment - use --with-deps
-		echo -e "${YELLOW}Nix in container detected - installing with system dependencies${NC}"
-		pnpm exec playwright install --with-deps chromium firefox
+
+	# Install Playwright browsers (only Chromium to save resources)
+	# Skip if using Nix-provided browsers
+	if [[ "$PLAYWRIGHT_BROWSERS_PATH" == /nix/store/* ]]; then
+		echo "✓ Using Nix-provided Playwright browsers, skipping installation..."
 	else
-		# Other systems - try with --with-deps, fall back if it fails
-		echo -e "${YELLOW}Attempting to install with system dependencies...${NC}"
-		if ! pnpm exec playwright install --with-deps chromium firefox 2>&1; then
-			echo -e "${YELLOW}Failed with --with-deps, installing browsers only...${NC}"
-			pnpm exec playwright install chromium firefox
-		fi
+		echo "🎭 Installing Playwright browsers..."
+		pnpm exec playwright install --with-deps chromium
 	fi
 	
 	echo ""

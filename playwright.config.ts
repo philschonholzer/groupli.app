@@ -31,10 +31,15 @@ export default defineConfig({
 			use: { ...devices['Desktop Chrome'] },
 		},
 
-		{
-			name: 'firefox',
-			use: { ...devices['Desktop Firefox'] },
-		},
+		// Only test Firefox locally, skip on Coolify build server to save resources
+		...(process.env.COOLIFY_BRANCH
+			? []
+			: [
+					{
+						name: 'firefox',
+						use: { ...devices['Desktop Firefox'] },
+					},
+				]),
 	],
 
 	/* Run your local dev server before starting the tests */
