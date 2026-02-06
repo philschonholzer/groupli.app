@@ -51,6 +51,42 @@ run_step() {
 	fi
 }
 
+# Helper function to ensure Playwright browsers are installed
+ensure_playwright_browsers() {
+	echo ""
+	echo -e "${BLUE}🎭 Checking Playwright browsers...${NC}"
+	echo ""
+	
+	# Check if browsers are already provided by Nix devShell
+	if [ -n "$PLAYWRIGHT_BROWSERS_PATH" ]; then
+		echo -e "${GREEN}✅ Playwright browsers already provided by Nix (PLAYWRIGHT_BROWSERS_PATH set)${NC}"
+		echo ""
+		return 0
+	fi
+	
+	# Detect environment and install accordingly
+	if command -v nix-env >/dev/null 2>&1; then
+		# NixOS or Nix package manager - browsers managed by Nix
+		echo -e "${YELLOW}Nix environment detected - installing browsers without system dependencies${NC}"
+		pnpm exec playwright install chromium firefox
+	elif [ -f /.dockerenv ] || grep -q docker /proc/1/cgroup 2>/dev/null; then
+		# Docker environment - install with system dependencies
+		echo -e "${YELLOW}Docker environment detected - installing with system dependencies${NC}"
+		pnpm exec playwright install --with-deps chromium firefox
+	else
+		# Other systems - try with --with-deps, fall back if it fails
+		echo -e "${YELLOW}Attempting to install with system dependencies...${NC}"
+		if ! pnpm exec playwright install --with-deps chromium firefox 2>&1; then
+			echo -e "${YELLOW}Failed with --with-deps, installing browsers only...${NC}"
+			pnpm exec playwright install chromium firefox
+		fi
+	fi
+	
+	echo ""
+	echo -e "${GREEN}✅ Playwright browsers ready${NC}"
+	echo ""
+}
+
 echo -e "${BLUE}🚀 Starting CI Pipeline${NC}"
 echo ""
 echo "============================================================"
@@ -67,8 +103,14 @@ else
 	echo ""
 fi
 
-# 3. Unit tests
-run_step "Unit tests" "npm run test"
+# 3. Unit tests (skip in Docker if SKIP_UNIT_TESTS is set)
+if [ "$SKIP_UNIT_TESTS" != "true" ]; then
+	run_step "Unit tests" "npm run test"
+else
+	echo ""
+	echo -e "${YELLOW}⏭️  Skipping unit tests (SKIP_UNIT_TESTS=true)${NC}"
+	echo ""
+fi
 
 # 4. Build
 echo ""
@@ -76,14 +118,20 @@ echo -e "${BLUE}📦 Building production bundle${NC}"
 echo ""
 run_step "Production build" "npm run build"
 
-# 5. Seed database for e2e tests
-echo ""
-echo -e "${YELLOW}🌱 Seeding database for e2e tests...${NC}"
-npm run seed:e2e
-echo ""
-
-# 6. E2E tests
-run_step "E2E tests" "npm run playwright"
+# 5. E2E tests (skip in Docker if SKIP_E2E_TESTS is set)
+if [ "$SKIP_E2E_TESTS" != "true" ]; then
+	# Ensure Playwright browsers are installed
+	ensure_playwright_browsers
+	
+	# Seed database for E2E tests
+	run_step "Seeding database for E2E tests" "npm run seed:e2e"
+	
+	run_step "E2E tests" "npm run playwright"
+else
+	echo ""
+	echo -e "${YELLOW}⏭️  Skipping E2E tests (SKIP_E2E_TESTS=true)${NC}"
+	echo ""
+fi
 
 echo "============================================================"
 echo ""
