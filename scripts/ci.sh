@@ -8,6 +8,20 @@ BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+# Cleanup function to kill any running servers
+cleanup() {
+	echo ""
+	echo -e "${BLUE}🧹 Cleaning up...${NC}"
+	# Kill any Next.js servers on port 3000
+	lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+	# Kill any playwright processes
+	pkill -f "playwright" 2>/dev/null || true
+	echo -e "${GREEN}✅ Cleanup complete${NC}"
+}
+
+# Register cleanup function to run on script exit (success or failure)
+trap cleanup EXIT
+
 # Environment variables for CI
 export DB_URL="data.sqlite"
 export OTLP_URL="http://localhost:4318/v1/traces"
