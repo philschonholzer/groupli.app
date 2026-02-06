@@ -1,9 +1,9 @@
+import { Effect, Option } from 'effect'
+import type { Metadata } from 'next'
 import { run } from '@/adapter/effect'
 import { Button } from '@/components/ui/button'
 import { H2, H3 } from '@/components/ui/typography'
 import { Group, Person, Round } from '@/domain'
-import { Effect, Option } from 'effect'
-import type { Metadata } from 'next'
 import { shufflePairingsInRound } from './action'
 import AddPerson from './add-person'
 import CopyToClipboard from './copy-to-clipboard'
@@ -55,7 +55,7 @@ export default async function GroupPage(props: {
 					{persons.length < 3 && rounds.length === 0 && (
 						<div className="grid h-24 place-items-center space-y-4 rounded border border-border/50 p-4 shadow-xs">
 							<div className="space-y-1 text-center text-foreground/40">
-								<p className=" font-semibold">Add members</p>
+								<p className="font-semibold">Add members</p>
 								<p className="">Add at least 3 members to your group.</p>
 							</div>
 						</div>
@@ -141,7 +141,7 @@ export default async function GroupPage(props: {
 							{rounds.length === 0 && (
 								<li className="grid h-52 place-items-center space-y-4 rounded border border-border/50 p-4 shadow-xs">
 									<div className="space-y-1 text-center text-foreground/40">
-										<p className=" font-semibold">Nothing going on yet...</p>
+										<p className="font-semibold">Nothing going on yet...</p>
 										<p className="">
 											Start your first round to pair your group members.
 										</p>

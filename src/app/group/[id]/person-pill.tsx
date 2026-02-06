@@ -1,5 +1,6 @@
 'use client'
 
+import { useActionState, useId } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -9,7 +10,6 @@ import {
 } from '@/components/ui/popover'
 import { H3 } from '@/components/ui/typography'
 import type { Group, Person } from '@/domain'
-import { useActionState } from 'react'
 import { removePerson, renamePerson } from './action'
 
 export default function PersonPill(props: {
@@ -18,6 +18,7 @@ export default function PersonPill(props: {
 }) {
 	const rename = renamePerson.bind(null, props.person.id, props.groupId)
 	const [state, renameAction] = useActionState(rename, { _tag: 'Idle' })
+	const renameId = useId()
 
 	return (
 		<Popover>
@@ -36,10 +37,10 @@ export default function PersonPill(props: {
 				<section>
 					<H3>Edit</H3>
 					<form action={renameAction}>
-						<label htmlFor="rename">Name</label>
+						<label htmlFor={renameId}>Name</label>
 						<div className="flex gap-2">
 							<Input
-								id="rename"
+								id={renameId}
 								name="name"
 								type="text"
 								defaultValue={props.person.name}

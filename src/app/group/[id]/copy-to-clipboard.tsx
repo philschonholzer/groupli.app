@@ -1,15 +1,12 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import type { Round } from '@/domain'
 import copy from 'copy-text-to-clipboard'
-import { set } from 'effect/Record'
 import { Check, ClipboardCopy } from 'lucide-react'
 import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import type { Round } from '@/domain'
 
-export default function CopyToClipboard(props: {
-	round: Round.RoundExtended
-}) {
+export default function CopyToClipboard(props: { round: Round.RoundExtended }) {
 	const [copied, setCopied] = useState(false)
 	const text = props.round.pairings
 		.map(({ person1, person2 }) => [person1.name, person2.name].join(' - '))

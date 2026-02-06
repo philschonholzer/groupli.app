@@ -1,6 +1,6 @@
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { H1 } from '@/components/ui/typography'
-import Link from 'next/link'
 import { newGroup } from './action'
 
 export default function Home() {

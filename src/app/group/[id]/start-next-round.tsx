@@ -1,13 +1,42 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import { Popover, PopoverContent } from '@/components/ui/popover'
-import type { Group, Person } from '@/domain'
 import { PopoverAnchor } from '@radix-ui/react-popover'
 import { pipe } from 'effect'
 import { valueTags } from 'effect/Match'
 import { useActionState, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Popover, PopoverContent } from '@/components/ui/popover'
+import type { Group, Person } from '@/domain'
 import { newRound } from './action'
+
+const NotEnoughPersonsMessage = () => (
+	<div className="space-y-2">
+		<p className="font-semibold">Not enough people</p>
+		<p className="opacity-90">
+			There are not enough people to start a pairing round. Add some more
+			members.
+		</p>
+	</div>
+)
+
+const DbErrorMessage = ({ message }: { message: unknown }) => (
+	<p>
+		The Database is not available. Try again later. {JSON.stringify(message)}
+	</p>
+)
+
+type NewRoundError =
+	| { _tag: 'NotEnoughPersonsForRound' }
+	| { _tag: 'DbError'; message: unknown }
+
+const renderError = (error: NewRoundError) =>
+	pipe(
+		error,
+		valueTags({
+			NotEnoughPersonsForRound: () => <NotEnoughPersonsMessage />,
+			DbError: (err) => <DbErrorMessage message={err.message} />,
+		}),
+	)
 
 export default function StartNextRound(props: {
 	groupId: Group.GroupId
@@ -31,7 +60,7 @@ function Form(props: {
 	serverAction: () => ReturnType<typeof newRound>
 	reset: (p1: boolean) => void
 }) {
-	const [state, action, isPending] = useActionState(props.serverAction, {
+	const [state, action, _isPending] = useActionState(props.serverAction, {
 		_tag: 'Idle',
 	})
 
@@ -47,28 +76,7 @@ function Form(props: {
 					{state._tag === 'Failure' && (
 						<div className="text-sm text-white">
 							{state.cause._tag === 'Fail' ? (
-								<>
-									{pipe(
-										state.cause.error,
-										valueTags({
-											NotEnoughPersonsForRound: (error) => (
-												<div className="space-y-2">
-													<p className="font-semibold">Not enough people</p>
-													<p className="opacity-90">
-														There are not enough people to start a pairing
-														round. Add some more members.
-													</p>
-												</div>
-											),
-											DbError: (error) => (
-												<p>
-													The Database is not available. Try again later.{' '}
-													{JSON.stringify(error.message)}
-												</p>
-											),
-										}),
-									)}
-								</>
+								renderError(state.cause.error as NewRoundError)
 							) : (
 								<>
 									Upps, something went wrong. Please try again later.{' '}

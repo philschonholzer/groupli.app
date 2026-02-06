@@ -1,22 +1,11 @@
+import { Effect, Schema } from 'effect'
 import { NameRequired } from '@/app/group/[id]/errors'
-import { Brand, Effect, Schema } from 'effect'
 import type { GroupId } from '../group'
 import { Repository } from './repository'
+import type { PersonId } from './schema'
 
-export * from './repository'
-
-export type PersonId = Brand.Branded<number, 'PersonId'>
-export const PersonId = Brand.nominal<PersonId>()
-export const Status = Schema.Literal('active', 'inactive')
-export type Status = typeof Status.Type
-
-export const Person = Schema.Struct({
-	id: Schema.Number.pipe(Schema.fromBrand(PersonId)),
-	name: Schema.String,
-	color: Schema.NullOr(Schema.String),
-	status: Status,
-})
-export type Person = typeof Person.Type
+export * from './schema'
+export { Repository }
 
 export const add = (name: string, groupId: GroupId) =>
 	Effect.gen(function* () {
@@ -42,7 +31,7 @@ export const removePerson = (personId: PersonId) =>
 		yield* Repository.setInactive(personId)
 	})
 
-export const skipRound = (personId: number) => {
+export const skipRound = (_personId: number) => {
 	throw new Error('Not implemented')
 }
 

@@ -1,12 +1,13 @@
-import { Db } from '@/adapter/db'
-import { Persons } from '@/adapter/db/schema'
 import { eq } from 'drizzle-orm'
 import { Array as A, Effect, Layer, Option, Schema } from 'effect'
-import { type Group, Person } from '..'
+import { Db } from '@/adapter/db'
+import { Persons } from '@/adapter/db/schema'
+import type * as Group from '../group'
+import { Person, type PersonId } from './schema'
 
 const make = Effect.gen(function* () {
 	const db = yield* Db
-	const decode = Schema.decodeSync(Person.Person)
+	const decode = Schema.decodeSync(Person)
 
 	return {
 		insert: (name: string, groupId: Group.GroupId) =>
@@ -24,18 +25,18 @@ const make = Effect.gen(function* () {
 						and(eq(_.group, groupId), eq(_.status, 'active')),
 				}),
 			).pipe(Effect.map(A.map((person) => decode(person)))),
-		updateName: (id: Person.PersonId, name: string) =>
+		updateName: (id: PersonId, name: string) =>
 			db((client) =>
 				client.update(Persons).set({ name }).where(eq(Persons.id, id)),
 			),
-		setInactive: (id: Person.PersonId) =>
+		setInactive: (id: PersonId) =>
 			db((client) =>
 				client
 					.update(Persons)
 					.set({ status: 'inactive' })
 					.where(eq(Persons.id, id)),
 			),
-		getById: (id: Person.PersonId) =>
+		getById: (id: PersonId) =>
 			db((client) =>
 				client.query.Persons.findFirst({ where: eq(Persons.id, id) }),
 			).pipe(Effect.map(Option.fromNullable), Effect.map(Option.map(decode))),

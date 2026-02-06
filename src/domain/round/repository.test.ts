@@ -1,11 +1,10 @@
 import assert from 'node:assert'
-import { describe, it } from 'vitest'
-
-import { Db } from '@/adapter/db'
 import { Effect, Layer } from 'effect'
+import { describe, it } from 'vitest'
+import { Db } from '@/adapter/db'
 import { Group, Round } from '..'
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: Test helper accepts dynamic mock data
 function runWithStubDb(data: any) {
 	return <A, I>(effect: Effect.Effect<A, I, Round.Repository>) => {
 		const query = () => Effect.succeed(data)

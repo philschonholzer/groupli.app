@@ -1,9 +1,9 @@
-import { Db } from '@/adapter/db'
-import { Pairings } from '@/adapter/db/schema'
 import { eq } from 'drizzle-orm'
 import { Effect, Layer } from 'effect'
-import { retryUntil } from 'effect/STM'
-import type { Person, Round } from '..'
+import { Db } from '@/adapter/db'
+import { Pairings } from '@/adapter/db/schema'
+import type * as Person from '../person'
+import type * as RoundSchema from '../round/schema'
 
 const make = Effect.gen(function* () {
 	const db = yield* Db
@@ -11,7 +11,7 @@ const make = Effect.gen(function* () {
 	return {
 		getAll: db((client) => client.query.Pairings.findMany()),
 		insert: (
-			roundId: Round.RoundId,
+			roundId: RoundSchema.RoundId,
 			pairs: (readonly [person1: Person.PersonId, person2: Person.PersonId])[],
 		) =>
 			db((client) =>
@@ -23,12 +23,12 @@ const make = Effect.gen(function* () {
 					})),
 				),
 			),
-		deleteByRoundId: (roundId: Round.RoundId) =>
+		deleteByRoundId: (roundId: RoundSchema.RoundId) =>
 			db((client) =>
 				client.delete(Pairings).where(eq(Pairings.round, roundId)),
 			),
 		updatePairsByRoundId: (
-			roundId: Round.RoundId,
+			roundId: RoundSchema.RoundId,
 			pairs: (readonly [Person.PersonId, Person.PersonId])[],
 		) => {
 			//this was once using batch of libsql, but better-sqlite3 does not support it

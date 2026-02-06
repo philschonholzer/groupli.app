@@ -1,20 +1,50 @@
 'use client'
 
+import { pipe } from 'effect'
+import { valueTags } from 'effect/Match'
+import { useActionState, useId, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import type { GroupId } from '@/domain/group'
-import { pipe } from 'effect'
-import { valueTags } from 'effect/Match'
-import { useActionState, useRef } from 'react'
 import { addPerson } from './action'
 
-export default function AddPerson(props: {
-	groupId: GroupId
-}) {
+const NameRequiredErrorMessage = ({ message }: { message: string }) => (
+	<p>{message}</p>
+)
+
+const TooManyPersonsInGroupMessage = () => (
+	<p>There are already 14 persons in the group. You can't add more.</p>
+)
+
+const DbErrorMessage = ({ message }: { message: unknown }) => (
+	<p>
+		The Database is not available. Try again later. {JSON.stringify(message)}
+	</p>
+)
+
+type AddPersonError =
+	| { _tag: 'NameRequiredError'; message: string }
+	| { _tag: 'TooManyPersonsInGroup' }
+	| { _tag: 'DbError'; message: unknown }
+
+const renderError = (error: AddPersonError) =>
+	pipe(
+		error,
+		valueTags({
+			NameRequiredError: (err) => (
+				<NameRequiredErrorMessage message={err.message} />
+			),
+			TooManyPersonsInGroup: () => <TooManyPersonsInGroupMessage />,
+			DbError: (err) => <DbErrorMessage message={err.message} />,
+		}),
+	)
+
+export default function AddPerson(props: { groupId: GroupId }) {
 	const addPersonAction = addPerson.bind(null, props.groupId)
 	const [state, action] = useActionState(addPersonAction, { _tag: 'Idle' })
 	const ref = useRef<HTMLFormElement>(null)
+	const inputId = useId()
 
 	if (state._tag === 'Success' && ref.current) {
 		ref.current.reset()
@@ -22,10 +52,10 @@ export default function AddPerson(props: {
 
 	return (
 		<form action={action} ref={ref}>
-			<Label htmlFor="add-person">Name</Label>
+			<Label htmlFor={inputId}>Name</Label>
 			<div className="flex gap-4">
 				<Input
-					id="add-person"
+					id={inputId}
 					className=""
 					type="text"
 					name="name"
@@ -38,24 +68,7 @@ export default function AddPerson(props: {
 			{state._tag === 'Failure' &&
 				(state.cause._tag === 'Fail' ? (
 					<div className="pt-1 text-red-600">
-						{pipe(
-							state.cause.error,
-							valueTags({
-								NameRequiredError: (error) => <p>{error.message}</p>,
-								TooManyPersonsInGroup: () => (
-									<p>
-										There are already 14 persons in the group. You can't add
-										more.
-									</p>
-								),
-								DbError: (error) => (
-									<p>
-										The Database is not available. Try again later.{' '}
-										{JSON.stringify(error.message)}
-									</p>
-								),
-							}),
-						)}
+						{renderError(state.cause.error as AddPersonError)}
 					</div>
 				) : (
 					<p className="pt-1 text-red-600">

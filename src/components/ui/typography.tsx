@@ -31,7 +31,7 @@ const H2 = forwardRef<
 		<h2
 			{...props}
 			ref={ref}
-			className={cn('scroll-m-20 font-semibold text-3xl ', props.className)}
+			className={cn('scroll-m-20 font-semibold text-3xl', props.className)}
 		>
 			{props.children}
 		</h2>
