@@ -65,13 +65,18 @@ ensure_playwright_browsers() {
 	fi
 	
 	# Detect environment and install accordingly
-	# Check Docker first, before Nix (nixpacks containers have both)
-	if [ -f /.dockerenv ] || grep -q docker /proc/1/cgroup 2>/dev/null; then
-		# Docker environment - install with system dependencies
-		echo -e "${YELLOW}Docker environment detected - installing with system dependencies${NC}"
+	# In CI environments (like Coolify), always use --with-deps for Playwright
+	# CI is set by nixpacks and most CI systems
+	if [ "$CI" = "true" ]; then
+		# CI environment (Coolify, GitHub Actions, etc.) - install with system dependencies
+		echo -e "${YELLOW}CI environment detected - installing with system dependencies${NC}"
 		pnpm exec playwright install --with-deps chromium firefox
+	elif command -v nix-env >/dev/null 2>&1 && [ -n "$PLAYWRIGHT_BROWSERS_PATH" ]; then
+		# NixOS with Playwright browsers provided by Nix devShell
+		echo -e "${YELLOW}Nix devShell detected - browsers already provided${NC}"
+		return 0
 	elif command -v nix-env >/dev/null 2>&1; then
-		# NixOS or Nix package manager (non-Docker) - browsers managed by Nix
+		# NixOS or Nix package manager (local development) - install browsers only
 		echo -e "${YELLOW}Nix environment detected - installing browsers without system dependencies${NC}"
 		pnpm exec playwright install chromium firefox
 	else
