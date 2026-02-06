@@ -12,10 +12,14 @@ NC='\033[0m' # No Color
 cleanup() {
 	echo ""
 	echo -e "${BLUE}🧹 Cleaning up...${NC}"
-	# Kill any Next.js servers on port 3000
-	lsof -ti:3000 | xargs kill -9 2>/dev/null || true
-	# Kill any playwright processes
-	pkill -f "playwright" 2>/dev/null || true
+	# Kill any Next.js servers on port 3000 (only if lsof is available)
+	if command -v lsof >/dev/null 2>&1; then
+		lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+	fi
+	# Kill any playwright processes (only if pkill is available)
+	if command -v pkill >/dev/null 2>&1; then
+		pkill -f "playwright" 2>/dev/null || true
+	fi
 	echo -e "${GREEN}✅ Cleanup complete${NC}"
 }
 
@@ -54,8 +58,14 @@ echo "============================================================"
 # 1. Linting
 # run_step "Linting" "npm run lint"
 
-# 2. Type checking
-run_step "Type checking" "npm run check"
+# 2. Type checking (skip in Docker if SKIP_TYPE_CHECK is set)
+if [ "$SKIP_TYPE_CHECK" != "true" ]; then
+	run_step "Type checking" "npm run check"
+else
+	echo ""
+	echo -e "${YELLOW}⏭️  Skipping type checking (SKIP_TYPE_CHECK=true)${NC}"
+	echo ""
+fi
 
 # 3. Unit tests
 run_step "Unit tests" "npm run test"
