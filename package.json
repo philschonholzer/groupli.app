@@ -9,6 +9,7 @@
 	"scripts": {
 		"dev": "next dev",
 		"build": "DB_URL=\"\" next build",
+		"build:ci": "./scripts/ci.sh",
 		"start": "next start",
 		"lint": "biome check src",
 		"check": "tsc --noEmit",
@@ -17,10 +18,6 @@
 		"seed:e2e": "tsx e2e/seed.ts",
 		"test:e2e": "npm run seed:e2e && npm run playwright",
 		"playwright": "playwright test",
-		"ci": "./scripts/ci.sh",
-		"pages:build": "pnpm next-on-pages",
-		"preview": "pnpm pages:build && wrangler pages dev",
-		"cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts",
 		"generate": "drizzle-kit generate:sqlite --schema=src/adapter/db/schema.ts",
 		"migrate:preview": "drizzle-kit migrate --config=drizzle-preview.config.ts",
 		"update-meta": "drizzle-kit up:sqlite",

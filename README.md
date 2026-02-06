@@ -58,7 +58,7 @@ See [e2e/README.md](./e2e/README.md) for more details.
 Run the complete CI pipeline locally:
 
 ```bash
-pnpm ci
+pnpm build:ci
 ```
 
 This runs (via `scripts/ci.sh`):
