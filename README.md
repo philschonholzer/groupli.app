@@ -61,11 +61,21 @@ Run the complete CI pipeline locally:
 pnpm ci
 ```
 
-This runs:
-1. Unit tests
-2. Type checking
+This runs (via `scripts/ci.sh`):
+
+1. Type checking
+2. Unit tests
 3. Production build
-4. E2E tests against production build
+4. Database seeding for e2e tests
+5. E2E tests against production build
+
+The CI script automatically:
+
+- Sets all required environment variables (`DB_URL`, `OTLP_URL`, `CI`, `E2E_GROUP_TEST_ID`)
+- Seeds the database with test data
+- Runs e2e tests against the production server
+
+**Note:** In CI mode, environment variables are exported directly by the shell script - no `.test-env.json` file is created.
 
 ## Production
 

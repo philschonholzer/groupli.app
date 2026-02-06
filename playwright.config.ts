@@ -1,24 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs'
-import path from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
-
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
-
-// Load test environment variables if available
-const testEnvPath = path.join(__dirname, 'e2e', '.test-env.json')
-if (existsSync(testEnvPath)) {
-	const testEnv = JSON.parse(readFileSync(testEnvPath, 'utf-8'))
-	Object.assign(process.env, testEnv)
-}
-
-// Set required environment variables for e2e tests
-process.env.DB_URL = process.env.DB_URL || 'data.sqlite'
-process.env.OTLP_URL = process.env.OTLP_URL || 'http://localhost:4318/v1/traces'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -55,13 +35,6 @@ export default defineConfig({
 			name: 'firefox',
 			use: { ...devices['Desktop Firefox'] },
 		},
-
-		// Webkit is disabled on NixOS due to system dependency issues
-		// Uncomment below if running on a different platform
-		// {
-		// 	name: 'webkit',
-		// 	use: { ...devices['Desktop Safari'] },
-		// },
 	],
 
 	/* Run your local dev server before starting the tests */

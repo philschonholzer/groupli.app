@@ -47,4 +47,3 @@ next-env.d.ts
 /blob-report/
 /playwright/.cache/
 data.sqlite
-e2e/.test-env.json
