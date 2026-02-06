@@ -45,7 +45,7 @@ npm run playwright -- --project=chromium
 ### Run complete CI pipeline
 
 ```bash
-npm run ci
+npm run build:ci
 ```
 
 This executes `scripts/ci.sh` which:
