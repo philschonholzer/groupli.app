@@ -1,24 +1,12 @@
-import { Brand, Effect, Option, Schema } from 'effect'
-import { type Group, Pairing, Person } from '..'
+import { Effect, Option, Schema } from 'effect'
+import type * as Group from '../group'
+import * as Pairing from '../pairing'
+import type * as Person from '../person'
 import { Repository } from './repository'
+import type { RoundId } from './schema'
 
-export * from './repository'
-
-export type RoundId = Brand.Branded<number, 'PersonId'>
-export const RoundId = Brand.nominal<RoundId>()
-
-export const Round = Schema.Struct({
-	id: Schema.Number.pipe(Schema.fromBrand(RoundId)),
-	group: Schema.String,
-	at: Schema.String,
-})
-
-export const RoundExtended = Schema.Struct({
-	...Round.fields,
-	persons: Schema.Array(Person.Person),
-	pairings: Schema.Array(Pairing.PairEntity),
-})
-export type RoundExtended = typeof RoundExtended.Type
+export * from './schema'
+export { Repository }
 
 export const newRound = (
 	groupId: Group.GroupId,
@@ -47,6 +35,7 @@ export const shufflePairings = (groupId: Group.GroupId) =>
 			return yield* new NoRoundFound()
 		}
 		const personsInRound = yield* Repository.getPersonsInRound(round.value.id)
+
 		const pairings = yield* Pairing.pairPersons(
 			groupId,
 			personsInRound.map((p) => p.person),
@@ -78,6 +67,7 @@ export const removePersonFromRound = (
 		}
 
 		const personsLeftInRound = yield* Repository.getPersonsInRound(roundId)
+
 		const pairings = yield* Pairing.pairPersons(
 			groupId,
 			personsLeftInRound.map((p) => p.person),

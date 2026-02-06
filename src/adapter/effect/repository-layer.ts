@@ -1,5 +1,5 @@
-import { Group, Pairing, Person, Round } from '@/domain'
 import { Layer } from 'effect'
+import { Group, Pairing, Person, Round } from '@/domain'
 
 export const RepositoryLayer = Layer.mergeAll(
 	Person.Repository.Layer,

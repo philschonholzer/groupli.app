@@ -1,10 +1,10 @@
 'use server'
 
+import { Effect, Schema } from 'effect'
 import { DbError } from '@/adapter/db'
 import { runAction } from '@/adapter/effect'
 import { Next } from '@/adapter/next'
 import { Group, Person, Round } from '@/domain'
-import { Effect, Schema } from 'effect'
 import { NameRequired } from './errors'
 
 type AddIdleTag<T> = Schema.Schema.Encoded<T> | { _tag: 'Idle' }
@@ -16,7 +16,7 @@ const AddPersonSchema = Schema.Exit({
 
 export async function addPerson(
 	groupId: Group.GroupId,
-	prevState: AddIdleTag<typeof AddPersonSchema>,
+	_prevState: AddIdleTag<typeof AddPersonSchema>,
 	formData: FormData,
 ) {
 	return Effect.gen(function* () {
@@ -87,7 +87,7 @@ const UpdateNameSchema = Schema.Exit({
 
 export async function renameGroup(
 	groupId: Group.GroupId,
-	prevState: AddIdleTag<typeof UpdateNameSchema>,
+	_prevState: AddIdleTag<typeof UpdateNameSchema>,
 	formData: FormData,
 ) {
 	return Effect.gen(function* () {
@@ -110,7 +110,7 @@ const RenamePersonSchema = Schema.Exit({
 export const renamePerson = async (
 	personId: Person.PersonId,
 	groupId: Group.GroupId,
-	prevState: AddIdleTag<typeof RenamePersonSchema>,
+	_prevState: AddIdleTag<typeof RenamePersonSchema>,
 	formData: FormData,
 ) =>
 	Effect.gen(function* () {

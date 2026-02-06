@@ -1,5 +1,3 @@
-import { Db } from '@/adapter/db'
-import { PersonsInRounds, Rounds } from '@/adapter/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import {
 	Array as A,
@@ -8,18 +6,23 @@ import {
 	Layer,
 	Option,
 	Order,
+	pipe,
 	String as S,
 	Schema,
-	pipe,
 } from 'effect'
-import { type Group, Pairing, Person, Round } from '..'
+import { Db } from '@/adapter/db'
+import { PersonsInRounds, Rounds } from '@/adapter/db/schema'
+import type * as Group from '../group'
+import * as PairingSchema from '../pairing/schema'
+import * as Person from '../person'
+import * as RoundSchema from './schema'
 
 const make = Effect.gen(function* () {
 	const db = yield* Db
 
 	const decodePerson = Schema.decodeSync(Person.Person)
-	const decodePair = Schema.decodeSync(Pairing.PairEntity)
-	const decodeExtended = Schema.decodeSync(Round.RoundExtended)
+	const decodePair = Schema.decodeSync(PairingSchema.PairEntity)
+	const decodeExtended = Schema.decodeSync(RoundSchema.RoundExtended)
 
 	return {
 		getAll: db((client) => client.query.Rounds.findMany()),
@@ -90,7 +93,10 @@ const make = Effect.gen(function* () {
 				)
 				return { round, personsInRound }
 			}),
-		addPersonToRound: (personId: Person.PersonId, roundId: Round.RoundId) =>
+		addPersonToRound: (
+			personId: Person.PersonId,
+			roundId: RoundSchema.RoundId,
+		) =>
 			db((client) =>
 				client
 					.insert(PersonsInRounds)
@@ -103,14 +109,17 @@ const make = Effect.gen(function* () {
 					.delete(PersonsInRounds)
 					.where(eq(PersonsInRounds.id, personInRoundId)),
 			),
-		findPersonInRound: (personId: Person.PersonId, roundId: Round.RoundId) =>
+		findPersonInRound: (
+			personId: Person.PersonId,
+			roundId: RoundSchema.RoundId,
+		) =>
 			db((client) =>
 				client.query.PersonsInRounds.findFirst({
 					where: (p, { and, eq }) =>
 						and(eq(p.person, personId), eq(p.round, roundId)),
 				}),
 			).pipe(Effect.map(Option.fromNullable)),
-		getPersonsInRound: (roundId: Round.RoundId) =>
+		getPersonsInRound: (roundId: RoundSchema.RoundId) =>
 			db((client) =>
 				client.query.PersonsInRounds.findMany({
 					where: eq(PersonsInRounds.round, roundId),

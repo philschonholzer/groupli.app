@@ -1,17 +1,11 @@
+import { Effect } from 'effect'
 import { Uuid } from '@/adapter/uuid'
 import { NameRequired } from '@/app/group/[id]/errors'
-import { Brand, Effect, Schema } from 'effect'
 import { Repository } from './repository'
+import { Group, GroupId } from './schema'
 
-export * from './repository'
-
-export type GroupId = Brand.Branded<string, 'GroupId'>
-export const GroupId = Brand.nominal<GroupId>()
-
-export const Group = Schema.Struct({
-	id: Schema.String.pipe(Schema.fromBrand(GroupId)),
-	name: Schema.String.pipe(Schema.nonEmptyString()),
-})
+export * from './schema'
+export { Repository }
 
 export const newGroup = Effect.gen(function* () {
 	const id = yield* Uuid.id(8)

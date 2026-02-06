@@ -1,9 +1,9 @@
 import assert from 'node:assert'
-import { runWithInMemoryDb } from '@/adapter/effect/run-with-in-memory-db'
 import { Console, Effect, TestClock } from 'effect'
 import { describe, it } from 'vitest'
-import { NotEnoughPersonsForRound } from '.'
+import { runWithInMemoryDb } from '@/adapter/effect/run-with-in-memory-db'
 import { Group, Person, Round } from '..'
+import { NotEnoughPersonsForRound } from '.'
 
 describe('Round domain', () => {
 	it('should start a new round', () =>

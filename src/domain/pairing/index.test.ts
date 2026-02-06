@@ -1,15 +1,14 @@
 import assert from 'node:assert'
-import { describe, test } from 'vitest'
-
-import { Db } from '@/adapter/db'
 import { Effect, Layer, Option } from 'effect'
+import { describe, test } from 'vitest'
+import { Db } from '@/adapter/db'
 import { Group, Pairing, Round } from '../index'
 import { PersonId } from '../person'
-import { type PairList, __tests__, pairPersons } from './index'
+import { __tests__, type PairList, pairPersons } from './index'
 
 const { generateAllListsOfPairs, addWeightToPairLists } = __tests__
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: Test helper accepts dynamic mock data
 function runTest(data: any) {
 	return <A, I>(
 		effect: Effect.Effect<A, I, Round.Repository | Pairing.Repository>,

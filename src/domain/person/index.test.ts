@@ -1,9 +1,9 @@
 import assert from 'node:assert'
-import { runWithInMemoryDb } from '@/adapter/effect/run-with-in-memory-db'
-import { NameRequired } from '@/app/group/[id]/errors'
 import { Effect } from 'effect'
 import { nanoid } from 'nanoid'
 import { describe, it } from 'vitest'
+import { runWithInMemoryDb } from '@/adapter/effect/run-with-in-memory-db'
+import { NameRequired } from '@/app/group/[id]/errors'
 import { Group, Person } from '..'
 
 describe('Person', () => {
