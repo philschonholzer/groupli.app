@@ -35,6 +35,38 @@
 1. `pnpm dev`
 1. Open <http://localhost:3000>
 
+## Testing
+
+### Unit Tests
+
+```bash
+pnpm test          # Run once
+pnpm test:w        # Watch mode
+```
+
+### E2E Tests
+
+```bash
+pnpm test:e2e      # Run e2e tests (dev mode)
+pnpm test:e2e:ci   # Run e2e tests (production mode)
+```
+
+See [e2e/README.md](./e2e/README.md) for more details.
+
+### CI Pipeline
+
+Run the complete CI pipeline locally:
+
+```bash
+pnpm ci
+```
+
+This runs:
+1. Unit tests
+2. Type checking
+3. Production build
+4. E2E tests against production build
+
 ## Production
 
 ### Backup

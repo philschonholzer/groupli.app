@@ -1,3 +1,5 @@
+import { existsSync, readFileSync } from 'node:fs'
+import path from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
 
 /**
@@ -6,6 +8,17 @@ import { defineConfig, devices } from '@playwright/test'
  */
 // import dotenv from 'dotenv';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+// Load test environment variables if available
+const testEnvPath = path.join(__dirname, 'e2e', '.test-env.json')
+if (existsSync(testEnvPath)) {
+	const testEnv = JSON.parse(readFileSync(testEnvPath, 'utf-8'))
+	Object.assign(process.env, testEnv)
+}
+
+// Set required environment variables for e2e tests
+process.env.DB_URL = process.env.DB_URL || 'data.sqlite'
+process.env.OTLP_URL = process.env.OTLP_URL || 'http://localhost:4318/v1/traces'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -43,36 +56,23 @@ export default defineConfig({
 			use: { ...devices['Desktop Firefox'] },
 		},
 
-		{
-			name: 'webkit',
-			use: { ...devices['Desktop Safari'] },
-		},
-
-		/* Test against mobile viewports. */
+		// Webkit is disabled on NixOS due to system dependency issues
+		// Uncomment below if running on a different platform
 		// {
-		//   name: 'Mobile Chrome',
-		//   use: { ...devices['Pixel 5'] },
-		// },
-		// {
-		//   name: 'Mobile Safari',
-		//   use: { ...devices['iPhone 12'] },
-		// },
-
-		/* Test against branded browsers. */
-		// {
-		//   name: 'Microsoft Edge',
-		//   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-		// },
-		// {
-		//   name: 'Google Chrome',
-		//   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+		// 	name: 'webkit',
+		// 	use: { ...devices['Desktop Safari'] },
 		// },
 	],
 
 	/* Run your local dev server before starting the tests */
-	// webServer: {
-	//   command: 'npm run start',
-	//   url: 'http://127.0.0.1:3000',
-	//   reuseExistingServer: !process.env.CI,
-	// },
+	webServer: {
+		command: process.env.CI ? 'npm run start' : 'npm run dev',
+		url: 'http://127.0.0.1:3000',
+		reuseExistingServer: !process.env.CI,
+		timeout: 120000,
+		env: {
+			DB_URL: 'data.sqlite',
+			OTLP_URL: 'http://localhost:4318/v1/traces',
+		},
+	},
 })

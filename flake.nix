@@ -51,7 +51,18 @@
             pnpm
             biome
             rclone
+            playwright-test
           ];
+
+          shellHook = ''
+            echo "groupli.app development environment"
+            echo "Node.js version: $(node --version)"
+            echo "pnpm version: $(pnpm --version)"
+
+            # Set Playwright environment variables for NixOS compatibility
+            export PLAYWRIGHT_BROWSERS_PATH="${pkgs.playwright-driver.browsers}"
+            export PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=true
+          '';
         };
       };
     };
