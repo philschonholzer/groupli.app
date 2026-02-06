@@ -1,10 +1,9 @@
 import assert from 'node:assert'
 import { expect, test } from '@playwright/test'
+import { TEST_GROUP_ID } from './constants'
 
 test('can start a new round', async ({ page }) => {
-	const groupId = process.env.E2E_GROUP_TEST_ID
-	expect(groupId).toBeDefined()
-	await page.goto(`/group/${groupId}`)
+	await page.goto(`/group/${TEST_GROUP_ID}`)
 
 	const startButton = page.getByRole('button', { name: /Start/i })
 	await expect(startButton).toBeEnabled()

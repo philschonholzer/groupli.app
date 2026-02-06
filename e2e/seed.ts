@@ -11,9 +11,9 @@ import {
 	PersonsInRounds,
 	Rounds,
 } from '../src/adapter/db/schema'
+import { TEST_GROUP_ID } from './constants'
 
 const DB_PATH = process.env.DB_URL || 'data.sqlite'
-const TEST_GROUP_ID = 'e2e-test-group'
 
 // Initialize database
 const sqlite = new Database(DB_PATH)
