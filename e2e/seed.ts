@@ -36,14 +36,6 @@ function seed() {
 		.all()
 	const personIds = testGroupPersons.map((p) => p.id)
 
-	// Find all rounds for this group
-	const testGroupRounds = db
-		.select({ id: Rounds.id })
-		.from(Rounds)
-		.where(eq(Rounds.group, TEST_GROUP_ID))
-		.all()
-	const roundIds = testGroupRounds.map((r) => r.id)
-
 	// Delete in correct order
 	// 1. Delete pairings related to these persons or rounds
 	for (const personId of personIds) {

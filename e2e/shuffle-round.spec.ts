@@ -31,7 +31,6 @@ test('can shuffle person in a round', async ({ page }) => {
 	const roundNumber = lastRoundTitle?.split('#').at(-1)
 	expect(roundNumber).toBeDefined()
 	assert(roundNumber)
-	const number = Number(roundNumber)
 
 	// Shuffle the round
 	const shuffleButton = roundsSection
