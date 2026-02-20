@@ -17,11 +17,32 @@ export const run = <A>(effect: Effect.Effect<A, never, MainLive>) => {
 	)
 }
 
-export const runAction =
-	<A, E, SI extends object>(props: {
-		schema: Schema.Schema<Exit.Exit<A, E>, SI, never>
-	}) =>
-	(effect: Effect.Effect<A, E | NextRedirect | NextNotFound, MainLive>) => {
+// Overload for when returnVoid is true
+export function runAction<A, E, SI extends object>(props: {
+	schema: Schema.Schema<Exit.Exit<A, E>, SI, never>
+	returnVoid: true
+}): (
+	effect: Effect.Effect<A, E | NextRedirect | NextNotFound, MainLive>,
+) => Promise<void>
+
+// Overload for when returnVoid is false or not provided
+export function runAction<A, E, SI extends object>(props: {
+	schema: Schema.Schema<Exit.Exit<A, E>, SI, never>
+	returnVoid?: false
+}): (
+	effect: Effect.Effect<A, E | NextRedirect | NextNotFound, MainLive>,
+) => Promise<
+	Schema.Schema.Encoded<typeof props.schema> | { readonly _tag: 'Idle' }
+>
+
+// Implementation
+export function runAction<A, E, SI extends object>(props: {
+	schema: Schema.Schema<Exit.Exit<A, E>, SI, never>
+	returnVoid?: boolean
+}) {
+	return (
+		effect: Effect.Effect<A, E | NextRedirect | NextNotFound, MainLive>,
+	) => {
 		const parse = Schema.encodeUnknownSync(props.schema)
 		return effect
 			.pipe(
@@ -36,9 +57,10 @@ export const runAction =
 			.then((result) => {
 				handleRedirectOrNotFound(result)
 				const parsed = parse(result)
-				return parsed as typeof parsed | { readonly _tag: 'Idle' }
+				return parsed as typeof parsed | { readonly _tag: 'Idle' } | undefined
 			})
 	}
+}
 
 function handleRedirectOrNotFound<A, E>(
 	result: Exit.Exit<

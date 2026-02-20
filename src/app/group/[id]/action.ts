@@ -75,6 +75,7 @@ export async function shufflePairingsInRound(groupId: Group.GroupId) {
 				failure: Schema.Union(DbError, Round.NoRoundFound),
 				defect: Schema.Void,
 			}),
+			returnVoid: true,
 		}),
 	)
 }
@@ -139,6 +140,7 @@ export const removePerson = async (
 				failure: Schema.Union(DbError),
 				defect: Schema.Void,
 			}),
+			returnVoid: true,
 		}),
 	)
 
