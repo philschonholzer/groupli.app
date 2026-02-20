@@ -1,2 +1,5 @@
 [phases.setup]
 nixPkgs = ['...', 'sqlite', 'minio-client']
+
+[phases.build]
+cmds = ['pnpm build:ci']

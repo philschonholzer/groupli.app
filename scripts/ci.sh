@@ -111,6 +111,28 @@ if [ "$SKIP_E2E_TESTS" != "true" ]; then
 	run_step "Seeding database for E2E tests" "npm run seed:e2e"
 	
 	run_step "E2E tests" "npm run playwright"
+	
+	# Clean up Playwright browsers after tests to save 1.5GB in Docker image
+	# Skip if using Nix-provided browsers (they're in /nix/store, not in cache)
+	if [[ "$PLAYWRIGHT_BROWSERS_PATH" == /nix/store/* ]]; then
+		echo ""
+		echo -e "${BLUE}ℹ️  Using Nix-provided browsers, skipping cache cleanup${NC}"
+		echo ""
+	else
+		echo ""
+		echo -e "${BLUE}🧹 Cleaning up Playwright browsers (saves 1.5GB)...${NC}"
+		# Use PLAYWRIGHT_BROWSERS_PATH if set, otherwise default cache locations
+		if [ -n "$PLAYWRIGHT_BROWSERS_PATH" ]; then
+			echo "   Removing: $PLAYWRIGHT_BROWSERS_PATH"
+			rm -rf "$PLAYWRIGHT_BROWSERS_PATH" || true
+		else
+			echo "   Removing: ~/.cache/ms-playwright and /root/.cache/ms-playwright"
+			rm -rf ~/.cache/ms-playwright || true
+			rm -rf /root/.cache/ms-playwright || true
+		fi
+		echo -e "${GREEN}✅ Playwright browsers removed${NC}"
+		echo ""
+	fi
 else
 	echo ""
 	echo -e "${YELLOW}⏭️  Skipping E2E tests (SKIP_E2E_TESTS=true)${NC}"
