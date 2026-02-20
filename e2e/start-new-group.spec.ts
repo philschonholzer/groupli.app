@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 test('can create a new group', async ({ page }) => {
 	await page.goto('/')
 
-	await page.getByRole('button').click()
+	await page.getByRole('button', { name: /Get started/i }).click()
 
 	await expect(page.getByLabel('Group')).toBeInViewport({ timeout: 20_000 })
 	const addPersonButton = page.getByRole('button', { name: /Add Person/i })

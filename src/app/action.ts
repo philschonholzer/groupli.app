@@ -18,6 +18,7 @@ export async function newGroup() {
 				failure: DbError,
 				defect: Schema.Void,
 			}),
+			returnVoid: true,
 		}),
 	)
 }
