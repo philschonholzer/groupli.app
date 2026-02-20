@@ -5,7 +5,6 @@ import { Context, Layer } from 'effect'
 import * as schema from './schema'
 
 const makeOrmClient = (url: string) => {
-	console.log('db url: %s', url)
 	const sqlite = new Database(url)
 	const ormClient = drizzle(sqlite, {
 		schema,
