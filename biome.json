@@ -1,5 +1,17 @@
 {
 	"$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+	"files": {
+		"experimentalScannerIgnores": [
+			"node_modules",
+			".next",
+			"dist",
+			"build",
+			"*.log",
+			"*.tsbuildinfo",
+			"playwright-report",
+			"test-results"
+		]
+	},
 	"assist": {
 		"enabled": true
 	},
@@ -8,6 +20,7 @@
 		"rules": {
 			"recommended": true,
 			"complexity": { "noStaticOnlyClass": "off" },
+			"suspicious": { "noUnknownAtRules": "off" },
 			"nursery": {
 				"useSortedClasses": {
 					"level": "warn",
