@@ -257,6 +257,31 @@ const { pending } = useFormStatus()
 - Bind params: `const action = serverAction.bind(null, id)`
 - Use `revalidatePath()` for cache invalidation
 
+## Next.js DevTools (MCP)
+
+This project has the Next.js MCP server configured for enhanced development capabilities.
+
+### Available Tools
+When the dev server is running (`pnpm dev`), AI agents have access to:
+- **get_project_metadata** - Project info (path, dev server URL, etc.)
+- **get_errors** - Current errors (global, runtime, build errors with stack traces)
+- **get_page_metadata** - Runtime metadata about page renders
+- **get_logs** - Access to Next.js dev logs
+- **get_server_action_by_id** - Locate Server Actions by ID
+- **get_routes** - All routes in your app (App Router & Pages Router)
+
+### Configuration
+- OpenCode config: `opencode.json` (configures the MCP server for OpenCode)
+- The MCP server automatically discovers the Next.js dev server on port 3000
+- No separate `.mpc.json` needed for OpenCode (only required for other MCP clients)
+
+### Usage
+AI agents can proactively use these tools to:
+- Diagnose errors before making changes
+- Understand the route structure before adding new pages
+- Inspect page metadata to understand rendering behavior
+- Locate server actions by their IDs in error messages
+
 ## Commit Conventions
 
 Follow Conventional Commits (enforced by commitlint):
