@@ -100,7 +100,7 @@ const P = forwardRef<
 	React.HTMLAttributes<HTMLParagraphElement>
 >((props, ref) => {
 	return (
-		<p {...props} ref={ref} className={cn('text-gray-600', props.className)}>
+		<p {...props} ref={ref} className={cn('text-foreground', props.className)}>
 			{props.children}
 		</p>
 	)

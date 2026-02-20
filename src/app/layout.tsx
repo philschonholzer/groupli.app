@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Grandstander } from 'next/font/google'
 import './globals.css'
 import Script from 'next/script'
+import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/toaster'
 import Header from './header'
 
@@ -19,7 +20,7 @@ export default function RootLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<Script
 				defer
 				src="/stats/script.js"
@@ -30,9 +31,16 @@ export default function RootLayout({
 			<body
 				className={`${fontFamily.className} container mx-auto my-12 max-w-3xl`}
 			>
-				<Header />
-				<main>{children}</main>
-				<Toaster />
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+				>
+					<Header />
+					<main>{children}</main>
+					<Toaster />
+				</ThemeProvider>
 			</body>
 		</html>
 	)
