@@ -8,9 +8,9 @@ const navigation = [
 
 export default function Header() {
 	return (
-		<header className="absolute inset-x-0 top-0 z-50">
+		<header className="sticky inset-x-0 top-0 z-50 border-b border-b-gray-400/10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
 			<nav
-				className="flex items-center justify-between p-6 lg:px-8"
+				className="flex items-center justify-between p-3 lg:px-8"
 				aria-label="Global"
 			>
 				<div className="flex lg:flex-1">

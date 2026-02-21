@@ -28,9 +28,7 @@ export default function RootLayout({
 				data-host-url="https://groupli.app"
 			/>
 
-			<body
-				className={`${fontFamily.className} container mx-auto my-12 max-w-3xl`}
-			>
+			<body className={fontFamily.className}>
 				<ThemeProvider
 					attribute="class"
 					defaultTheme="system"
@@ -38,7 +36,7 @@ export default function RootLayout({
 					disableTransitionOnChange
 				>
 					<Header />
-					<main>{children}</main>
+					<main className="container mx-auto my-4 max-w-3xl">{children}</main>
 					<Toaster />
 				</ThemeProvider>
 			</body>
