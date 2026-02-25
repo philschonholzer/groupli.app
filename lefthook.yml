@@ -8,4 +8,4 @@ pre-commit:
 commit-msg:
   commands:
     commitlint:
-      run: npx --no -- commitlint --edit {1}
+      run: commitlint --edit {1}
