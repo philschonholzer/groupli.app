@@ -9,5 +9,14 @@
 				"NEXT_DEV_URL": "http://localhost:3000"
 			}
 		}
+	},
+	"permission": {
+		"bash": {
+			"*": "ask",
+			"npm *": "deny",
+			"pnpm *": "allow",
+			"git push *": "deny",
+			"git *": "allow"
+		}
 	}
 }
