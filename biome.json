@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.6.2/schema.json",
 	"css": {
 		"parser": {
 			"tailwindDirectives": true
@@ -16,15 +16,16 @@
 		}
 	],
 	"files": {
-		"experimentalScannerIgnores": [
-			"node_modules",
-			".next",
-			"dist",
-			"build",
-			"*.log",
-			"*.tsbuildinfo",
-			"playwright-report",
-			"test-results"
+		"includes": [
+			"**",
+			"!!**/node_modules",
+			"!!**/.next",
+			"!!**/dist",
+			"!!**/build",
+			"!!**/*.log",
+			"!!**/*.tsbuildinfo",
+			"!!**/playwright-report",
+			"!!**/test-results"
 		]
 	},
 	"assist": {
@@ -33,11 +34,11 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true,
+			"preset": "recommended",
 			"complexity": { "noStaticOnlyClass": "off" },
 			"suspicious": { "noUnknownAtRules": "off" },
 			"nursery": {
-				"useSortedClasses": {
+				"useTailwindSortedClasses": {
 					"level": "warn",
 					"fix": "safe",
 					"options": {}
