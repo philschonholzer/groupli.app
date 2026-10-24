@@ -7,66 +7,71 @@
     process-compose-flake.url = "github:Platonic-Systems/process-compose-flake";
     services-flake.url = "github:juspay/services-flake";
   };
-  outputs = inputs:
-    inputs.flake-parts.lib.mkFlake {inherit inputs;} {
+  outputs =
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       systems = import inputs.systems;
       imports = [
         inputs.process-compose-flake.flakeModule
       ];
-      perSystem = {
-        self',
-        pkgs,
-        lib,
-        ...
-      }: {
-        # `process-compose.foo` will add a flake package output called "foo".
-        # Therefore, this will add a default package that you can build using
-        # `nix build` and run using `nix run`.
-        process-compose."default" = {config, ...}: let
-          dbName = "sample";
-        in {
-          imports = [
-            inputs.services-flake.processComposeModules.default
-          ];
+      perSystem =
+        {
+          self',
+          pkgs,
+          lib,
+          ...
+        }:
+        {
+          # `process-compose.foo` will add a flake package output called "foo".
+          # Therefore, this will add a default package that you can build using
+          # `nix build` and run using `nix run`.
+          process-compose."default" =
+            { config, ... }:
+            let
+              dbName = "sample";
+            in
+            {
+              imports = [
+                inputs.services-flake.processComposeModules.default
+              ];
 
-          services.tempo.tempo.enable = true;
-          services.grafana.grafana = {
-            enable = true;
-            http_port = 4000;
-            datasources = with config.services.tempo.tempo; [
-              {
-                name = "Tempo";
-                type = "tempo";
-                access = "proxy";
-                url = "http://${httpAddress}:${builtins.toString httpPort}";
-                isDefault = true;
-              }
+              services.tempo.tempo.enable = true;
+              services.grafana.grafana = {
+                enable = true;
+                http_port = 4000;
+                datasources = with config.services.tempo.tempo; [
+                  {
+                    name = "Tempo";
+                    type = "tempo";
+                    access = "proxy";
+                    url = "http://${httpAddress}:${builtins.toString httpPort}";
+                    isDefault = true;
+                  }
+                ];
+              };
+            };
+
+          devShells.default = pkgs.mkShell {
+            nativeBuildInputs = with pkgs; [
+              nodejs_24
+              corepack
+              rclone
+              playwright-test
             ];
+
+            shellHook = ''
+              echo "groupli.app development environment"
+              echo "Node.js version: $(node --version)"
+              # pnpm is provided through corepack, which installs the version
+              # pinned in package.json ("packageManager").
+              export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+              echo "pnpm version: $(pnpm --version)"
+
+              # Set Playwright environment variables for NixOS compatibility
+              export PLAYWRIGHT_BROWSERS_PATH="${pkgs.playwright-driver.browsers}"
+              export PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=true
+            '';
           };
         };
-
-        devShells.default = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [
-            nodejs_24
-            corepack
-            biome
-            rclone
-            playwright-test
-          ];
-
-          shellHook = ''
-            echo "groupli.app development environment"
-            echo "Node.js version: $(node --version)"
-            # pnpm is provided through corepack, which installs the version
-            # pinned in package.json ("packageManager").
-            export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
-            echo "pnpm version: $(pnpm --version)"
-
-            # Set Playwright environment variables for NixOS compatibility
-            export PLAYWRIGHT_BROWSERS_PATH="${pkgs.playwright-driver.browsers}"
-            export PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=true
-          '';
-        };
-      };
     };
 }
