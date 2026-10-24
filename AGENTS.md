@@ -12,8 +12,8 @@ Groupli is a Next.js 15 application for managing group pairings, built with:
 - **Styling**: Tailwind CSS v4
 - **UI Components**: Radix UI primitives
 - **Testing**: Vitest (unit), Playwright (e2e)
-- **Package Manager**: pnpm v9.12.3
-- **Node Version**: 22
+- **Package Manager**: pnpm v12.14.0 (pinned via `packageManager` in package.json; Rust install engine, settings in `pnpm-workspace.yaml`)
+- **Node Version**: 24 (pinned via `engines.node` in package.json; Railpack reads these same fields)
 
 ## Build, Lint, and Test Commands
 

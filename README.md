@@ -5,8 +5,12 @@
 ### Setup
 
 1. `direnv allow`
-1. `pnpm i`
-1. `drizzle-kit push` to run db migrations
+2. `pnpm i`
+3. `drizzle-kit push` to run db migrations
+
+Node.js 24 and pnpm 12.14.0 are pinned in `package.json` (`engines.node` / `packageManager`).
+The Nix dev shell provides Node 24 + corepack, which installs the pinned pnpm automatically.
+Production builds (Railpack/Coolify) read the same fields.
 
 #### Secrets
 
@@ -84,7 +88,21 @@ The CI script automatically:
 Script that is run on the server to backup the db:
 
 ```sh
-sqlite3 db/data.sqlite ".backup 'db/backups/backup_$(date +\%Y-%m-%d_%H-%M-%S).sqlite'" && mc mirror db/backups infomaniak/default/groupli/backup
+sqlite3 db/data.sqlite ".backup 'db/backups/backup_$(date +\%Y-%m-%d_%H-%M-%S).sqlite'" && rclone copy db/backups infomaniak-backup:default/groupli/backup
+```
+
+`rclone copy` only uploads new and changed backups and never deletes anything in the bucket.
+
+The `infomaniak-backup` remote is configured with `rclone config` for the root user.
+
+Only if the task is ever moved inside the deployment container does the remote need to be made available there, either by mounting an `rclone.conf` (via Coolify volume) or with environment variables (rclone reads env-based remotes without any config file):
+
+```env
+RCLONE_CONFIG_INFOMANIAK_BACKUP_TYPE=s3
+RCLONE_CONFIG_INFOMANIAK_BACKUP_PROVIDER=Other
+RCLONE_CONFIG_INFOMANIAK_BACKUP_ENDPOINT=https://s3.swiss-backup04.infomaniak.com
+RCLONE_CONFIG_INFOMANIAK_BACKUP_ACCESS_KEY_ID=...
+RCLONE_CONFIG_INFOMANIAK_BACKUP_SECRET_ACCESS_KEY=...
 ```
 
 ### Accessing Infomaniak Backups

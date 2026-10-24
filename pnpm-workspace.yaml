@@ -1,0 +1,15 @@
+# pnpm settings (pnpm 12 reads settings from this file, not package.json)
+
+# Allowlisted dependency build scripts (pnpm blocks unapproved builds by default).
+# better-sqlite3 needs its native build; the rest ship prebuilt binaries.
+allowBuilds:
+  better-sqlite3: true
+  esbuild: true
+  lefthook: true
+  msgpackr-extract: true
+  protobufjs: true
+  sharp: true
+
+overrides:
+  '@types/react': '$@types/react'
+  '@types/react-dom': '$@types/react-dom'

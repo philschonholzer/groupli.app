@@ -110,7 +110,7 @@ export default async function GroupPage(props: {
 												>
 													<PersonCard
 														person={pair.person1}
-														className="-rotate-12 z-10 translate-x-3"
+														className="z-10 translate-x-3 -rotate-12"
 													>
 														{roundIndex === 0 && (
 															<SkipRoundButton

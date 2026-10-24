@@ -47,8 +47,8 @@
 
         devShells.default = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
-            nodejs
-            pnpm
+            nodejs_24
+            corepack
             biome
             rclone
             playwright-test
@@ -57,6 +57,9 @@
           shellHook = ''
             echo "groupli.app development environment"
             echo "Node.js version: $(node --version)"
+            # pnpm is provided through corepack, which installs the version
+            # pinned in package.json ("packageManager").
+            export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
             echo "pnpm version: $(pnpm --version)"
 
             # Set Playwright environment variables for NixOS compatibility

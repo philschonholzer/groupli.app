@@ -1,0 +1,12 @@
+# Keep the build context small for Railpack (local/CI builds)
+node_modules
+.next
+.git
+.direnv
+.nix-perinst
+data.sqlite
+backup_*.sqlite
+playwright-report
+test-results
+*.log
+.DS_Store

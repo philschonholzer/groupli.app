@@ -27,7 +27,7 @@ export default function CopyToClipboard(props: { round: Round.RoundExtended }) {
 		>
 			<ClipboardCopy
 				data-copied={copied}
-				className="data-[copied=true]:-rotate-90 h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all data-[copied=true]:scale-0"
+				className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all data-[copied=true]:-rotate-90 data-[copied=true]:scale-0"
 			/>
 			<Check
 				data-copied={copied}

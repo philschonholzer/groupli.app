@@ -21,6 +21,7 @@ const H1 = forwardRef<
 })
 
 H1.displayName = 'H1'
+
 export { H1 }
 
 const H2 = forwardRef<
@@ -39,6 +40,7 @@ const H2 = forwardRef<
 })
 
 H2.displayName = 'H2'
+
 export { H2 }
 
 const H3 = forwardRef<
@@ -57,6 +59,7 @@ const H3 = forwardRef<
 })
 
 H3.displayName = 'H3'
+
 export { H3 }
 
 const H4 = forwardRef<
@@ -75,6 +78,7 @@ const H4 = forwardRef<
 })
 
 H4.displayName = 'H4'
+
 export { H4 }
 
 const Lead = forwardRef<
@@ -93,6 +97,7 @@ const Lead = forwardRef<
 })
 
 Lead.displayName = 'Lead'
+
 export { Lead }
 
 const P = forwardRef<
@@ -107,6 +112,7 @@ const P = forwardRef<
 })
 
 P.displayName = 'P'
+
 export { P }
 
 const Large = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
@@ -124,6 +130,7 @@ const Large = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
 )
 
 Large.displayName = 'Large'
+
 export { Large }
 
 const Small = forwardRef<
@@ -142,6 +149,7 @@ const Small = forwardRef<
 })
 
 Small.displayName = 'Small'
+
 export { Small }
 
 const Muted = forwardRef<
@@ -160,6 +168,7 @@ const Muted = forwardRef<
 })
 
 Muted.displayName = 'Muted'
+
 export { Muted }
 
 const InlineCode = forwardRef<
@@ -181,6 +190,7 @@ const InlineCode = forwardRef<
 })
 
 InlineCode.displayName = 'InlineCode'
+
 export { InlineCode }
 
 const List = forwardRef<
@@ -199,6 +209,7 @@ const List = forwardRef<
 })
 
 List.displayName = 'List'
+
 export { List }
 
 const Quote = forwardRef<
@@ -220,4 +231,5 @@ const Quote = forwardRef<
 })
 
 Quote.displayName = 'Quote'
+
 export { Quote }

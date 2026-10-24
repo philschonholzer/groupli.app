@@ -1,0 +1,12 @@
+{
+	"$schema": "https://schema.railpack.com",
+	"buildAptPackages": ["...", "sqlite3"],
+	"steps": {
+		"build": {
+			"commands": ["pnpm build:ci"]
+		}
+	},
+	"deploy": {
+		"aptPackages": ["...", "sqlite3", "rclone"]
+	}
+}
