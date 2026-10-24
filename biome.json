@@ -36,6 +36,7 @@
 		"rules": {
 			"preset": "recommended",
 			"complexity": { "noStaticOnlyClass": "off" },
+			"correctness": { "noComponentHookFactories": "off" },
 			"suspicious": { "noUnknownAtRules": "off" },
 			"nursery": {
 				"useTailwindSortedClasses": {

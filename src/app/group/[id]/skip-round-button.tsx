@@ -38,7 +38,7 @@ export function SkipRoundButton(props: {
 				<Button
 					variant="ghost"
 					type="submit"
-					className="flex h-8 gap-2 px-2 text-primary text-xs"
+					className="text-primary flex h-8 gap-2 px-2 text-xs"
 					title="Skip Round"
 				>
 					Skip <CircleArrowOutUpRight strokeWidth={3} size={14} />

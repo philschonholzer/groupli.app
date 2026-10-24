@@ -8,7 +8,7 @@ export default function Component() {
 		<div className="w-full py-12 md:py-24 lg:py-32">
 			<div className="flex flex-col items-center justify-center space-y-4 text-center">
 				<div className="space-y-2">
-					<h1 className="font-bold text-4xl tracking-tighter sm:text-5xl">
+					<h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">
 						Latest Blog Posts
 					</h1>
 					<p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">

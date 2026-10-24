@@ -10,7 +10,7 @@ export default function PersonCard(props: {
 		<li
 			key={props.person.id}
 			className={cn(
-				'group flex h-32 w-24 flex-col rounded-xl border border-primary/30 bg-card px-3 py-2 text-card-foreground shadow-sm',
+				'group border-primary/30 bg-card text-card-foreground flex h-32 w-24 flex-col rounded-xl border px-3 py-2 shadow-sm',
 				props.className,
 			)}
 		>

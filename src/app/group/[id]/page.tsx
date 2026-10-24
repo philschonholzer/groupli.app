@@ -53,8 +53,8 @@ export default async function GroupPage(props: {
 					</ul>
 					<AddPerson groupId={id} />
 					{persons.length < 3 && rounds.length === 0 && (
-						<div className="grid h-24 place-items-center space-y-4 rounded border border-border/50 p-4 shadow-xs">
-							<div className="space-y-1 text-center text-foreground/40">
+						<div className="border-border/50 grid h-24 place-items-center space-y-4 rounded border p-4 shadow-xs">
+							<div className="text-foreground/40 space-y-1 text-center">
 								<p className="font-semibold">Add members</p>
 								<p className="">Add at least 3 members to your group.</p>
 							</div>
@@ -139,8 +139,8 @@ export default async function GroupPage(props: {
 								</li>
 							))}
 							{rounds.length === 0 && (
-								<li className="grid h-52 place-items-center space-y-4 rounded border border-border/50 p-4 shadow-xs">
-									<div className="space-y-1 text-center text-foreground/40">
+								<li className="border-border/50 grid h-52 place-items-center space-y-4 rounded border p-4 shadow-xs">
+									<div className="text-foreground/40 space-y-1 text-center">
 										<p className="font-semibold">Nothing going on yet...</p>
 										<p className="">
 											Start your first round to pair your group members.

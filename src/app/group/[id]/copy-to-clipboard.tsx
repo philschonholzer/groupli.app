@@ -27,11 +27,11 @@ export default function CopyToClipboard(props: { round: Round.RoundExtended }) {
 		>
 			<ClipboardCopy
 				data-copied={copied}
-				className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all data-[copied=true]:-rotate-90 data-[copied=true]:scale-0"
+				className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all data-[copied=true]:scale-0 data-[copied=true]:-rotate-90"
 			/>
 			<Check
 				data-copied={copied}
-				className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all data-[copied=true]:rotate-0 data-[copied=true]:scale-100"
+				className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all data-[copied=true]:scale-100 data-[copied=true]:rotate-0"
 			/>
 			<span className="sr-only">Copy to clipboard</span>
 		</Button>

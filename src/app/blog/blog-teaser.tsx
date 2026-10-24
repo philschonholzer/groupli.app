@@ -28,7 +28,7 @@ export function BlogTeaser(props: {
 				className="h-48 w-full object-cover transition-all duration-300 group-hover:scale-105"
 			/>
 			<div className="bg-white p-6 dark:bg-gray-950">
-				<h2 className="line-clamp-2 font-bold text-xl">{props.title}</h2>
+				<h2 className="line-clamp-2 text-xl font-bold">{props.title}</h2>
 				<p className="mt-2 line-clamp-3 text-gray-500 dark:text-gray-400">
 					{props.teaser}
 				</p>

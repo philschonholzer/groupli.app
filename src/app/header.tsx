@@ -8,14 +8,14 @@ const navigation = [
 
 export default function Header() {
 	return (
-		<header className="sticky inset-x-0 top-0 z-50 border-b border-b-gray-400/10 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+		<header className="bg-background/95 supports-backdrop-filter:bg-background/60 sticky inset-x-0 top-0 z-50 border-b border-b-gray-400/10 backdrop-blur">
 			<nav
 				className="flex items-center justify-between p-3 lg:px-8"
 				aria-label="Global"
 			>
 				<div className="flex lg:flex-1">
 					<Link href={'/'}>
-						<span className="font-bold text-primary">Groupli!</span>
+						<span className="text-primary font-bold">Groupli!</span>
 					</Link>
 				</div>
 				<div className="flex lg:hidden">
@@ -31,7 +31,7 @@ export default function Header() {
 						<a
 							key={item.name}
 							href={item.href}
-							className="font-semibold text-gray-900 text-sm leading-6 dark:text-gray-100"
+							className="text-sm leading-6 font-semibold text-gray-900 dark:text-gray-100"
 						>
 							{item.name}
 						</a>
@@ -41,7 +41,7 @@ export default function Header() {
 					<ThemeToggle />
 					<Link
 						href="/login"
-						className="font-semibold text-gray-900 text-sm leading-6 dark:text-gray-100"
+						className="text-sm leading-6 font-semibold text-gray-900 dark:text-gray-100"
 					>
 						Log in <span aria-hidden="true">&rarr;</span>
 					</Link>

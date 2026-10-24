@@ -11,7 +11,7 @@ const H1 = forwardRef<
 			{...props}
 			ref={ref}
 			className={cn(
-				'scroll-m-20 text-pretty font-bold text-4xl tracking-tighter sm:text-5xl',
+				'scroll-m-20 text-4xl font-bold tracking-tighter text-pretty sm:text-5xl',
 				props.className,
 			)}
 		>
@@ -32,7 +32,7 @@ const H2 = forwardRef<
 		<h2
 			{...props}
 			ref={ref}
-			className={cn('scroll-m-20 font-semibold text-3xl', props.className)}
+			className={cn('scroll-m-20 text-3xl font-semibold', props.className)}
 		>
 			{props.children}
 		</h2>
@@ -51,7 +51,7 @@ const H3 = forwardRef<
 		<h3
 			{...props}
 			ref={ref}
-			className={cn('scroll-m-20 font-semibold text-2xl', props.className)}
+			className={cn('scroll-m-20 text-2xl font-semibold', props.className)}
 		>
 			{props.children}
 		</h3>
@@ -70,7 +70,7 @@ const H4 = forwardRef<
 		<h4
 			{...props}
 			ref={ref}
-			className={cn('scroll-m-20 font-semibold text-xl', props.className)}
+			className={cn('scroll-m-20 text-xl font-semibold', props.className)}
 		>
 			{props.children}
 		</h4>
@@ -121,7 +121,7 @@ const Large = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
 			<div
 				{...props}
 				ref={ref}
-				className={cn('font-semibold text-lg', props.className)}
+				className={cn('text-lg font-semibold', props.className)}
 			>
 				{props.children}
 			</div>
@@ -141,7 +141,7 @@ const Small = forwardRef<
 		<p
 			{...props}
 			ref={ref}
-			className={cn('font-medium text-sm', props.className)}
+			className={cn('text-sm font-medium', props.className)}
 		>
 			{props.children}
 		</p>
@@ -180,7 +180,7 @@ const InlineCode = forwardRef<
 			{...props}
 			ref={ref}
 			className={cn(
-				'relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono font-semibold text-sm',
+				'bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold',
 				props.className,
 			)}
 		>
@@ -221,7 +221,7 @@ const Quote = forwardRef<
 			{...props}
 			ref={ref}
 			className={cn(
-				'mt-6 border-l-2 pl-6 text-muted-foreground italic',
+				'text-muted-foreground mt-6 border-l-2 pl-6 italic',
 				props.className,
 			)}
 		>
