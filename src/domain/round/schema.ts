@@ -6,7 +6,7 @@ export type RoundId = Brand.Branded<number, 'RoundId'>
 export const RoundId = Brand.nominal<RoundId>()
 
 export const Round = Schema.Struct({
-	id: Schema.Number.pipe(Schema.fromBrand(RoundId)),
+	id: Schema.Number.pipe(Schema.fromBrand('RoundId', RoundId)),
 	group: Schema.String,
 	at: Schema.String,
 })

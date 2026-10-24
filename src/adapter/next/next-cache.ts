@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref } from 'effect'
+import { Context, Effect, Layer, Ref } from 'effect'
 import { revalidatePath } from 'next/cache'
 
 const makeCacheImpl = Effect.gen(function* () {
@@ -18,10 +18,14 @@ const makeCacheStub = Effect.gen(function* () {
 	}
 })
 
-export class NextCache extends Effect.Tag('@dep/next')<
+export class NextCache extends Context.Service<
 	NextCache,
-	Effect.Effect.Success<typeof makeCacheImpl>
->() {
-	static Live = Layer.effect(this, makeCacheImpl)
+	{
+		revalidatePath: (path: string) => Effect.Effect<void>
+		isRevalidated: Effect.Effect<boolean>
+	}
+>()('@dep/next') {
+	static layer = Layer.effect(this, makeCacheImpl)
 	static Stub = Layer.effect(this, makeCacheStub)
+	static isRevalidated = this.use((cache) => cache.isRevalidated)
 }

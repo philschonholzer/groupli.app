@@ -47,10 +47,10 @@ export default function PersonPill(props: {
 							/>
 							<Button type="submit">Save</Button>
 						</div>
-						{state._tag === 'Failure' && state.cause._tag === 'Fail' && (
+						{state._tag === 'Failure' && state.cause[0]?._tag === 'Fail' && (
 							<div className="pt-1 text-red-600">
-								{state.cause.error._tag === 'NameRequiredError' &&
-									state.cause.error.message}
+								{state.cause[0].error._tag === 'NameRequiredError' &&
+									state.cause[0].error.message}
 							</div>
 						)}
 					</form>

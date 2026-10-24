@@ -1,5 +1,6 @@
 import assert from 'node:assert'
-import { Console, Effect, TestClock } from 'effect'
+import { Console, Effect } from 'effect'
+import { TestClock } from 'effect/testing'
 import { describe, it } from 'vitest'
 import { runWithInMemoryDb } from '@/adapter/effect/run-with-in-memory-db'
 import { Group, Person, Round } from '..'
@@ -24,7 +25,7 @@ describe('Round domain', () => {
 				},
 			})
 		}).pipe(
-			Effect.catchAll((e) => Console.log('Error', e, e.cause)),
+			Effect.catch((e: unknown) => Console.log('Error', e)),
 			runWithInMemoryDb,
 		))
 	it('should not allow a new round with less then 2 persons', () =>
@@ -37,7 +38,7 @@ describe('Round domain', () => {
 
 			assert.equal(error instanceof NotEnoughPersonsForRound, true)
 		}).pipe(
-			Effect.catchAll((e) => Console.log('Error', e)),
+			Effect.catch((e) => Console.log('Error', e)),
 			runWithInMemoryDb,
 		))
 
@@ -57,11 +58,15 @@ describe('Round domain', () => {
 			yield* Round.newRound(group.id, members)
 
 			yield* Round.shufflePairings(group.id).pipe(
-				Effect.tap((_) => assert.notDeepEqual(firstRound.pairings, _.pairings)),
-				Effect.repeatN(6),
+				Effect.tap((_) =>
+					Effect.sync(() =>
+						assert.notDeepEqual(firstRound.pairings, _.pairings),
+					),
+				),
+				Effect.repeat({ times: 6 }),
 			)
 		}).pipe(
-			Effect.catchAll((e) => Console.log('Error', e, e.cause)),
+			Effect.catch((e: unknown) => Console.log('Error', e)),
 			runWithInMemoryDb,
 		))
 
@@ -81,11 +86,15 @@ describe('Round domain', () => {
 			yield* createSecondGroup
 
 			yield* Round.shufflePairings(group.id).pipe(
-				Effect.tap((_) => assert.equal(firstRound.round.group, _.round.group)),
-				Effect.repeatN(6),
+				Effect.tap((_) =>
+					Effect.sync(() =>
+						assert.equal(firstRound.round.group, _.round.group),
+					),
+				),
+				Effect.repeat({ times: 6 }),
 			)
 		}).pipe(
-			Effect.catchAll((e) => Console.log('Error', e, e.cause)),
+			Effect.catch((e: unknown) => Console.log('Error', e)),
 			runWithInMemoryDb,
 		))
 
@@ -101,9 +110,9 @@ describe('Round domain', () => {
 					jenny.id,
 					carl.id,
 					petra.id,
-				]).pipe(Effect.repeatN(6))
+				]).pipe(Effect.repeat({ times: 6 }))
 			}).pipe(
-				Effect.catchAll((e) => Console.log('Error', e)),
+				Effect.catch((e) => Console.log('Error', e)),
 				runWithInMemoryDb,
 			))
 	})

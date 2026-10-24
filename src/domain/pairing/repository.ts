@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm'
-import { Effect, Layer } from 'effect'
+import { Context, Effect, Layer } from 'effect'
 import { Db } from '@/adapter/db'
 import { Pairings } from '@/adapter/db/schema'
 import type * as Person from '../person'
@@ -52,9 +52,17 @@ const make = Effect.gen(function* () {
 	}
 })
 
-export class Repository extends Effect.Tag('@domain/pairing/repository')<
+export class Repository extends Context.Service<
 	Repository,
-	Effect.Effect.Success<typeof make>
->() {
+	Effect.Success<typeof make>
+>()('@domain/pairing/repository') {
 	static Layer = Layer.effect(this, make)
+	static insert = (
+		roundId: RoundSchema.RoundId,
+		pairs: (readonly [person1: Person.PersonId, person2: Person.PersonId])[],
+	) => this.use((repo) => repo.insert(roundId, pairs))
+	static updatePairsByRoundId = (
+		roundId: RoundSchema.RoundId,
+		pairs: (readonly [Person.PersonId, Person.PersonId])[],
+	) => this.use((repo) => repo.updatePairsByRoundId(roundId, pairs))
 }

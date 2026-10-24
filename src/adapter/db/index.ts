@@ -23,14 +23,10 @@ const make = Effect.gen(function* () {
 	return query
 })
 
-type _Db = Effect.Effect.Success<typeof make>
+type _Db = Effect.Success<typeof make>
 
-export class Db extends Context.Tag('@adapter/db')<Db, _Db>() {
-	// Would be needed with Effect.Tag
-	// static readonly query = <A>(
-	// 	body: (client: DrizzleD1Database<Record<string, never>>) => Promise<A>,
-	// ) => this.use((_) => _.query(body))
-	static Live = Layer.effect(this, make).pipe(Layer.provide(OrmClient.Live))
+export class Db extends Context.Service<Db, _Db>()('@adapter/db') {
+	static Live = Layer.effect(this, make).pipe(Layer.provide(OrmClient.layer))
 	static Layer = Layer.effect(this, make)
 }
 

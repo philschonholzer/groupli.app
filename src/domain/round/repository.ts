@@ -2,6 +2,7 @@ import { desc, eq } from 'drizzle-orm'
 import {
 	Array as A,
 	Clock,
+	Context,
 	Effect,
 	Layer,
 	Option,
@@ -71,7 +72,7 @@ const make = Effect.gen(function* () {
 					where: eq(Rounds.group, groupId),
 					orderBy: desc(Rounds.at),
 				}),
-			).pipe(Effect.map(Option.fromNullable)),
+			).pipe(Effect.map(Option.fromNullishOr)),
 		newRound: (groupId: Group.GroupId, persons: Person.PersonId[]) =>
 			Effect.gen(function* () {
 				const now = yield* Clock.currentTimeMillis
@@ -118,7 +119,7 @@ const make = Effect.gen(function* () {
 					where: (p, { and, eq }) =>
 						and(eq(p.person, personId), eq(p.round, roundId)),
 				}),
-			).pipe(Effect.map(Option.fromNullable)),
+			).pipe(Effect.map(Option.fromNullishOr)),
 		getPersonsInRound: (roundId: RoundSchema.RoundId) =>
 			db((client) =>
 				client.query.PersonsInRounds.findMany({
@@ -128,9 +129,25 @@ const make = Effect.gen(function* () {
 	}
 })
 
-export class Repository extends Effect.Tag('@domain/round/repository')<
+export class Repository extends Context.Service<
 	Repository,
-	Effect.Effect.Success<typeof make>
->() {
+	Effect.Success<typeof make>
+>()('@domain/round/repository') {
 	static Layer = Layer.effect(this, make)
+	static getSixByGroupId = (groupId: Group.GroupId) =>
+		this.use((repo) => repo.getSixByGroupId(groupId))
+	static get10LastByGroupIdWithPairings = (groupId: Group.GroupId) =>
+		this.use((repo) => repo.get10LastByGroupIdWithPairings(groupId))
+	static findLast = (groupId: Group.GroupId) =>
+		this.use((repo) => repo.findLast(groupId))
+	static findPersonInRound = (
+		personId: Person.PersonId,
+		roundId: RoundSchema.RoundId,
+	) => this.use((repo) => repo.findPersonInRound(personId, roundId))
+	static removePersonFromRound = (personInRoundId: number) =>
+		this.use((repo) => repo.removePersonFromRound(personInRoundId))
+	static getPersonsInRound = (roundId: RoundSchema.RoundId) =>
+		this.use((repo) => repo.getPersonsInRound(roundId))
+	static newRound = (groupId: Group.GroupId, persons: Person.PersonId[]) =>
+		this.use((repo) => repo.newRound(groupId, persons))
 }

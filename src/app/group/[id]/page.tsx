@@ -154,9 +154,7 @@ export default async function GroupPage(props: {
 			</div>
 		)
 	}).pipe(
-		Effect.catchAll((e) =>
-			Effect.succeed(<div>Error {JSON.stringify(e)}</div>),
-		),
+		Effect.catch((e) => Effect.succeed(<div>Error {JSON.stringify(e)}</div>)),
 		run,
 	)
 }

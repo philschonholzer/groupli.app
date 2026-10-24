@@ -7,18 +7,18 @@ import { Next } from '@/adapter/next'
 import { Group } from '@/domain'
 
 export async function newGroup() {
-	return Effect.gen(function* () {
-		const group = yield* Group.newGroup
-		yield* Next.redirect(`/group/${group.id}`)
-		return group
-	}).pipe(
-		runAction({
-			schema: Schema.Exit({
-				success: Schema.Struct({ id: Schema.String, name: Schema.String }),
-				failure: DbError,
-				defect: Schema.Void,
-			}),
-			returnVoid: true,
+	return runAction({
+		schema: Schema.Exit(
+			Schema.Struct({ id: Schema.String, name: Schema.String }),
+			DbError,
+			Schema.Void,
+		),
+		returnVoid: true,
+	})(
+		Effect.gen(function* () {
+			const group = yield* Group.newGroup
+			yield* Next.redirect(`/group/${group.id}`)
+			return group
 		}),
 	)
 }

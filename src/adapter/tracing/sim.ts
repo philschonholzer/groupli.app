@@ -27,7 +27,7 @@ const program = task('client', 2, [
 		task('/payment Gateway', 6, [task('DB', 7), task('Ext. Merchant', 8)]),
 		task('/dispatch', 9, [
 			task('/dispatch/search', 10),
-			Effect.all([poll, poll, poll], { concurrency: 'inherit' }),
+			Effect.all([poll, poll, poll], { concurrency: 'unbounded' }),
 			task('/pollDriver/{id}', 11),
 		]),
 	]),
@@ -39,10 +39,7 @@ const NodeSdkLive = NodeSdk.layer(() => ({
 }))
 
 Effect.runPromise(
-	program.pipe(
-		Effect.provide(NodeSdkLive),
-		Effect.catchAllCause(Effect.logError),
-	),
+	program.pipe(Effect.provide(NodeSdkLive), Effect.catchCause(Effect.logError)),
 )
 /*
 Output:

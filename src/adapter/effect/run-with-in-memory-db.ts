@@ -1,4 +1,5 @@
-import { Effect, Layer, TestContext } from 'effect'
+import { Effect, Layer } from 'effect'
+import { TestClock } from 'effect/testing'
 import { Db } from '../db'
 import { OrmClient } from '../db/orm-client'
 import { Next } from '../next'
@@ -6,9 +7,9 @@ import { Uuid } from '../uuid'
 import type { MainLive } from './main-layer'
 import { RepositoryLayer } from './repository-layer'
 
-export function runWithInMemoryDb<A, I>(effect: Effect.Effect<A, I, MainLive>) {
+export function runWithInMemoryDb(effect: Effect.Effect<any, any, MainLive>) {
 	const InfraNullable = Layer.mergeAll(
-		TestContext.TestContext,
+		TestClock.layer(),
 		Uuid.Nullable,
 		Next.Nullable,
 	)

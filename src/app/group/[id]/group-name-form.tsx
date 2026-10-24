@@ -33,10 +33,10 @@ export default function GroupNameForm(props: {
 				</label>
 			</H1>
 			<div className="pt-2 text-right text-red-600">
-				{state._tag === 'Failure' && state.cause._tag === 'Fail' && (
+				{state._tag === 'Failure' && state.cause[0]?._tag === 'Fail' && (
 					<p>
-						{state.cause.error._tag === 'NameRequiredError' &&
-							state.cause.error.message}
+						{state.cause[0].error._tag === 'NameRequiredError' &&
+							state.cause[0].error.message}
 					</p>
 				)}
 			</div>

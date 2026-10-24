@@ -6,7 +6,7 @@ import { Group, Round } from '..'
 
 // biome-ignore lint/suspicious/noExplicitAny: Test helper accepts dynamic mock data
 function runWithStubDb(data: any) {
-	return <A, I>(effect: Effect.Effect<A, I, Round.Repository>) => {
+	return (effect: Effect.Effect<any, any, Round.Repository>) => {
 		const query = () => Effect.succeed(data)
 		const DbStub = Layer.succeed(Db, Db.of(query))
 		const RoundRepository = Round.Repository.Layer.pipe(Layer.provide(DbStub))

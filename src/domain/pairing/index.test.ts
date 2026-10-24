@@ -10,8 +10,8 @@ const { generateAllListsOfPairs, addWeightToPairLists } = __tests__
 
 // biome-ignore lint/suspicious/noExplicitAny: Test helper accepts dynamic mock data
 function runTest(data: any) {
-	return <A, I>(
-		effect: Effect.Effect<A, I, Round.Repository | Pairing.Repository>,
+	return (
+		effect: Effect.Effect<any, any, Round.Repository | Pairing.Repository>,
 	) => {
 		const query = () => Effect.succeed(data)
 		const DbTest = Layer.succeed(Db, Db.of(query))
@@ -431,7 +431,7 @@ describe('Pairing', () => {
 
 				assert.equal(Option.isNone(actual), true)
 			}).pipe(
-				Effect.repeatN(100),
+				Effect.repeat({ times: 100 }),
 				runTest([
 					{
 						id: 232,
@@ -458,7 +458,7 @@ describe('Pairing', () => {
 
 				assert.equal(Option.isNone(actual), true)
 			}).pipe(
-				Effect.repeatN(100),
+				Effect.repeat({ times: 100 }),
 				runTest([
 					{
 						id: 232,
@@ -481,13 +481,13 @@ describe('Pairing', () => {
 				const actual = yield* pairPersons(
 					Group.GroupId('groupId'),
 					[1, 2].map(PersonId),
-				).pipe(Effect.flatten)
+				).pipe(Effect.map(Option.getOrThrow))
 
 				assert.deepStrictEqual(actual, [[1, 2]])
 
 				assert.equal(actual.length, 1)
 			}).pipe(
-				Effect.repeatN(100),
+				Effect.repeat({ times: 100 }),
 				runTest([
 					{
 						id: 232,
@@ -510,7 +510,7 @@ describe('Pairing', () => {
 				const actual = yield* pairPersons(
 					Group.GroupId('groupId'),
 					[1, 2, 3].map(PersonId),
-				).pipe(Effect.flatten)
+				).pipe(Effect.map(Option.getOrThrow))
 
 				assert.equal(
 					actual.some(
@@ -520,7 +520,7 @@ describe('Pairing', () => {
 				)
 				assert.equal(actual.length, 1)
 			}).pipe(
-				Effect.repeatN(100),
+				Effect.repeat({ times: 100 }),
 				runTest([
 					{
 						id: 232,
@@ -543,7 +543,7 @@ describe('Pairing', () => {
 				const actual = yield* pairPersons(
 					Group.GroupId('groupId'),
 					[1, 2, 3, 4].map(PersonId),
-				).pipe(Effect.flatten)
+				).pipe(Effect.map(Option.getOrThrow))
 
 				assert.equal(
 					actual.some(([p1, p2]) => p1 === 2 && p2 === 3),
@@ -551,7 +551,7 @@ describe('Pairing', () => {
 				)
 				assert.equal(actual.length, 2)
 			}).pipe(
-				Effect.repeatN(100),
+				Effect.repeat({ times: 100 }),
 				runTest([
 					{
 						id: 232,
@@ -574,7 +574,7 @@ describe('Pairing', () => {
 				const actual = yield* pairPersons(
 					Group.GroupId('groupId'),
 					[1, 2, 3, 4, 5].map(PersonId),
-				).pipe(Effect.flatten)
+				).pipe(Effect.map(Option.getOrThrow))
 
 				assert.equal(
 					actual.some(
@@ -584,7 +584,7 @@ describe('Pairing', () => {
 				)
 				assert.equal(actual.length, 2)
 			}).pipe(
-				Effect.repeatN(100),
+				Effect.repeat({ times: 100 }),
 				runTest([
 					{
 						id: 232,
@@ -607,7 +607,7 @@ describe('Pairing', () => {
 				const actual = yield* pairPersons(
 					Group.GroupId('groupId'),
 					[1, 2, 3, 4, 5, 6].map(PersonId),
-				).pipe(Effect.flatten)
+				).pipe(Effect.map(Option.getOrThrow))
 
 				assert.equal(
 					actual.some(
@@ -617,7 +617,7 @@ describe('Pairing', () => {
 				)
 				assert.equal(actual.length, 3)
 			}).pipe(
-				Effect.repeatN(100),
+				Effect.repeat({ times: 100 }),
 				runTest([
 					{
 						id: 232,

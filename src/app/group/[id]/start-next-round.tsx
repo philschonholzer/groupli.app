@@ -75,8 +75,8 @@ function Form(props: {
 				<PopoverContent align="end" className="bg-red-500 p-6">
 					{state._tag === 'Failure' && (
 						<div className="text-sm text-white">
-							{state.cause._tag === 'Fail' ? (
-								renderError(state.cause.error as NewRoundError)
+							{state.cause[0]?._tag === 'Fail' ? (
+								renderError(state.cause[0].error as NewRoundError)
 							) : (
 								<>
 									Upps, something went wrong. Please try again later.{' '}

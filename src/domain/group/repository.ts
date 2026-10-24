@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm'
-import { Array as A, Effect, Layer, Option, Schema } from 'effect'
+import { Array as A, Context, Effect, Layer, Option, Schema } from 'effect'
 import { Db } from '@/adapter/db'
 import { Groups } from '@/adapter/db/schema'
 import { Group, type GroupId } from './schema'
@@ -16,7 +16,7 @@ const make = Effect.gen(function* () {
 		getById: (id: GroupId) =>
 			db((client) =>
 				client.query.Groups.findFirst({ where: (_, { eq }) => eq(_.id, id) }),
-			).pipe(Effect.map(Option.fromNullable), Effect.map(Option.map(decode))),
+			).pipe(Effect.map(Option.fromNullishOr), Effect.map(Option.map(decode))),
 		insert: (props: { id: GroupId; name: string }) =>
 			db((client) =>
 				client.insert(Groups).values({ id: props.id, name: props.name }),
@@ -28,9 +28,14 @@ const make = Effect.gen(function* () {
 	}
 })
 
-export class Repository extends Effect.Tag('@domain/group/repository')<
+export class Repository extends Context.Service<
 	Repository,
-	Effect.Effect.Success<typeof make>
->() {
+	Effect.Success<typeof make>
+>()('@domain/group/repository') {
 	static Layer = Layer.effect(this, make)
+	static getById = (id: GroupId) => this.use((repo) => repo.getById(id))
+	static insert = (props: { id: GroupId; name: string }) =>
+		this.use((repo) => repo.insert(props))
+	static updateName = (id: GroupId, name: string) =>
+		this.use((repo) => repo.updateName(id, name))
 }

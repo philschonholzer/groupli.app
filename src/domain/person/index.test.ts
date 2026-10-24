@@ -1,5 +1,5 @@
 import assert from 'node:assert'
-import { Effect } from 'effect'
+import { Effect, Option } from 'effect'
 import { nanoid } from 'nanoid'
 import { describe, it } from 'vitest'
 import { runWithInMemoryDb } from '@/adapter/effect/run-with-in-memory-db'
@@ -20,7 +20,7 @@ describe('Person', () => {
 	it('should allow to add 14 persons to a group', () =>
 		Effect.gen(function* () {
 			const group = yield* Group.newGroup
-			yield* Person.add(nanoid(), group.id).pipe(Effect.repeatN(13))
+			yield* Person.add(nanoid(), group.id).pipe(Effect.repeat({ times: 13 }))
 			const persons = yield* Person.Repository.getByGroupId(group.id)
 			assert.equal(persons.length, 14)
 		}).pipe(runWithInMemoryDb))
@@ -28,7 +28,7 @@ describe('Person', () => {
 		Effect.gen(function* () {
 			const group = yield* Group.newGroup
 			const error = yield* Person.add(nanoid(), group.id).pipe(
-				Effect.repeatN(15),
+				Effect.repeat({ times: 15 }),
 				Effect.flip,
 			)
 
@@ -58,7 +58,7 @@ describe('Person', () => {
 			const person = yield* Person.add('foo', group.id)
 			yield* Person.removePerson(person.id)
 			const result = yield* Person.Repository.getById(person.id).pipe(
-				Effect.flatten,
+				Effect.map(Option.getOrThrow),
 			)
 
 			assert.equal(result.status, 'inactive')

@@ -1,4 +1,4 @@
-import { Brand, Effect, Layer } from 'effect'
+import { Brand, Context, Effect, Layer } from 'effect'
 import { NanoId } from './nanoid'
 
 type UuidString = Brand.Branded<string, 'UuidString'>
@@ -11,10 +11,11 @@ const make = Effect.gen(function* () {
 	}
 })
 
-export class Uuid extends Effect.Tag('@adapter/uuid')<
+export class Uuid extends Context.Service<
 	Uuid,
 	{ id: (size: number) => Effect.Effect<UuidString> }
->() {
-	static Live = Layer.effect(this, make).pipe(Layer.provide(NanoId.Live))
+>()('@adapter/uuid') {
+	static layer = Layer.effect(this, make).pipe(Layer.provide(NanoId.layer))
 	static Nullable = Layer.effect(this, make).pipe(Layer.provide(NanoId.Stub))
+	static id = (size: number) => this.use((uuid) => uuid.id(size))
 }

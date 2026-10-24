@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm'
-import { Array as A, Effect, Layer, Option, Schema } from 'effect'
+import { Array as A, Context, Effect, Layer, Option, Schema } from 'effect'
 import { Db } from '@/adapter/db'
 import { Persons } from '@/adapter/db/schema'
 import type * as Group from '../group'
@@ -39,13 +39,22 @@ const make = Effect.gen(function* () {
 		getById: (id: PersonId) =>
 			db((client) =>
 				client.query.Persons.findFirst({ where: eq(Persons.id, id) }),
-			).pipe(Effect.map(Option.fromNullable), Effect.map(Option.map(decode))),
+			).pipe(Effect.map(Option.fromNullishOr), Effect.map(Option.map(decode))),
 	}
 })
 
-export class Repository extends Effect.Tag('@domain/person/repository')<
+export class Repository extends Context.Service<
 	Repository,
-	Effect.Effect.Success<typeof make>
->() {
+	Effect.Success<typeof make>
+>()('@domain/person/repository') {
 	static Layer = Layer.effect(this, make)
+	static insert = (name: string, groupId: Group.GroupId) =>
+		this.use((repo) => repo.insert(name, groupId))
+	static getByGroupId = (groupId: Group.GroupId) =>
+		this.use((repo) => repo.getByGroupId(groupId))
+	static updateName = (id: PersonId, name: string) =>
+		this.use((repo) => repo.updateName(id, name))
+	static setInactive = (id: PersonId) =>
+		this.use((repo) => repo.setInactive(id))
+	static getById = (id: PersonId) => this.use((repo) => repo.getById(id))
 }

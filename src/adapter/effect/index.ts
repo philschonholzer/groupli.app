@@ -1,5 +1,7 @@
-import { Cause, type ConfigError, Effect, Exit, Schema } from 'effect'
+import { Cause, Effect, Exit, Schema } from 'effect'
+import { ConfigError } from 'effect/Config'
 import { notFound, redirect } from 'next/navigation'
+import { DbError } from '../db'
 import { NextNotFound, NextRedirect } from '../next'
 import { TracingLive } from '../tracing'
 import type { MainLive } from './main-layer'
@@ -8,7 +10,7 @@ import runtime from './runtime'
 export const run = <A>(effect: Effect.Effect<A, never, MainLive>) => {
 	return effect.pipe(
 		Effect.withSpan('run'),
-		Effect.catchAllDefect((defect) => {
+		Effect.catchDefect((defect) => {
 			console.error(defect)
 			return Effect.die(defect)
 		}),
@@ -17,37 +19,39 @@ export const run = <A>(effect: Effect.Effect<A, never, MainLive>) => {
 	)
 }
 
+type ExitSchema<A, E> = Schema.Constraint & {
+	readonly Type: Exit.Exit<A, E>
+}
+
 // Overload for when returnVoid is true
-export function runAction<A, E, SI extends object>(props: {
-	schema: Schema.Schema<Exit.Exit<A, E>, SI, never>
+export function runAction<A, E, S extends ExitSchema<A, E>>(props: {
+	schema: S
 	returnVoid: true
 }): (
 	effect: Effect.Effect<A, E | NextRedirect | NextNotFound, MainLive>,
 ) => Promise<void>
 
 // Overload for when returnVoid is false or not provided
-export function runAction<A, E, SI extends object>(props: {
-	schema: Schema.Schema<Exit.Exit<A, E>, SI, never>
+export function runAction<A, E, S extends ExitSchema<A, E>>(props: {
+	schema: S
 	returnVoid?: false
 }): (
 	effect: Effect.Effect<A, E | NextRedirect | NextNotFound, MainLive>,
-) => Promise<
-	Schema.Schema.Encoded<typeof props.schema> | { readonly _tag: 'Idle' }
->
+) => Promise<S['Iso'] | { readonly _tag: 'Idle' }>
 
 // Implementation
-export function runAction<A, E, SI extends object>(props: {
-	schema: Schema.Schema<Exit.Exit<A, E>, SI, never>
+export function runAction<A, E, S extends ExitSchema<A, E>>(props: {
+	schema: S
 	returnVoid?: boolean
 }) {
 	return (
 		effect: Effect.Effect<A, E | NextRedirect | NextNotFound, MainLive>,
 	) => {
-		const parse = Schema.encodeUnknownSync(props.schema)
+		const toIso = Schema.toIso(props.schema)
 		return effect
 			.pipe(
 				Effect.withSpan('action'),
-				Effect.catchAllDefect((defect) => {
+				Effect.catchDefect((defect) => {
 					console.error(defect)
 					return Effect.die(defect)
 				}),
@@ -56,25 +60,38 @@ export function runAction<A, E, SI extends object>(props: {
 			)
 			.then((result) => {
 				handleRedirectOrNotFound(result)
-				const parsed = parse(result)
-				return parsed as typeof parsed | { readonly _tag: 'Idle' } | undefined
+				return toIso.get(result as S['Type']) as
+					| S['Iso']
+					| { readonly _tag: 'Idle' }
 			})
 	}
 }
 
 function handleRedirectOrNotFound<A, E>(
-	result: Exit.Exit<
-		A,
-		ConfigError.ConfigError | NextNotFound | NextRedirect | E
-	>,
+	result: Exit.Exit<A, ConfigError | NextNotFound | NextRedirect | E>,
 ) {
-	if (Exit.isFailure(result) && Cause.isFailType(result.cause)) {
-		if (result.cause.error instanceof NextRedirect) {
-			redirect(result.cause.error.path)
+	if (Exit.isFailure(result)) {
+		const failReason = result.cause.reasons.find(Cause.isFailReason)
+		const error = failReason?.error
+		if (error instanceof NextRedirect) {
+			redirect(error.path)
 		}
-		if (result.cause.error instanceof NextNotFound) {
+		if (error instanceof NextNotFound) {
 			notFound()
 		}
-		console.error('Error in result:', result)
+		if (!isExpectedFailure(result.cause)) {
+			console.error(`Error in result:\n${Cause.pretty(result.cause)}`)
+		}
 	}
+}
+
+// Domain failures such as invalid user input are reported back to the form
+// and are not worth logging. Defects, interrupts, database and config errors are.
+function isExpectedFailure(cause: Cause.Cause<unknown>) {
+	return cause.reasons.every(
+		(reason) =>
+			Cause.isFailReason(reason) &&
+			!(reason.error instanceof DbError) &&
+			!(reason.error instanceof ConfigError),
+	)
 }

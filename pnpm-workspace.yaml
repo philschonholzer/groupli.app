@@ -23,9 +23,13 @@ minimumReleaseAgeExclude:
   - '@next/swc-win32-x64-msvc@16.4.3'
   - next@16.4.3
 
+catalog:
+  '@types/react': 19.3.0
+  '@types/react-dom': 19.3.0
+
 overrides:
-  '@types/react': '$@types/react'
-  '@types/react-dom': '$@types/react-dom'
+  '@types/react': 'catalog:'
+  '@types/react-dom': 'catalog:'
   basic-ftp@<5.2.0: ^5.2.1
   protobufjs@>=8.0.0 <8.0.1: ^8.0.1
   shell-quote@>=1.1.0 <=1.8.3: ^1.8.4

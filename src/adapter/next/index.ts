@@ -1,4 +1,4 @@
-import { Effect, Layer, Schema } from 'effect'
+import { Context, Effect, Layer, Schema } from 'effect'
 import { NextCache } from './next-cache'
 
 export class NextRedirect extends Schema.TaggedError<NextRedirect>()(
@@ -15,18 +15,26 @@ const make = Effect.gen(function* () {
 	const nextCache = yield* NextCache
 
 	return {
-		notFound: new NextNotFound(),
+		notFound: Effect.fail(new NextNotFound()),
 		revalidatePath: (path: string) => nextCache.revalidatePath(path),
-		redirect: (path: string) => new NextRedirect({ path }),
+		redirect: (path: string) => Effect.fail(new NextRedirect({ path })),
 	}
 })
 
-export class Next extends Effect.Tag('@adapter/next')<
+export class Next extends Context.Service<
 	Next,
-	Effect.Effect.Success<typeof make>
->() {
-	static Live = Layer.effect(this, make).pipe(Layer.provide(NextCache.Live))
+	{
+		notFound: Effect.Effect<never, NextNotFound>
+		revalidatePath: (path: string) => Effect.Effect<void>
+		redirect: (path: string) => Effect.Effect<never, NextRedirect>
+	}
+>()('@adapter/next') {
+	static Live = Layer.effect(this, make).pipe(Layer.provide(NextCache.layer))
 	static Nullable = Layer.effect(this, make).pipe(
 		Layer.provideMerge(NextCache.Stub),
 	)
+	static revalidatePath = (path: string) =>
+		this.use((next) => next.revalidatePath(path))
+	static redirect = (path: string) => this.use((next) => next.redirect(path))
+	static notFound = this.use((next) => next.notFound)
 }

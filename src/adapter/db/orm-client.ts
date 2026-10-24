@@ -18,10 +18,13 @@ const makeOrmClient = (url: string) => {
 	return ormClient
 }
 
-export class OrmClient extends Context.Tag('@adapter/db/orm-client')<
+export class OrmClient extends Context.Service<
 	OrmClient,
 	BetterSQLite3Database<typeof schema>
->() {
-	static Live = Layer.sync(this, () => makeOrmClient(process.env.DB_URL ?? '')) // Use InMemory db for build. UB_URL is set to empty in build script.
+>()('@adapter/db/orm-client') {
+	static layer = Layer.sync(
+		this,
+		() => makeOrmClient(process.env.DB_URL ?? ''), // Use InMemory db for build. DB_URL is set to empty in build script.
+	)
 	static InMemory = Layer.sync(this, () => makeOrmClient(''))
 }

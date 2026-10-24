@@ -66,9 +66,9 @@ export default function AddPerson(props: { groupId: GroupId }) {
 				</Button>
 			</div>
 			{state._tag === 'Failure' &&
-				(state.cause._tag === 'Fail' ? (
+				(state.cause[0]?._tag === 'Fail' ? (
 					<div className="pt-1 text-red-600">
-						{renderError(state.cause.error as AddPersonError)}
+						{renderError(state.cause[0].error as AddPersonError)}
 					</div>
 				) : (
 					<p className="pt-1 text-red-600">

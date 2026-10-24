@@ -1,6 +1,6 @@
 {
 	"name": "groupify",
-	"version": "0.1.0",
+	"version": "1.1.0",
 	"private": true,
 	"packageManager": "pnpm@12.14.0",
 	"engines": {
@@ -24,7 +24,7 @@
 		"studio": "drizzle-kit studio"
 	},
 	"dependencies": {
-		"@effect/opentelemetry": "^0.61.0",
+		"@effect/opentelemetry": "^4.0.6",
 		"@mdx-js/loader": "^3.1.1",
 		"@mdx-js/react": "^3.1.1",
 		"@next/mdx": "16.4.3",
@@ -42,7 +42,7 @@
 		"clsx": "^2.1.1",
 		"copy-text-to-clipboard": "^3.2.2",
 		"drizzle-orm": "^0.45.1",
-		"effect": "^3.19.18",
+		"effect": "^4.0.6",
 		"lucide-react": "^0.575.0",
 		"nanoid": "^5.1.6",
 		"next": "16.4.3",
@@ -62,8 +62,8 @@
 		"@types/better-sqlite3": "^7.6.13",
 		"@types/mdx": "^2.0.13",
 		"@types/node": "^25.3.0",
-		"@types/react": "19.3.0",
-		"@types/react-dom": "19.3.0",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
 		"drizzle-kit": "^0.31.9",
 		"lefthook": "^2.1.1",
 		"postcss": "^8.5.6",

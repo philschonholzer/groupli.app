@@ -1,4 +1,4 @@
-import { Chunk, Effect, Option, pipe, Random } from 'effect'
+import { Effect, Option, pipe, Random } from 'effect'
 import type * as Group from '../group'
 import type * as Person from '../person'
 import * as Round from '../round'
@@ -21,9 +21,7 @@ export const pairPersons = (
 		const sortedPassedRounds =
 			yield* Round.Repository.get10LastByGroupIdWithPairings(groupId)
 
-		const randomPersonIds = yield* Random.shuffle(personIds).pipe(
-			Effect.map(Chunk.toArray),
-		)
+		const randomPersonIds = yield* Random.shuffle(personIds)
 		const allPossiblePairsFromPersons = generateAllListsOfPairs(randomPersonIds)
 
 		return pipe(
